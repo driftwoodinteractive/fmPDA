@@ -1,0 +1,25 @@
+{
+   "name": "driftwoodinteractive/fmPDA",
+   "type": "library",
+   "description": "A replacement class for FileMaker's API for PHP using the Data API",
+   "keywords": [
+      "FileMaker",
+      "PHP",
+      "DataAPI",
+      "REST"
+   ],
+   "homepage": "https://github.com/driftwoodinteractive/fmPDA",
+   "version": "1.0.0",
+   "license": "MIT",
+   "authors": [
+   {
+      "name": "Mark DeNyse",
+      "email": "mark@driftwoodinteractive.com",
+      "homepage": "https://www.driftwoodinteractive.com",
+      "role": "Developer"
+   }
+   ],
+   "require": {
+      "php": "^5.2.17",
+   }
+}
