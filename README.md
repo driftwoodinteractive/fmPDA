@@ -1,10 +1,10 @@
-                                   fmPDA
-                            FileMaker Php Data Api
+fmPDA
+FileMaker Php Data Api
 
 A replacement class for the FileMaker API For PHP using the FileMaker Data API
 
-                                 Mark DeNyse
-                        fmpda@driftwoodinteractive.com
+Mark DeNyse
+fmpda@driftwoodinteractive.com
 
 
 At FM Devon 2017, there was a discusssion about how to move existing CWP code
@@ -50,7 +50,7 @@ make some changes to your code.
 
 fmPDA can also return the 'raw' data from the Data API; if you want to use fmPDA
 to create the structures for passing to the Data API but want to process the
-data on your own, set the 'translateResult' element to true in the $options
+data on your own, set the 'translateResult' element to false in the $options
 array you pass to the fmPDA constructor.
 
 
