@@ -35,9 +35,10 @@ require_once 'fmCURL.class.php';
 
 // *********************************************************************************************************************************
 define('PATH_AUTH',                    '/fmi/rest/api/auth/');
-define('PATH_RECORD',                  '/fmi/rest/api/record/');
 define('PATH_FIND',                    '/fmi/rest/api/find/');
 define('PATH_GLOBAL',                  '/fmi/rest/api/global/');
+define('PATH_RECORD',                  '/fmi/rest/api/record/');
+define('PATH_UPLOAD',                  '/fmi/rest/api/upload/');
 
 // *********************************************************************************************************************************
 define('CONTENT_TYPE_JSON',            'application/json');
@@ -164,6 +165,33 @@ class fmDataAPI extends fmCURL
    }
 
    // *********************************************************************************************************************************
+   function apiUploadFile($layout, $recordID, $fieldName, $file)
+   {
+      // @@@
+      // @@@ Coming in FM NEXT
+      // @@@
+      // @@@ PUT/fmi/rest/api/upload/SOLUTION/LAYOUT/RECORD_ID/FIELD_NAME/REPETITION
+      // @@@ (Other headers)
+      // @@@ Content-Type: multipart/form-data; boundary=---------------NNNNNNNNNN
+      // @@@ Content-Length: nnn
+      // @@@ ---------------NNNNNNNNNN
+      // @@@
+      // @@@ Content-Disposition: form-data; name="upload"; filename="binary"
+      // @@@ Content-Type: application/octet-stream
+      // @@@ <file-data>
+      // @@@ ---------------NNNNNNNNNN--
+
+//      $data = array();
+//      $data[FM_DATA] = $fields;
+//      if ($modificationID != '') {
+//         $data[FM_MOD_ID] = $modificationID;
+//      }
+
+//      return $this->dataAPI($this->getAPIPath(PATH_UPLOAD) .'/'. rawurlencode($layout) .'/'. $recordID, METHOD_PUT, $data);
+      return null;
+   }
+
+   // *********************************************************************************************************************************
    function apiFindRecords($layout, $data)
    {
       return $this->dataAPI($this->getAPIPath(PATH_FIND) .'/'. rawurlencode($layout), METHOD_POST, $data);
@@ -206,6 +234,12 @@ class fmDataAPI extends fmCURL
          $header[] = FM_DATA_TOKEN .':'. $options[FM_DATA_TOKEN];
       }
       $options[CURLOPT_HTTPHEADER] = $header;
+
+
+//      $options['logSentHeaders']       = true;
+//      $options['logSentData']          = true;
+//      $options['logCURLInfo']          = true;
+
 
       $result = $this->curl($url, $method, $data, $options);
 
