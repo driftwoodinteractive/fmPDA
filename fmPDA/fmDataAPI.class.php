@@ -202,7 +202,7 @@ class fmDataAPI extends fmCURL
    {
       $header = array('Content-Type:'. CONTENT_TYPE_JSON);                                            // Form the header
 
-      if (array_key_exists(FM_DATA_TOKEN, $options) and ($options[FM_DATA_TOKEN] != '')) {
+      if (array_key_exists(FM_DATA_TOKEN, $options) && ($options[FM_DATA_TOKEN] != '')) {
          $header[] = FM_DATA_TOKEN .':'. $options[FM_DATA_TOKEN];
       }
       $options[CURLOPT_HTTPHEADER] = $header;
