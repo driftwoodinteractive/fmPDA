@@ -1,17 +1,19 @@
 fmPDA
 
 Mark DeNyse
+Driftwood Interactive
 fmpda@driftwoodinteractive.com
 
 
 Version     Date            Notes
 -------     ----            -----
 1.0         Aug 28, 2017    Initial release.
+1.1         Jun 13, 2018    Support for FileMaker Server 17/v1 API, added fmAdminAPI
 
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-Copyright (c) 2017 Mark DeNyse
+Copyright (c) 2017 - 2018 Mark DeNyse
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

@@ -1,61 +1,146 @@
-fmPDA
-FileMaker Php Data Api
+                                   fmPDA
+                            FileMaker Php Data Api
 
 A replacement class for the FileMaker API For PHP using the FileMaker Data API
 
-Mark DeNyse
-fmpda@driftwoodinteractive.com
+                                 Mark DeNyse
+                        fmpda@driftwoodinteractive.com
 
 
-At FM Devon 2017, there was a discusssion about how to move existing CWP code
-using FileMaker's API For PHP to the new Data API (REST) interface. fmPDA solves
-this issue by providing method-level compatibility to the existing API with
-minimal code changes on your part. Under the hood, fmPDA uses the new Data API.
-fmPDA has been tested with PHP versions 5.2.17 through 7.1.6.
+Your Problem:
+-------------
+You have Custom Web Publishing (CWP) code written using FileMaker's
+API for PHP. FileMaker has made it clear the new Data API is the way to go, and
+the XML interface (which FileMaker's API for PHP uses) will likely be deprecated
+in the future. Your code will break. Game Over, Dude.
 
-fmPDA is divided into three classes:
+
+So, what do you do?
+-------------------
+- Rewrite your code to use the new Data API. Not 'hard', but it'll take time to
+  rewrite/debug. In the end, your code may be a little faster. Yay, you.
+
+- Use a library that someone wrote to solve the same problem. Less time
+  consuming, especially if the code could replicate FileMaker's API for PHP.
+
+
+Wait, what?
+-----------
+fmPDA provides method & data structure compatibility with FileMaker's API For
+PHP. So, only minor changes should be needed to your code.
+
+
+
+
+fmPDA v1
+--------
 
 fmCURL
 ------
-fmCURL is a wrapper for curl() calls. You can use this class for any curl()
-calls you need to make. This class is used by the fmDataAPI class to communicate
-with FileMaker's Data API. Additionally, fmCURL instantiates a global fmLogger
-object to log various messages the classes generate. You can use this for your
-own purposes as well. See any of the example files on how it's used.
+fmCURL is a wrapper for CURL calls. The curl() method sets the typical
+parameters and optionally encode/decodes JSON data. fmCURL is independent of
+the FM API; it can be used to communicate with virtualy any host (such as
+Google, Swipe, etc.). The fmAPI class (see below) uses fmCURL to communicate
+with FileMaker's API.
+
+Example:
+$curl = new CURL();
+$curlResult = $curl->curl('https://www.example.com');
+
+Additionally, fmCURL instantiates a global fmLogger object to log various
+messages these classes generate. You can use this for your own purposes as well.
+See any of the example files on how it's used.
+
+
+
+fmAPI
+-----
+fmAPI encapsulates the interactions with FileMaker's API. fmAdminAPI and
+fmDataAPI extend this class. You won't typically instantiate this class
+directly.
+
+fmAPI takes care of managing the authentication token the API requires in all
+calls. It will request a new token whenever the current token is invalid without
+your code needing to know. By default, the token is stored in a session variable
+so calls across multiple PHP pages will reuse the same token. You can disable
+session variable storage, but you'll be responsible for managing the storage of
+the token.
+
+
+
+fmAdminAPI
+----------
+fmAdminAPI encapsulates the interactions with FileMaker's Admin Console API. Use
+this to communicate with FileMaker Server's Admin Console to get the server
+status, schedules, configuration, etc.
+
+Example:
+$fm = new fmAdminAPI($host, $userName, $password);
+$apiResult = $fm->apiGetServerStatus();
+
 
 
 fmDataAPI
 ---------
-fmDataAPI encapsulates the interactions with FileMaker's Data API. It takes care
-of managing the authentication token the Data API uses. By default it stores the
-token in a session variable so calls across multiple PHP pages will reuse the
-same token. If the token ages out, fmDataAPI will ask the Data API for a new one
-and update the session variable. You can disable session variable storage, but
-you'll then be responsible for managing the storage of the token.
+fmDataAPI encapsulates interactions with FileMaker's Data API. The class
+provides methods for directly interacting with the Data API (Get, Find, Create,
+Edit, Delete, Upload Container, Set Globals, Scripts, etc.)
+
+Example:
+$fm = new fmDataAPI($database, $host, $userName, $password);
+$apiResult = $fm->apiGetRecord($layout, $recordID);
+
+
+Caution
+-------
+- OAuth support is included but has not been tested.
+
+- The Data API replaces the name of the Table Occurrence in portals with the
+  layout object name (if one exists). If you name your portals on the dedicated
+  Web layouts (you do have those, right?) you've been using with the old API,
+  you'll need to change your code (ugh) or remove the object names.
+
+- The Data API translates FM line separators from a line feed (\n) in the old
+  API is now a carriage return (\r). If your code looks for line feeds, look for
+  carriage returns now.
+
+
 
 fmPDA
 -----
-fmPDA mirrors FileMaker's 'old' API For PHP. To use it, you'll remove:
+fmPDA provides method & data structure compatibility with FileMaker's 'old' API
+For PHP.
 
-include 'PATH-TO-FILEMAKER-CLASS-FILES/FileMaker.php';
+Example:
+$fm = new fmPDA($database, $host, $userName, $password);
+$findAllCommand = $fm->newFindAllCommand($layout);
+$findAllCommand->addSortRule($fieldName, 1, FILEMAKER_SORT_DESCEND);
+$result = $findAllCommand->execute();
 
-and replace it with:
 
-include 'PATH-TO-FMPDA-CLASS-FILES/fmPDA.php';
+Remember, wherever you did this:
 
-Within the limits described below, your existing code existing code should
-function as is, with the exception that it's using FileMaker's Data API instead
-of the XML interface. Not everything is supported, so you will probably have to
-make some changes to your code.
+$fm = new FileMaker(...);
+
+replace it with:
+
+$fm = new fmPDA(...);
+
+
+Within the limits described below, your existing code should function as is,
+with the exception that it's using FileMaker's Data API instead of the XML
+interface. Not everything is supported, so you may have to make some changes to
+your code.
 
 fmPDA can also return the 'raw' data from the Data API; if you want to use fmPDA
 to create the structures for passing to the Data API but want to process the
 data on your own, set the 'translateResult' element to false in the $options
-array you pass to the fmPDA constructor.
+array you pass to the fmPDA constructor. Alternatively, you can override
+fmPDA::newResult() to return the result in whatever form you wish.
 
 
-What is supported:
-------------------
+What is supported
+-----------------
 - Get Record By ID
 - Find All
 - Find Any
@@ -68,71 +153,64 @@ What is supported:
 - Get Container Data
 - Get Container Data URL
 - Script execution
-   Emulated with the old XML interface. When FMI supports this directly,
-   fmPDA will be updated to use the Data API. This is only for direct script
-   calls - pre-script, pre-command, and pre-sort can not be emulated.
+- Duplicate record (The duplicate.php example file shows how to do this with a
+  simple FM script)
 
-What isn't supported:
----------------------
-- Duplicate record
-- Pre-script, pre-command, pre-sort script execution
-- Setting the Result layout
+
+What isn't supported
+--------------------
 - List scripts
-- List databases
+- List databases - in v1 or later, use fmAdminAPI::apiListDatabases()
 - List layouts
 - Get layout metadata
 - Validation
 - Value Lists
-- getTableRecordCount() and getFoundSetCount()
-   fmPDA will create a fmLogger() message and return getFetchCount().
-   One suggestion has been made to create an unstored calculation field in
-   your table to return these values and place them on your layout.
 - Using Commit() to commit data on portals.
+- getTableRecordCount() and getFoundSetCount() - fmPDA will create a fmLogger()
+  message and return getFetchCount(). One suggestion has been made to create an
+  unstored calculation field in your table to return these values and place them
+  on your layout.
 
 
-Changes you'll likely have to make to your code:
-------------------------------------------------
-The biggest change is replacing all calls to FileMaker::isError() to use the
-function fmGetIsError() as the FileMaker class no longer exists. If this is a
-major hassle, you can change conf.fmPDA.php and modify the following line:
+Caution
+-------
+- getFieldAsTimestamp() can't automatically determine the field type as the Data
+  API doesn't return field metadata. There is now a new third parameter
+  ($fieldType) to tell the method how to convert the field data. See
+  FMRecord.class.php for details.
 
-   define('DEFINE_FILEMAKER_CLASS', false);
+- getContainerData() and getContainerDataURL() now return the full URL - no need
+  for the 'ContainerBridge' file! See container_data.php or
+  container_data_url.php for an example.
+
+
+
+
+Changes you'll likely have to make to your code
+-----------------------------------------------
+The biggest change is replacing any calls to FileMaker::isError($result) to use
+the function fmGetIsError($result) as the FileMaker class no longer exists. If
+this is a major hassle, you can change fmPDA.conf.php and modify the following
+line:
+
+define('DEFINE_FILEMAKER_CLASS', false);
 
 to:
 
-   define('DEFINE_FILEMAKER_CLASS', true);
+define('DEFINE_FILEMAKER_CLASS', true);
 
 This will create a 'glue' FileMaker class that fmPDA inherits from, and you can
-continue to use FileMaker::isError(). You should switch to fmGetIsError() in the
-future to reduce your dependence on the FileMaker class.
+continue to use FileMaker::isError(). Even so, it's recommended that you should
+switch to fmGetIsError() in the future to reduce/eradicate your dependence on a
+class called FileMaker. You'll run into conflicts if you do this and keep
+FileMaker's old classes in your include tree, so beware.
 
 
 
-Things to look out for with the new Data API:
----------------------------------------------
-Do not name a field called omi; that name is used in a find query to omit
-records.
 
-Do not name a field called deleteRelated; that name is used when editing a
-record to delete a related record.
-
-getFieldAsTimestamp() can't automatically determine the field type as the Data
-API doesn't return field metadata. There is now a new third parameter
-($fieldType) to tell the method how to convert the field data. See
-Record.inc.php for details.
-
-getContainerData() and getContainerDataURL() now return the full URL - no need
-for the 'ContainerBridge' file! See container_data.php or container_data_url.php
-for an example.
-
-The Data API replaces the name of the Table Occurrence in portals with the
-layout object name (if one exists). If you name your portals on the dedicated
-CWP layouts (you do have those, right?) you've been using with the old API,
-you'll need to change your code (ugh) or remove the object names (recommended).
-
-The Data API translates FM line separators from a line feed (\n) in the old API
-is now a carriage return (\r). If your code looks for line feeds, look for
-carriage returns now.
+PHP Compatibility
+-----------------
+fmPDA has been tested with PHP versions 5.2.17 through 7.1.6.
 
 
 
@@ -150,7 +228,7 @@ fmpda@driftwoodinteractive.com
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-Copyright (c) 2017 Mark DeNyse
+Copyright (c) 2017 - 2018 Mark DeNyse
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

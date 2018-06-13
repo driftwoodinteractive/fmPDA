@@ -1,79 +1,244 @@
-body {
-	padding: 10px;
-	margin: 10px;
-	font-family: "Helvetica Neue", Helvetica, Tahoma, Geneva, sans-serif;
-	font-size: 14px;
-	background-color: #eeeeee;
+html, body {
+   font-family: "Helvetica Neue", Helvetica, Tahoma, Geneva, sans-serif;
+   background-color: #ffffff;
+   height: 100%;
+   margin: 0;
+   padding: 0;
+   -webkit-font-smoothing: antialiased;
 }
-
-img {
-	border: 0;
-}
-
 
 a {
-	color: #0066CC;
-	padding: 3px;
-	-webkit-font-smoothing: antialiased;
-	text-decoration:none;
+   color: #0066CC;
+   padding: 3px;
+   font-size: 1em;
+   text-decoration: none;
+   -webkit-font-smoothing: antialiased;
+   cursor: pointer;
 }
 
 a:hover
 {
-	text-decoration:none;
-	color: white;
-	padding: 3px;
-	background-color: #0066CC;
-	cursor: pointer;
-	-webkit-font-smoothing: antialiased;
-	-webkit-transition-delay: 0s;
-	-webkit-transition-duration: 0.30000001192092896s;
-	-webkit-transition-property: background;
-	-webkit-transition-timing-function: cubic-bezier(0, 0, 0.58, 1);
-	-moz-transition-delay: 0s;
-	-moz-transition-duration: 0.30000001192092896s;
-	-moz-transition-property: background;
-	-moz-transition-timing-function: cubic-bezier(0, 0, 0.58, 1);
-	-o-transition-delay: 0s;
-	-o-transition-duration: 0.30000001192092896s;
-	-o-transition-property: background;
-	-o-transition-timing-function: cubic-bezier(0, 0, 0.58, 1);
-	border-radius:          5px 5px 5px 5px;
-	-moz-border-radius:     5px 5px 5px 5px;
-	-webkit-border-radius:  5px 5px 5px 5px;
+   text-decoration: none;
+   color: white;
+   padding: 3px;
+   background-color: #0066CC;
+   -webkit-font-smoothing: antialiased;
+   -webkit-transition-delay: 0s;
+   -webkit-transition-duration: 0.30000001192092896s;
+   -webkit-transition-property: background;
+   -webkit-transition-timing-function: cubic-bezier(0, 0, 0.58, 1);
+   -moz-transition-delay: 0s;
+   -moz-transition-duration: 0.30000001192092896s;
+   -moz-transition-property: background;
+   -moz-transition-timing-function: cubic-bezier(0, 0, 0.58, 1);
+   -o-transition-delay: 0s;
+   -o-transition-duration: 0.30000001192092896s;
+   -o-transition-property: background;
+   -o-transition-timing-function: cubic-bezier(0, 0, 0.58, 1);
+   border-radius:          5px 5px 5px 5px;
+   -moz-border-radius:     5px 5px 5px 5px;
+   -webkit-border-radius:  5px 5px 5px 5px;
+}
+
+img {
+   border: 0;
+}
+
+header {
+   position: fixed;
+   top: 0;
+   height: 50px !important;
+   width: 100%;
+   padding: 10px;
+
+   background: #0066CC;
+   color: #ffffff;
+   font-size: 1.5em;
+
+   -moz-box-sizing: border-box;
+   -webkit-box-sizing: border-box;
+   -o-box-sizing: border-box;
+   -ms-box-sizing: border-box;
+   box-sizing: border-box;
+}
+
+.content {
+   height: 100%;
+   width: 100%;
+   padding-top: 50px;
+   padding-bottom: 50px;
+   padding-left: 0px;
+   margin:0 auto 0 auto;
+
+   -moz-box-sizing: border-box;
+   -webkit-box-sizing: border-box;
+   -o-box-sizing: border-box;
+   -ms-box-sizing: border-box;
+   box-sizing: border-box;
+}
+
+.navigation-left {
+   top: 50px;
+   bottom: 50px;
+   width: 250px;
+   position: absolute;
+   padding-left: 0px;
+
+   background: #0066CC;
+   color: #ffffff;
+   opacity: .8;
+
+   font-size: .9em;
+
+   left: 0;
+   overflow-x: hidden;
+}
+
+.navigation-right {
+   top: 50px;
+   bottom: 50px;
+   width: 250px;
+   position: absolute;
+   right: 0;
+
+   background: #0066CC;
+   color: #ffffff;
+}
+
+/* Style the navigation-left links and the dropdown button */
+.navigation-left a, .dropdown-btn {
+   width: 100%;
+   padding: 0px;
+   padding-left: 5px;
+   padding-top: 5px;
+   padding-bottom: 5px;
+   color: #ffffff;
+   display: block;
+   border: none;
+   background: none;
+   text-align: left;
+   outline: none;
+   cursor: pointer;
+}
+
+/* On mouse-over */
+.navigation-left a:hover, .dropdown-btn:hover {
+   color: #0066CC;
+   background-color: #ffffff;
+   opacity: 1;
+}
+
+.navigation-header1 {
+   padding-left: 0px;
+   padding-right: 0px;
+   font-size: 1.5em;
+}
+
+.navigation-header2 {
+   padding-left: 10px;
+   padding-right: 0px;
+   font-size: 1.2em;
+}
+
+.indent-1 {
+   padding-left: 30px;
+}
+
+/* Add an active class to the active dropdown button */
+.active {
+   /*
+   background-color: #eeeeee;
+   color: white;
+   */
+}
+
+/* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
+.dropdown-container {
+   display: none;
+   background-color: #0066CC;
+   color: #ffffff;
+}
+
+/* Optional: Style the caret down icon */
+.fa-caret-down {
+   float: right;
+   padding-right: 10px;
 }
 
 
-#header {
-	background-color: #0066CC;
-	color: #ffffff;
-	margin: 0;
-	padding-top: 10px;
-	padding-bottom: 10px;
-	padding-left: 10px;
-	padding-right: 10px;
-	font-size: 1.5em;
-	text-align: center;
-	border-radius:          5px 5px 5px 5px;
-	-moz-border-radius:     5px 5px 5px 5px;
-	-webkit-border-radius:  5px 5px 5px 5px;
+/* Some media queries for responsiveness */
+@media screen and (max-height: 450px) {
+   /*
+   .navigation-left {padding-top: 15px;}
+   .navigation-left a {font-size: 18px;}
+   */
 }
 
-#footer {
-	background-color: #000000;
-	color: #777777;
-	margin-top: 20px;
-	padding: 6px;
-	padding-top: 10px;
-	padding-bottom: 10px;
-	text-align: center;
-	border-radius:          5px 5px 5px 5px;
-	-moz-border-radius:     5px 5px 5px 5px;
-	-webkit-border-radius:  5px 5px 5px 5px;
+.main {
+   height: 100%;
+   margin-left: 250px;
+/* margin-right: 250px; add this if you have navigation-right */
+   padding-left: 10px;
+   padding-right: 10px;
+   overflow: auto;
+}
+
+.main-header {
+   background: #0066CC;
+   color: #ffffff;
+   opacity: .9;
+   font-size: 1.1em;
+   font-weight: 700;
+   text-align: center;
+   padding: 10px;
+   margin-top: 5px;
+   margin-bottom: 5px;
+   border-radius:          5px 5px 5px 5px;
+   -moz-border-radius:     5px 5px 5px 5px;
+   -webkit-border-radius:  5px 5px 5px 5px;
+}
+
+.main-sub-header-1  {
+   font-size: 1em;
+   opacity: .75;
+   text-align: left;
 }
 
 
-.link {
-	padding-left: 20px;
-	padding-right: 20px;
+footer {
+   height: 50px;
+   bottom: 0;
+   width: 100%;
+   position: fixed;
+
+   background: #000000;
+   color: #ffffff;
+   text-align: center;
+   font-size: .6em;
 }
+
+.output-header {
+   padding: 10px;
+   background-color: #cccccc;
+   border-radius:          5px 5px 0px 0px;
+   -moz-border-radius:     5px 5px 0px 0px;
+   -webkit-border-radius:  5px 5px 0px 0px;
+}
+
+.output {
+   padding: 10px;
+   background-color: #ffffff;
+   border: 1px solid #cccccc;
+   border-radius:          0px 0px 5px 5px;
+   -moz-border-radius:     0px 0px 5px 5px;
+   -webkit-border-radius:  0px 0px 5px 5px;
+}
+
+.caution {
+   color: #CA9008;
+}
+
+.fmPDA-heart {
+   color: #ff0000;
+}
+
