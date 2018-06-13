@@ -186,12 +186,25 @@ Caution
 
 
 
-Changes you'll likely have to make to your code
------------------------------------------------
+A change you'll likely have to make to your code
+------------------------------------------------
 The biggest change is replacing any calls to FileMaker::isError($result) to use
-the function fmGetIsError($result) as the FileMaker class no longer exists. If
-this is a major hassle, you can change fmPDA.conf.php and modify the following
-line:
+the function fmGetIsError($result) as the FileMaker class no longer exists.
+
+if (FileMaker::isError($result)) {
+   /* Oops. Let's handle the error... */
+}
+
+Change it to:
+
+if (fmGetIsError($result)) {
+   /* Oops. Let's handle the error... */
+}
+
+
+
+If you really don't want to do this (::sigh::), you can change fmPDA.conf.php
+and modify the following line:
 
 define('DEFINE_FILEMAKER_CLASS', false);
 
@@ -203,7 +216,7 @@ This will create a 'glue' FileMaker class that fmPDA inherits from, and you can
 continue to use FileMaker::isError(). Even so, it's recommended that you should
 switch to fmGetIsError() in the future to reduce/eradicate your dependence on a
 class called FileMaker. You'll run into conflicts if you do this and keep
-FileMaker's old classes in your include tree, so beware.
+FileMaker's old classes in your include tree. You Have Been Warned.
 
 
 
