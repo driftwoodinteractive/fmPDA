@@ -44,8 +44,10 @@ Google, Swipe, etc.). The fmAPI class (see below) uses fmCURL to communicate
 with FileMaker's API.
 
 Example:
+```
 $curl = new CURL();
 $curlResult = $curl->curl('https://www.example.com');
+```
 
 Additionally, fmCURL instantiates a global fmLogger object to log various
 messages these classes generate. You can use this for your own purposes as well.
@@ -75,8 +77,10 @@ this to communicate with FileMaker Server's Admin Console to get the server
 status, schedules, configuration, etc.
 
 Example:
+```
 $fm = new fmAdminAPI($host, $userName, $password);
 $apiResult = $fm->apiGetServerStatus();
+```
 
 
 
@@ -87,8 +91,10 @@ provides methods for directly interacting with the Data API (Get, Find, Create,
 Edit, Delete, Upload Container, Set Globals, Scripts, etc.)
 
 Example:
+```
 $fm = new fmDataAPI($database, $host, $userName, $password);
 $apiResult = $fm->apiGetRecord($layout, $recordID);
+```
 
 
 Caution
@@ -112,19 +118,25 @@ fmPDA provides method & data structure compatibility with FileMaker's 'old' API
 For PHP.
 
 Example:
+```
 $fm = new fmPDA($database, $host, $userName, $password);
 $findAllCommand = $fm->newFindAllCommand($layout);
 $findAllCommand->addSortRule($fieldName, 1, FILEMAKER_SORT_DESCEND);
 $result = $findAllCommand->execute();
+```
 
 
 Remember, wherever you did this:
 
+```
 $fm = new FileMaker(...);
+```
 
 replace it with:
 
+```
 $fm = new fmPDA(...);
+```
 
 
 Within the limits described below, your existing code should function as is,
@@ -208,11 +220,15 @@ if (fmGetIsError($result)) {
 If you really don't want to do this (::sigh::), you can change fmPDA.conf.php
 and modify the following line:
 
+```
 define('DEFINE_FILEMAKER_CLASS', false);
+```
 
 to:
 
+```
 define('DEFINE_FILEMAKER_CLASS', true);
+```
 
 This will create a 'glue' FileMaker class that fmPDA inherits from, and you can
 continue to use FileMaker::isError(). Even so, it's recommended that you should
