@@ -191,16 +191,18 @@ A change you'll likely have to make to your code
 The biggest change is replacing any calls to FileMaker::isError($result) to use
 the function fmGetIsError($result) as the FileMaker class no longer exists.
 
+```
 if (FileMaker::isError($result)) {
    /* Oops. Let's handle the error... */
 }
-
+```
 Change it to:
 
+```
 if (fmGetIsError($result)) {
    /* Oops. Let's handle the error... */
 }
-
+```
 
 
 If you really don't want to do this (::sigh::), you can change fmPDA.conf.php
