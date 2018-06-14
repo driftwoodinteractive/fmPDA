@@ -1,7 +1,7 @@
 <?php
 // *********************************************************************************************************************************
 //
-// apiListSchedules.php
+// get_schedule.php
 //
 // This example uses fmAdminAPI::apiListSchedules() to list the schedules on the server.
 //

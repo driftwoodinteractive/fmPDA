@@ -98,6 +98,8 @@ class fmCURL
    //
    public function curl($url, $method = METHOD_GET, $data = '', $options = array())
    {
+      $result = array();
+
       $options = array_merge($this->options, $options);
 
       $postData = '';
@@ -177,19 +179,17 @@ class fmCURL
       curl_close($ch);                                                        // All done with curl for now
 
       if ($this->curlInfo['http_code'] == HTTP_SERVICE_UNAVAILABLE) {         // One way to get this is to turn off Data API in FM Admin Console
-         $result = array();
          $this->curlErrNum = $this->curlInfo['http_code'];
          $this->curlErrMsg = 'Service Unavailable';
       }
-      if ($this->curlInfo['http_code'] == HTTP_BAD_REQUREST) {
-         $result = array();
+      else if ($this->curlInfo['http_code'] == HTTP_BAD_REQUREST) {
          $this->curlErrNum = $this->curlInfo['http_code'];
          $this->curlErrMsg = 'Bad Request';
       }
-      else {
+
+      if ($curlResult != '') {
          $result = $options['decodeAsJSON'] ? json_decode($curlResult, true) : $curlResult;
       }
-
 
       $length = number_format(strlen($curlResult), 0, '.', ',');
       $bytesSec = number_format((floatval(strlen($curlResult) / $this->callTime)) / 1024, 0, '.', ',');

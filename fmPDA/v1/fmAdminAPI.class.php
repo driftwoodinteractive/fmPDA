@@ -67,10 +67,25 @@ define('FM_ERROR_INSUFFICIENT_PRIVILEGES',   9);                       // Insuff
 // *********************************************************************************************************************************
 define('FM_ADMIN_SESSION_TOKEN',      'FM-Admin-Session-token');       // Where we store the token in the PHP session
 
+// *********************************************************************************************************************************
+function convertBoolean_arraywalk(&$value, $key)
+{
+   if (strtolower($value) == 'true') {
+      $value = true;
+   }
+   else if (strtolower($value) == 'false') {
+      $value = false;
+   }
+
+   return;
+}
+
 
 // *********************************************************************************************************************************
 class fmAdminAPI extends fmAPI
 {
+   public   $convertBooleanStrings;
+
    function __construct($host, $username, $password, $options = array())
    {
       $options['logCURLResult']   = false;
@@ -84,12 +99,29 @@ class fmAdminAPI extends fmAPI
 
       parent::__construct($options);
 
+      $this->convertBooleanStrings = array_key_exists('convertBooleanStrings', $options) ? $options['convertBooleanStrings'] : true;
+
       fmLogger('fmAdminAPI: v'. $this->version);
 
       return;
    }
 
    // *********************************************************************************************************************************
+   // The Admin API returns Booleans as quoted strings (ugh). This can really mess with your code so
+   // we iterate across all array elements to change 'true' and 'false' into true boolean values.
+   //
+   public function fmAPI($url, $method = METHOD_GET, $data = '', $options = array())
+   {
+      $apiResult = parent::fmAPI($url, $method, $data, $options);
+
+      if ($this->convertBooleanStrings) {
+         array_walk_recursive($apiResult, 'convertBoolean_arraywalk');
+      }
+
+      return $apiResult;
+   }
+
+  // *********************************************************************************************************************************
    public function apiGetXMLConfiguration()
    {
       return $this->fmAPI($this->getAPIPath(PATH_ADMIN_XML), METHOD_GET);
@@ -331,7 +363,7 @@ class fmAdminAPI extends fmAPI
    {
       $messages = array();
 
-      if (($result != '') && (is_array($result) && array_key_exists(FM_RESULT, $result))) {
+      if (($result != '') && (is_array($result) && array_key_exists(FM_RESULT, $result) && ($result[FM_RESULT] != 0))) {
          $message = array();
          $message[FM_CODE]    = array_key_exists(FM_RESULT, $result) ? $result[FM_RESULT] : '';
          $message[FM_MESSAGE] = array_key_exists(FM_ERROR_MESSAGE, $result) ? $result[FM_ERROR_MESSAGE] : '';
