@@ -83,28 +83,29 @@ class fmXMLParser
 
       else {                                                                           // Looks good, let's get the data
          $data = array();
-         foreach ($xml['resultset']['record'] as $record) {
-            $fmData = array();
-            $fmData[FM_RECORD_ID] = $record['@attributes']['record-id'];               // Record ID
-            $fmData[FM_MOD_ID] = $record['@attributes']['mod-id'];                     // Modification ID
-            $fmData[FM_FIELD_DATA] = $this->parseFields($record);                      // Main fields on the layout
+         if (array_key_exists('resultset', $xml) && array_key_exists('record', $xml['resultset'])) {
+            foreach ($xml['resultset']['record'] as $record) {
+               $fmData = array();
+               $fmData[FM_RECORD_ID] = $record['@attributes']['record-id'];               // Record ID
+               $fmData[FM_MOD_ID] = $record['@attributes']['mod-id'];                     // Modification ID
+               $fmData[FM_FIELD_DATA] = $this->parseFields($record);                      // Main fields on the layout
 
-            $relatedSets = array();                                                    // Look for any portals
-            foreach ($record['relatedset'] as $relatedset) {
-               $relatedsetName = $relatedset['@attributes']['table'];
-               if (array_key_exists('record', $relatedset)) {
-                  $relatedSet = array();
-                  foreach ($relatedset['record'] as $record) {
-                     $relatedSet[] = $this->parseFields($record, true/*includeRecordID*/);
+               $relatedSets = array();                                                    // Look for any portals
+               foreach ($record['relatedset'] as $relatedset) {
+                  $relatedsetName = $relatedset['@attributes']['table'];
+                  if (array_key_exists('record', $relatedset)) {
+                     $relatedSet = array();
+                     foreach ($relatedset['record'] as $record) {
+                        $relatedSet[] = $this->parseFields($record, true/*includeRecordID*/);
+                     }
+                     $relatedSets[$relatedsetName] = $relatedSet;
                   }
-                  $relatedSets[$relatedsetName] = $relatedSet;
                }
+               $fmData[FM_PORTAL_DATA] = $relatedSets;
+
+               $data[] = $fmData;
             }
-            $fmData[FM_PORTAL_DATA] = $relatedSets;
-
-            $data[] = $fmData;
          }
-
          if ($fm->getTranslateResult()) {
             $result = $fm->newResult($layout, $data);
          }
