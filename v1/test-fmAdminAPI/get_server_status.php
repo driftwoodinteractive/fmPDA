@@ -104,13 +104,13 @@ else {
                Get the Server Status<br>
                <pre><code class="language-php">
                   $fm = new fmAdminAPI(FM_HOST, FM_USERNAME, FM_PASSWORD);
-$apiResult = $fm->apiGetServerStatus();
-if (! $fm->getIsError($apiResult)) {
-   $result = $fm->getResponse($apiResult);
-}
-else {
-   $messageInfo = $fm->getMessageInfo($apiResult);
-}
+                  $apiResult = $fm->apiGetServerStatus();
+                  if (! $fm->getIsError($apiResult)) {
+                     $result = $fm->getResponse($apiResult);
+                  }
+                  else {
+                     $messageInfo = $fm->getMessageInfo($apiResult);
+                  }
                </code></pre>
             </div>
 

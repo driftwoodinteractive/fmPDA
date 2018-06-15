@@ -155,7 +155,7 @@ class fmCURL
 
       // Map a few common HTTP response codes into a curl error field
       if ($this->curlErrNum == 0) {
-         if ($this->curlInfo['http_code'] == HTTP_SERVICE_UNAVAILABLE) {      // One way to get this is to turn off Data API in FM Admin Console
+         if ($this->curlInfo['http_code'] == HTTP_SERVICE_UNAVAILABLE) {     // One way to get this is to turn off Data API in FM Admin Console
             $this->curlErrNum = $this->curlInfo['http_code'];
             $this->curlErrMsg = 'Service Unavailable';
          }

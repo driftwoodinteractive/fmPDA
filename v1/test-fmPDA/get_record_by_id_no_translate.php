@@ -45,7 +45,7 @@ $options = array(
                   'version'             => DATA_API_VERSION,
                   'storeTokenInSession' => true,
                   'translateResult'     => false,                // Do *not* return old-style objects - return DataAPI structure
-                  'token' => ''  //'BAD-ROBOT'
+                  'token'               => ''  //'BAD-ROBOT'
                );
 
 $fm = new fmPDA(FM_DATABASE, FM_HOST, FM_USERNAME, FM_PASSWORD, $options);

@@ -47,7 +47,7 @@ define('HTTP_BAD_REQUREST',            400);                      // Bad Request
 define('HTTP_UNAUTHORIZED',            401);                      // Unauthorized (bad credentials)
 define('HTTP_SERVICE_UNAVAILABLE',     503);                      // Service Unavailable
 
-define('CURL_CONNECTION_TIMEOUT',      2);                       // Connection time out
+define('CURL_CONNECTION_TIMEOUT',      2);                        // Connection time out
 
 // *********************************************************************************************************************************
 class fmCURL

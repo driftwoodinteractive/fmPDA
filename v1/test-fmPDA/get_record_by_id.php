@@ -44,7 +44,7 @@ $output = '';
 $options = array(
                   'version'             => DATA_API_VERSION,
                   'storeTokenInSession' => true,
-                  'token' => ''  //'BAD-ROBOT'
+                  'token'               => ''  //'BAD-ROBOT'
                );
 
 // This wasn't possible before but the Data API supports this now...
