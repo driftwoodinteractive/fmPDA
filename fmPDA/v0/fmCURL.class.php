@@ -153,17 +153,23 @@ class fmCURL
       curl_close($ch);                                                        // All done with curl for now
 
 
-      if ($this->curlInfo['http_code'] == HTTP_SERVICE_UNAVAILABLE) {         // One way to get this is to turn off Data API in FM Admin Console
-         $result = array();
-         $this->curlErrNum = $this->curlInfo['http_code'];
-         $this->curlErrMsg = 'Service Unavailable';
+      // Map a few common HTTP response codes into a curl error field
+      if ($this->curlErrNum == 0) {
+         if ($this->curlInfo['http_code'] == HTTP_SERVICE_UNAVAILABLE) {      // One way to get this is to turn off Data API in FM Admin Console
+            $this->curlErrNum = $this->curlInfo['http_code'];
+            $this->curlErrMsg = 'Service Unavailable';
+         }
+         else if ($this->curlInfo['http_code'] == HTTP_BAD_REQUREST) {
+            $this->curlErrNum = $this->curlInfo['http_code'];
+            $this->curlErrMsg = 'Bad Request';
+         }
+         else if ($this->curlInfo['http_code'] == HTTP_UNAUTHORIZED) {
+            $this->curlErrNum = $this->curlInfo['http_code'];
+            $this->curlErrMsg = 'Unauthorized';
+         }
       }
-      if ($this->curlInfo['http_code'] == HTTP_BAD_REQUREST) {
-         $result = array();
-         $this->curlErrNum = $this->curlInfo['http_code'];
-         $this->curlErrMsg = 'Bad Request';
-      }
-      else {
+
+      if ($curlResult != '') {
          $result = $options['encodeDecodeAsJSON'] ? json_decode($curlResult, true) : $curlResult;
       }
 
@@ -172,7 +178,7 @@ class fmCURL
       $bytesSec = number_format((floatval(strlen($curlResult) / $this->callTime)) / 1024, 0, '.', ',');
 
       fmLogger('————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————');
-      fmLogger('{HTTP: '. $this->httpCode .'} ['. $method .'] ('. round($this->callTime, 3) .'s&#8644;, '. $length .'bytes, '. $bytesSec .'k/s) '. $url);
+      fmLogger('{HTTP: '. $this->httpCode .'} ['. $method .'] ('. round($this->callTime, 3) .'s&#8644;, '. $length .' bytes, '. $bytesSec .'k/s) '. $url);
 
       if ($options['logSentHeaders']) {
          fmLogger('HTTP header:'. '<br>'. print_r($this->curlInfo['request_header'], true)); // CURLOPT_HTTPHEADER only gives what we add
