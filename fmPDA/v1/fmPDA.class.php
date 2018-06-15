@@ -117,7 +117,6 @@ class fmPDA extends fmPDAGlue
       }
 
       $options['userAgent']   = array_key_exists('userAgent', $options) ? $options['userAgent'] : FMPDA_USER_AGENT;
-      $options['version']     = array_key_exists('version', $options) ? $options['version'] : DATA_API_VERSION;
 
       parent::__construct($database, $host, $username, $password, $options);
 

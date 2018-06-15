@@ -42,6 +42,7 @@ $output = '';
 // in the session. In that case you should pass in a valid token and set storeTokenInSession => false. If you do this,
 // you'll be responsible for storage of the token which you can retrieve with $fm->getToken().
 $options = array(
+                  'version'             => DATA_API_VERSION,
                   'storeTokenInSession' => true,
                   'token' => ''  //'BAD-ROBOT'
                );

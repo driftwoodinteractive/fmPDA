@@ -4,7 +4,6 @@ html, body {
    height: 100%;
    margin: 0;
    padding: 0;
-   -webkit-font-smoothing: antialiased;
 }
 
 a {
@@ -12,7 +11,6 @@ a {
    padding: 3px;
    font-size: 1em;
    text-decoration: none;
-   -webkit-font-smoothing: antialiased;
    cursor: pointer;
 }
 
@@ -22,7 +20,6 @@ a:hover
    color: white;
    padding: 3px;
    background-color: #0066CC;
-   -webkit-font-smoothing: antialiased;
    -webkit-transition-delay: 0s;
    -webkit-transition-duration: 0.30000001192092896s;
    -webkit-transition-property: background;

@@ -31,7 +31,18 @@
 
 require_once 'startup.inc.php';
 
-$fm = new fmPDA(FM_DATABASE, FM_HOST, FM_USERNAME, FM_PASSWORD);
+// Set token to something invalid if you want to force fmPDA to request a new token on it's first call.
+// This is mainly useful for debugging - it will slow down performance if you always force it to get a new token.
+// The main reason for passing a token here is you want to store the token some place other than the default location
+// in the session. In that case you should pass in a valid token and set storeTokenInSession => false. If you do this,
+// you'll be responsible for storage of the token which you can retrieve with $fm->getToken().
+$options = array(
+                  'version'             => DATA_API_VERSION,
+                  'storeTokenInSession' => true,
+                  'token'               => ''  //'BAD-ROBOT'
+               );
+
+$fm = new fmPDA(FM_DATABASE, FM_HOST, FM_USERNAME, FM_PASSWORD, $options);
 
 // First, add a record to the database, get the returned recordID, then delete it.
 $addCommand = $fm->newAddCommand('Web_Project');

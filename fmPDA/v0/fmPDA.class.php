@@ -147,7 +147,7 @@ class fmPDA extends fmPDAGlue
    // *********************************************************************************************************************************
    // Returns any error from the Data API, then checks to see if there is a curl error to return.
    //
-   function getErrorInfo($result)
+   function getErrorInfo($result = '')
    {
       $errorInfo = parent::getErrorInfo($result);
 

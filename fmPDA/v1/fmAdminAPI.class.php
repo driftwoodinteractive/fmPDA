@@ -13,8 +13,12 @@
 //
 //
 // Admin Console API:
+// Web: http://fmhelp.filemaker.com/cloud/17/en/adminapi/
 // Mac FMS: /Library/FileMaker Server/Documentation/Admin API Documentation
 // Windows FMS: [drive]:\Program Files\FileMaker\FileMaker Server\Documentation\Admin API Documentation
+//
+// Feature Requests for FileMaker:
+// http://www.filemaker.com/company/contact/feature_request.html
 //
 // *********************************************************************************************************************************
 //
@@ -92,6 +96,7 @@ class fmAdminAPI extends fmAPI
       $options['host']            = $host;
       $options['sessionTokenKey'] = FM_ADMIN_SESSION_TOKEN;
       $options['userAgent']       = array_key_exists('userAgent', $options) ? $options['userAgent'] : DATA_ADMIN_API_USER_AGENT;
+      $options['version']         = array_key_exists('version', $options) ? $options['version'] : FM_VERSION_1;
 
       $options['authentication'] = array();
       $options['authentication']['username'] = $username;
@@ -107,13 +112,12 @@ class fmAdminAPI extends fmAPI
    }
 
    // *********************************************************************************************************************************
-   // The Admin API returns Booleans as quoted strings (ugh). This can really mess with your code so
-   // we iterate across all array elements to change 'true' and 'false' into true boolean values.
-   //
    public function fmAPI($url, $method = METHOD_GET, $data = '', $options = array())
    {
       $apiResult = parent::fmAPI($url, $method, $data, $options);
 
+      // The Admin API returns Booleans as quoted strings (ugh). This can really mess with your code so we
+      // recursively iterate across all array elements to change 'true' and 'false' into true boolean values.
       if ($this->convertBooleanStrings) {
          array_walk_recursive($apiResult, 'convertBoolean_arraywalk');
       }
