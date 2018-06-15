@@ -64,6 +64,34 @@ class fmXMLParser
    }
 
    // *********************************************************************************************************************************
+   function parseOneRecord($data, $record)
+   {
+      $fmData = array();
+      $fmData[FM_RECORD_ID] = $record['@attributes']['record-id'];               // Record ID
+      $fmData[FM_MOD_ID] = $record['@attributes']['mod-id'];                     // Modification ID
+      $fmData[FM_FIELD_DATA] = $this->parseFields($record);                      // Main fields on the layout
+
+      $relatedSets = array();                                                    // Look for any portals
+      if (array_key_exists('relatedset', $record)) {
+         foreach ($record['relatedset'] as $relatedset) {
+            $relatedsetName = $relatedset['@attributes']['table'];
+            if (array_key_exists('record', $relatedset)) {
+               $relatedSet = array();
+               foreach ($relatedset['record'] as $relatedRecord) {
+                  $relatedSet[] = $this->parseFields($relatedRecord, true/*includeRecordID*/);
+               }
+               $relatedSets[$relatedsetName] = $relatedSet;
+            }
+         }
+         $fmData[FM_PORTAL_DATA] = $relatedSets;
+      }
+
+      $data[] = $fmData;
+
+      return $data;
+   }
+
+   // *********************************************************************************************************************************
    function parse($fm, $layout, $rawXML)
    {
       $parsedXML = simplexml_load_string($rawXML);                                     // Convert XML into PHP array
@@ -83,34 +111,27 @@ class fmXMLParser
 
       else {                                                                           // Looks good, let's get the data
          $data = array();
-         if (array_key_exists('resultset', $xml) && array_key_exists('record', $xml['resultset'])) {
-            foreach ($xml['resultset']['record'] as $record) {
-               $fmData = array();
-               $fmData[FM_RECORD_ID] = $record['@attributes']['record-id'];               // Record ID
-               $fmData[FM_MOD_ID] = $record['@attributes']['mod-id'];                     // Modification ID
-               $fmData[FM_FIELD_DATA] = $this->parseFields($record);                      // Main fields on the layout
 
-               $relatedSets = array();                                                    // Look for any portals
-               foreach ($record['relatedset'] as $relatedset) {
-                  $relatedsetName = $relatedset['@attributes']['table'];
-                  if (array_key_exists('record', $relatedset)) {
-                     $relatedSet = array();
-                     foreach ($relatedset['record'] as $record) {
-                        $relatedSet[] = $this->parseFields($record, true/*includeRecordID*/);
-                     }
-                     $relatedSets[$relatedsetName] = $relatedSet;
-                  }
+         $fetchSize = $xml['resultset']['@attributes']['fetch-size'];
+
+         if (($fetchSize > 0) && array_key_exists('resultset', $xml) && array_key_exists('record', $xml['resultset'])) {
+            $resultSet = $xml['resultset'];
+
+            if ($fetchSize == 1) {
+               $data = $this->parseOneRecord($data, $resultSet['record']);
+            }
+            else {
+               foreach ($resultSet['record'] as $record) {
+                  $data = $this->parseOneRecord($data, $record);
                }
-               $fmData[FM_PORTAL_DATA] = $relatedSets;
-
-               $data[] = $fmData;
             }
          }
+
          if ($fm->getTranslateResult()) {
             $result = $fm->newResult($layout, $data);
          }
          else {
-            $result = $apiResult;
+            $result = $parsedXML;
          }
       }
 
