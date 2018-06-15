@@ -131,7 +131,7 @@ class fmLogger
       if ($this->logging) {
          if ($asHTML) {
             $fgbgColors = $this->darkMode ? 'background-color: #000000; color: #ffffff; ' : 'background-color: #ffffff; color: #000000; ';
-            $result .= '<div id="fmLogger" style="margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px; padding-left: 5px; padding-right: 5px; white-space: nowrap; font-family: monospace; font-weight: normal; font-size: 12px; line-height: 13px; border: 1px solid gray; border-radius: 5px 5px 5px 5px; -moz-border-radius: 5px 5px 5px 5px; -webkit-border-radius: 5px 5px 5px 5px; text-align: left; '. $fgbgColors .'">';
+            $result .= '<div id="fmLogger" style="margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px; padding-left: 5px; padding-right: 5px; overflow-x: scroll; overflow-y: hidden; white-space: nowrap; font-family: monospace; font-weight: normal; font-size: 12px; line-height: 13px; border: 1px solid gray; border-radius: 5px 5px 5px 5px; -moz-border-radius: 5px 5px 5px 5px; -webkit-border-radius: 5px 5px 5px 5px; text-align: left; '. $fgbgColors .'">';
             $result .= str_replace(array("\n", ' '), array('<br>', '&nbsp;'), $this->log );
             $result .= '</div>';
          }
