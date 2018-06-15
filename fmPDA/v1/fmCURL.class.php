@@ -229,7 +229,7 @@ class fmCURL
    // *********************************************************************************************************************************
    // Returns true if there's an error from curl.
    //
-   function getIsError()
+   function getIsError($result = '')
    {
       $isError = false;
 
@@ -247,7 +247,7 @@ class fmCURL
    // *********************************************************************************************************************************
    // Returns any error from curl.
    //
-   function getErrorInfo()
+   function getErrorInfo($result)
    {
       $errorInfo = array('code' => '', 'message' => '');
 
