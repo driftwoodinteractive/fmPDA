@@ -111,7 +111,7 @@ class fmPDA extends fmPDAGlue
 
       // If the old API is included, warn the user that there might be conflicts.
       if (! DEFINE_FILEMAKER_CLASS && class_exists('FileMaker')) {
-         fmLogger('<br><br>*** Old FileMaker API For PHP class files are still. You *may* have conflicts. ***<br><br>');
+         fmLogger('<br><br>*** Old FileMaker API For PHP class files are still included. You *may* have conflicts. ***<br><br>');
       }
 
       parent::__construct($database, $host, $username, $password, $loginLayout, $options);
