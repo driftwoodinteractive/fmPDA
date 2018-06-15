@@ -224,7 +224,7 @@ class fmCURL
    // *********************************************************************************************************************************
    // Returns any error from curl.
    //
-   function getErrorInfo($result)
+   function getErrorInfo($result = '')
    {
       $errorInfo = array('code' => '', 'message' => '');
 

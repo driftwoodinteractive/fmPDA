@@ -295,7 +295,7 @@ class fmDataAPI extends fmCURL
    // *********************************************************************************************************************************
    // Returns any error from the Data API, then checks to see if there is a curl error to return.
    //
-   function getErrorInfo($result)
+   function getErrorInfo($result = '')
    {
       $errorInfo = array('code' => '', 'message' => '');
 
