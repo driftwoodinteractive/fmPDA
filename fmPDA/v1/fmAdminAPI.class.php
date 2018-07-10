@@ -49,9 +49,13 @@ require_once 'fmAPI.class.php';
 // *********************************************************************************************************************************
 define('DATA_ADMIN_API_USER_AGENT',     'fmAdminAPI/1.0');         // Our user agent string
 
+// How to get server information. This does not require authentication - just go a GET
+define('PATH_SERVER_INFO',             'fmws/serverinfo');
+
+define('PATH_FMS_SERVER_API_BASE',     '/fmi');                   // Cloud doesn't have this, only FMS on Mac/Windows
 
 // Starting with the v1 API, this is the base path for the Admin API
-define('PATH_ADMIN_API_BASE',          '/fmi/admin/api/v%%%VERSION%%%');
+define('PATH_ADMIN_API_BASE',          'admin/api/v%%%VERSION%%%');
 
 define('PATH_ADMIN_LOGIN',             PATH_ADMIN_API_BASE .'/user/login');
 define('PATH_ADMIN_LOGOUT',            PATH_ADMIN_API_BASE .'/user/logout');
@@ -88,6 +92,7 @@ function convertBoolean_arraywalk(&$value, $key)
 // *********************************************************************************************************************************
 class fmAdminAPI extends fmAPI
 {
+   public   $cloud;
    public   $convertBooleanStrings;
 
    function __construct($host, $username, $password, $options = array())
@@ -104,6 +109,7 @@ class fmAdminAPI extends fmAPI
 
       parent::__construct($options);
 
+      $this->cloud = array_key_exists('cloud', $options) ? $options['cloud'] : false;
       $this->convertBooleanStrings = array_key_exists('convertBooleanStrings', $options) ? $options['convertBooleanStrings'] : true;
 
       fmLogger('fmAdminAPI: v'. $this->version);
@@ -118,11 +124,17 @@ class fmAdminAPI extends fmAPI
 
       // The Admin API returns Booleans as quoted strings (ugh). This can really mess with your code so we
       // recursively iterate across all array elements to change 'true' and 'false' into true boolean values.
-      if ($this->convertBooleanStrings) {
+      if ($this->convertBooleanStrings && is_array($apiResult)) {
          array_walk_recursive($apiResult, 'convertBoolean_arraywalk');
       }
 
       return $apiResult;
+   }
+
+  // *********************************************************************************************************************************
+   public function apiGetServerInfo()
+   {
+      return $this->fmAPI($this->getAPIPath(PATH_SERVER_INFO), METHOD_GET);
    }
 
   // *********************************************************************************************************************************
@@ -326,6 +338,16 @@ class fmAdminAPI extends fmAPI
       }
 
       return $result;
+   }
+
+   // *********************************************************************************************************************************
+   public function getAPIPath($requestPath)
+   {
+      $path = parent::getAPIPath($requestPath);
+
+      $path = ((! $this->cloud) ? PATH_FMS_SERVER_API_BASE : '') . $path;    // Cloud doesn't have the /fmi prefix
+
+      return $path;
    }
 
    // *********************************************************************************************************************************
