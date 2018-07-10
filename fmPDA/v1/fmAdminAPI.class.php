@@ -55,7 +55,7 @@ define('PATH_SERVER_INFO',             'fmws/serverinfo');
 define('PATH_FMS_SERVER_API_BASE',     '/fmi');                   // Cloud doesn't have this, only FMS on Mac/Windows
 
 // Starting with the v1 API, this is the base path for the Admin API
-define('PATH_ADMIN_API_BASE',          'admin/api/v%%%VERSION%%%');
+define('PATH_ADMIN_API_BASE',          '%%%FMI%%%/admin/api/v%%%VERSION%%%');
 
 define('PATH_ADMIN_LOGIN',             PATH_ADMIN_API_BASE .'/user/login');
 define('PATH_ADMIN_LOGOUT',            PATH_ADMIN_API_BASE .'/user/logout');
@@ -345,7 +345,10 @@ class fmAdminAPI extends fmAPI
    {
       $path = parent::getAPIPath($requestPath);
 
-      $path = ((! $this->cloud) ? PATH_FMS_SERVER_API_BASE : '') . $path;    // Cloud doesn't have the /fmi prefix
+      $search  = array('%%%FMI%%%');
+      $replace = (! $this->cloud ) ? PATH_FMS_SERVER_API_BASE : '';
+
+      $path = str_replace($search, $replace, $path);
 
       return $path;
    }
