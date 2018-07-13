@@ -7,8 +7,8 @@ A replacement class for the FileMaker API For PHP using the FileMaker Data API
                         fmpda@driftwoodinteractive.com
 
 
-What is fmPDA
--------------
+What is fmPDA?
+--------------
 fmPDA is a set of PHP classes for FileMaker's Data and Admin API. The special
 sauce, the fmPDA class: a replacement class for FileMaker's API For PHP
 'FileMaker' class, using the Data API. fmPDA provides method & data structure
