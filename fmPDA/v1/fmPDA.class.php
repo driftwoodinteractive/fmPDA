@@ -53,7 +53,7 @@
 require_once 'fmDataAPI.class.php';
 
 // *********************************************************************************************************************************
-define('FMPDA_USER_AGENT',             'fmPDA/1.0');              // Our user agent string
+define('FMPDA_USER_AGENT',             'fmPDAphp/1.0');           // Our user agent string
 
 define('FM_ERROR_COMMUNICATION',       22);                       // PHP API Error for lots of things
 

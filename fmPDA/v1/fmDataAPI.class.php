@@ -44,7 +44,7 @@
 require_once 'fmAPI.class.php';
 
 // *********************************************************************************************************************************
-define('DATA_API_USER_AGENT',          'fmDataAPI/1.0');  // Our user agent string
+define('DATA_API_USER_AGENT',          'fmDataAPIphp/1.0');  // Our user agent string
 
 // Starting with the v1 API, this is the new base path
 define('PATH_DATA_API_BASE',           '/fmi/data/v%%%VERSION%%%/databases');

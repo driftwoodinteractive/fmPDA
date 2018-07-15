@@ -43,7 +43,7 @@
 require_once 'fmCURL.class.php';
 
 // *********************************************************************************************************************************
-define('FM_API_USER_AGENT',            'fmAPI/1.0');               // Our user agent string
+define('FM_API_USER_AGENT',            'fmAPIphp/1.0');            // Our user agent string
 
 define('FM_VERSION_LATEST',            'Latest');                  // By default we'll always use the latest version
 define('FM_VERSION_0',                 '0');                       // Version 0 was released with FileMaker Server 16

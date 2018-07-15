@@ -47,7 +47,7 @@
 require_once 'fmAPI.class.php';
 
 // *********************************************************************************************************************************
-define('DATA_ADMIN_API_USER_AGENT',     'fmAdminAPI/1.0');         // Our user agent string
+define('DATA_ADMIN_API_USER_AGENT',     'fmAdminAPIphp/1.0');     // Our user agent string
 
 // How to get server information. This does not require authentication - just go a GET
 define('PATH_SERVER_INFO',             'fmws/serverinfo');
