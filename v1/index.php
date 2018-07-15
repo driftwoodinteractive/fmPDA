@@ -73,8 +73,8 @@ define('HIGHEST_VERSION',  (DATA_API_VERSION == 'Latest') ? SUPPORTED_API_VERSIO
          <div class="main">
             <h4>Installation</h4>
             <ul>
-               <li>Remove FileMaker's API For PHP class files from your project.</li>
-               <li>Copy the fmPDA/v<?php echo HIGHEST_VERSION; ?> directory into your project, typically in the same directory where FileMaker's old API resided.</li>
+               <li>Remove FileMaker's API For PHP class files (<code>FileMaker.php</code> and the adjacent <code>FileMaker</code> directory) from your project.</li>
+               <li>Copy the <code>fmPDA/v<?php echo HIGHEST_VERSION; ?></code> directory into your project, typically in the same directory where FileMaker's old API resided.</li>
                <li>Wherever you do this:</li>
                      <pre><code class="language-php">require_once 'PATH-TO-FILEMAKER-CLASS-FILES/FileMaker.php';</code></pre>
                      replace with:<br>
@@ -87,9 +87,9 @@ define('HIGHEST_VERSION',  (DATA_API_VERSION == 'Latest') ? SUPPORTED_API_VERSIO
                <li>
                   <strong>fmCURL</strong>
                   <ul>
-                     <code>fmCURL</code> is a wrapper for CURL calls. The <code>curl()</code> method sets the typical parameters and optionally encode/decodes JSON data. <code>fmCURL</code> is independent of the FM API; it can be used to communicate with virtually any host (such as Google, Swipe, etc.). The <code>fmAPI</code> class (see below) uses <code>fmCURL</code> to communicate with FileMaker's API.<br>
+                     <code>fmCURL</code> is a wrapper for CURL calls. The <code>curl()</code> method sets the typical parameters and optionally encode/decodes JSON data. <code>fmCURL</code> is independent of the FM API; it can be used to communicate with virtually any host (Google, Swipe, etc.). The <code>fmAPI</code> class (see below) uses <code>fmCURL</code> to communicate with FileMaker's API.<br>
                      <pre><code class="language-php">
-                        $curl = new CURL();<br>
+                        $curl = new fmCURL();<br>
                         $curlResult = $curl->curl('https://www.example.com');
                      </code></pre>
                      Additionally, <code>fmCURL</code> instantiates a global <code>fmLogger</code> object to log various messages these classes generate. You can use this for your own purposes as well. See any of the example files on how it's used.<br>
@@ -171,6 +171,7 @@ define('HIGHEST_VERSION',  (DATA_API_VERSION == 'Latest') ? SUPPORTED_API_VERSIO
                         <li>Get Container Data URL</li>
                         <li>Script execution</li>
                         <li>Duplicate record (The duplicate.php example file shows how to do this with a simple FM script)</li>
+                        <li>Uploading a container (this is an extension thanks to the Data API); use <code>fmPDA::newUploadContainerCommand(...)</code></li>
                      </ul>
 
                      <h3><span style="color: #A40800;"><i class="fas fa-frown fa-lg"></i></span> What isn't supported</h3>
@@ -178,17 +179,17 @@ define('HIGHEST_VERSION',  (DATA_API_VERSION == 'Latest') ? SUPPORTED_API_VERSIO
                         <li>List scripts</li>
                         <li>List databases - in v1 or later, use <code>fmAdminAPI::apiListDatabases()</code></li>
                         <li>List layouts</li>
-                        <li>Get layout metadata</li>
+                        <li>Get layout metadata (some of it is available through an undocumented API)</li>
                         <li>Validation</li>
                         <li>Value Lists</li>
                         <li>Using <code>Commit()</code> to commit data on portals.</li>
-                        <li><code>getTableRecordCount()</code> and <code>getFoundSetCount()</code> - fmPDA will create a <code>fmLogger()</code> message and return <code>getFetchCount()</code>. One suggestion has been made to create an unstored calculation field in your table to return these values and place them on your layout.</li>
+                        <li>was made</li>
                      </ul>
 
                      <h3 class="caution"><i class="fas fa-exclamation-triangle"></i> Caution</h3>
                      <ul>
-                        <li><code>getFieldAsTimestamp()</code> can't automatically determine the field type as the Data API doesn't return field metadata. There is now a new third parameter (<code>$fieldType</code>) to tell the method how to convert the field data. See <code>FMRecord.class.php</code> for details.</li>
-                        <li><code>getContainerData()</code> and <code>getContainerDataURL()</code> now return the full URL - no need for the 'ContainerBridge' file! See container_data.php or container_data_url.php for an example.</li>
+                        <li><code>fmRecord::getFieldAsTimestamp() (FileMaker_Record::getFieldAsTimestamp() in the old API)</code> can't automatically determine the field type as the Data API doesn't return field metadata. There is now a new third parameter (<code>$fieldType</code>) to tell the method how to convert the field data. See <code>FMRecord.class.php</code> for details.</li>
+                        <li><code>fmPDA::getContainerData()</code> and <code>fmPDA::getContainerDataURL()</code> now return the full URL - no need for the 'ContainerBridge' file! See container_data.php or container_data_url.php for an example.</li>
                      </ul>
                      <br>
 
@@ -211,7 +212,7 @@ define('HIGHEST_VERSION',  (DATA_API_VERSION == 'Latest') ? SUPPORTED_API_VERSIO
                      <pre><code class="language-php">define('DEFINE_FILEMAKER_CLASS', false);</code></pre>
                      to:<br>
                      <pre><code class="language-php">define('DEFINE_FILEMAKER_CLASS', true);</code></pre>
-                     This will create a 'glue' FileMaker class that fmPDA inherits from, and you can continue to use <code>FileMaker::isError()</code>. Even so, it's recommended that you should switch to <code>fmGetIsError()</code> in the future to reduce/eradicate your dependence on a class called FileMaker. You'll run into conflicts if you do this and keep FileMaker's old classes in your include tree. You Have Been Warned.<br>
+                     This will create a 'glue' FileMaker class that fmPDA inherits from, and you can continue to use <code>FileMaker::isError()</code>. Even so, it's recommended that you should switch to <code>fmGetIsError()</code> in the future to reduce/eradicate your dependence on a class called FileMaker. You'll likely run into conflicts if you do this and keep FileMaker's old classes in your include tree. You Have Been Warned.<br>
                      <br>
                   </ul>
                </li>

@@ -81,15 +81,24 @@
             <div class="main-header">
                fmPDA (<u>F</u>ileMaker <u>P</u>HP <u>D</u>ata <u>A</u>PI)<br>
             </div>
+
+            <h4>What is fmPDA <span class="fmPDA-heart"><i class="fas fa-heart"></i></span> ?</h4>
+            fmPDA <span class="fmPDA-heart"><i class="fas fa-heart"></i></span> is a set of PHP classes for FileMaker's Data and Admin API. The special sauce, the fmPDA class: a replacement for FileMaker's API For PHP FileMaker class, using the Data API. fmPDA provides <strong>method & data structure compatibility</strong> with FileMaker's API For PHP classes.
+            <p>
+            But wait, there's more! A set of Modular FileMaker Scripts to let you access the Data API and Admin API right from your FileMaker solution. Perfect for your standalone solution or iOS SDK app.
+            </p>
+            <br>
+
+
             <h4><span style="color: #8E3C18;"><i class="fas fa-poo fa-lg"></i></span> You've Got A Problem</h4>
-            You have Custom Web Publishing (CWP) code written using FileMaker's API for PHP. FileMaker has made it clear the new Data API is the way to go, and the XML interface (which FileMaker's API for PHP uses) will likely be deprecated in the future. Your code will break. Game Over, Dude.<br>
+            You have Custom Web Publishing (CWP) code written using FileMaker's API for PHP. FileMaker has made it clear the new Data API is the way to go, and the XML interface (which FileMaker's API for PHP uses) will likely be deprecated and removed in the future. Your code will break. Game over, Player One.<br>
             <h4><span style="color: #CA9008;"><i class="fas fa-question-circle fa-lg"></i></span> So, What Do You Do?</h4>
             <ul>
                <li>Rewrite your code to use the new Data API. Not 'hard', but it'll take time to rewrite/debug. In the end, your code may be a little faster. Yay, you.</li>
                <li>Use a library that someone wrote to solve the same problem. Less time consuming, especially if the code could <i>replicate FileMaker's API for PHP</i>.</li>
             </ul>
             <h4><span style="color: #63A63D;"><i class="fas fa-smile fa-lg"></i></span> Wait, What?</h4>
-            fmPDA provides <strong>method & data structure compatibility with FileMaker's API For PHP</strong>. So, only minor changes should be needed to your code.<br>
+            fmPDA provides <strong>method & data structure compatibility with FileMaker's API For PHP</strong>. Only minor changes should be needed to your code and it should take you less than an hour.<br>
             <br>
 
 

@@ -11,9 +11,9 @@ A replacement class for the FileMaker API For PHP using the FileMaker Data API
 What is fmPDA?
 -------------
 fmPDA is a set of PHP classes for FileMaker's Data and Admin API. The special
-sauce, the fmPDA class: a replacement class for FileMaker's API For PHP
-'FileMaker' class, using the Data API. fmPDA provides method & data structure
-compatibility with FM's API For PHP.
+sauce, the fmPDA class: a replacement for FileMaker's API For PHP 'FileMaker'
+class, using the Data API. fmPDA provides method & data structure compatibility
+with FileMaker's API For PHP.
 
 But wait, there's more! A set of Modular FileMaker Scripts to let you access the
 Data API and Admin API right from your FileMaker solution. Perfect for your
@@ -21,17 +21,12 @@ standalone solution or iOS SDK app.
 
 
 
-fmPDA v1
---------
-A replacement class for the FileMaker API For PHP using the FileMaker Data API (REST)
-
-
 Your Problem:
 -------------
 You have Custom Web Publishing (CWP) code written using FileMaker's
 API for PHP. FileMaker has made it clear the new Data API is the way to go, and
 the XML interface (which FileMaker's API for PHP uses) will likely be deprecated
-in the future. Your code will break. Game Over, Dude.
+and removed in the future. Your code will break. Game over, Player One.
 
 
 So, what do you do?
@@ -46,7 +41,8 @@ So, what do you do?
 Wait, what?
 -----------
 fmPDA provides method & data structure compatibility with FileMaker's API For
-PHP. So, only minor changes should be needed to your code.
+PHP. Only minor changes should be needed to your code and it should take you
+less than an hour.
 
 
 
@@ -62,7 +58,7 @@ with FileMaker's API.
 
 Example:
 ```
-$curl = new CURL();
+$curl = new fmCURL();
 $curlResult = $curl->curl('https://www.example.com');
 ```
 
@@ -184,33 +180,35 @@ What is supported
 - Script execution
 - Duplicate record (The duplicate.php example file shows how to do this with a
   simple FM script)
-
+- Uploading a container (this is an extension thanks to the Data API); use
+  fmPDA::newUploadContainerCommand(...)
 
 What isn't supported
 --------------------
 - List scripts
 - List databases - in v1 or later, use fmAdminAPI::apiListDatabases()
 - List layouts
-- Get layout metadata
+- Get layout metadata (some of it is available through an undocumented API)
 - Validation
 - Value Lists
 - Using Commit() to commit data on portals.
 - getTableRecordCount() and getFoundSetCount() - fmPDA will create a fmLogger()
-  message and return getFetchCount(). One suggestion has been made to create an
-  unstored calculation field in your table to return these values and place them
-  on your layout.
+  message and return getFetchCount(). One suggestion as a workaround was made
+  to create an unstored calculation field in your table to return these
+  values and place them on your layout.
 
 
 Caution
 -------
-- getFieldAsTimestamp() can't automatically determine the field type as the Data
-  API doesn't return field metadata. There is now a new third parameter
-  ($fieldType) to tell the method how to convert the field data. See
-  FMRecord.class.php for details.
+- fmRecord::ggetFieldAsTimestamp() (FileMaker_Record::getFieldAsTimestamp() in
+  the old API)can't automatically determine the field type as the Data API
+  doesn't return field metadata. There is now a new third parameter
+  ($fieldType) to tell the method how to convert the field data.
+  See FMRecord.class.php for details.
 
-- getContainerData() and getContainerDataURL() now return the full URL - no need
-  for the 'ContainerBridge' file! See container_data.php or
-  container_data_url.php for an example.
+- fmPDA::getContainerData() and fmPDA::getContainerDataURL() now return
+  the full URL - no need for the 'ContainerBridge' file! See container_data.php
+  or container_data_url.php for an example.
 
 
 
@@ -250,8 +248,8 @@ define('DEFINE_FILEMAKER_CLASS', true);
 This will create a 'glue' FileMaker class that fmPDA inherits from, and you can
 continue to use FileMaker::isError(). Even so, it's recommended that you should
 switch to fmGetIsError() in the future to reduce/eradicate your dependence on a
-class called FileMaker. You'll run into conflicts if you do this and keep
-FileMaker's old classes in your include tree. You Have Been Warned.
+class called FileMaker. You'll likely run into conflicts if you do this and
+keep FileMaker's old classes in your include tree. You Have Been Warned.
 
 
 
