@@ -52,7 +52,7 @@ fmCURL
 ------
 fmCURL is a wrapper for CURL calls. The curl() method sets the typical
 parameters and optionally encode/decodes JSON data. fmCURL is independent of
-the FM API; it can be used to communicate with virtualy any host (such as
+the FM API; it can be used to communicate with virtually any host (such as
 Google, Swipe, etc.). The fmAPI class (see below) uses fmCURL to communicate
 with FileMaker's API.
 

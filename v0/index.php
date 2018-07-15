@@ -79,7 +79,7 @@ require_once 'nav.inc.php';
                <li>
                   <strong>fmCURL</strong>
                   <ul>
-                     <code>fmCURL</code> is a wrapper for CURL calls. The <code>curl()</code> method sets the typical parameters and optionally encode/decodes JSON data. <code>fmCURL</code> is independent of the FM API; it can be used to communicate with virtualy any host (such as Google, Swipe, etc.). The <code>fmDataAPI</code> class (see below) uses <code>fmCURL</code> to communicate with FileMaker's API.<br>
+                     <code>fmCURL</code> is a wrapper for CURL calls. The <code>curl()</code> method sets the typical parameters and optionally encode/decodes JSON data. <code>fmCURL</code> is independent of the FM API; it can be used to communicate with virtually any host (such as Google, Swipe, etc.). The <code>fmDataAPI</code> class (see below) uses <code>fmCURL</code> to communicate with FileMaker's API.<br>
                      <pre><code class="language-php">
                         $curl = new CURL();<br>
                         $curlResult = $curl->curl('https://www.example.com');

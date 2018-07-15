@@ -58,8 +58,9 @@ $requests[] = $query;
 $data['query'] = $requests;
 
 //$data['offset'] = ...;
-//$data['range'] =  ...;
-//$data['sort'] =  ...;
+//$data['limit'] = 1;
+//$data['sort'][] = array('fieldName' => 'Name', 'sortOrder' => FILEMAKER_SORT_ASCEND);
+
 
 $apiResult = $fm->apiFindRecords('Web_Project', $data);
 if (! $fm->getIsError($apiResult)) {
