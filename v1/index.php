@@ -102,7 +102,7 @@ define('HIGHEST_VERSION',  (DATA_API_VERSION == 'Latest') ? SUPPORTED_API_VERSIO
                   <ul>
                      <code>fmAPI</code> encapsulates the interactions with FileMaker's API. <code>fmAdminAPI</code> and <code>fmDataAPI</code> extend this class. You won't typically instantiate this class directly.<br>
                      <br>
-                     <code>fmAPI</code> takes care of managing the authentication token the API requires in all calls. It will request a new token whenever the current token is invalid without your code needing to know. By default, the token is stored in a session variable so calls across multiple PHP pages will reuse the same token. You can disable session variable storage, but you'll be responsible for managing the storage of the token.<br>
+                     <code>fmAPI</code> takes care of managing the authentication token the API requires in all calls. Without your code needing to know, <code>fmAPI</code> will request a new token whenever the current token is invalid. By default, the token is stored in a session variable so calls across multiple PHP pages will reuse the same token. You can disable session variable storage, but you'll be responsible for managing the storage of the token.<br>
                   </ul>
                </li>
                <br>
