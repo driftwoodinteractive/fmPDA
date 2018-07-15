@@ -7,12 +7,15 @@
 // extend to provide access to the Data and Admin APIs.
 //
 // FileMaker's Data API documentation can be found here:
+// https://support.filemaker.com/s/answerview?language=en_US&anum=000025925#issues
+// https://<your.FileMaker.Server>/fmi/data/apidoc/
 // Web: http://fmhelp.filemaker.com/docs/17/en/dataapi/
 // Mac FMS: /Library/FileMaker Server/Documentation/Data API Documentation
 // Windows FMS: [drive]:\Program Files\FileMaker\FileMaker Server\Documentation\Data API Documentation
 //
 //
 // Admin Console API:
+// https://<your.FileMaker.Server>/fmi/admin/apidoc/
 // Mac FMS: /Library/FileMaker Server/Documentation/Admin API Documentation
 // Windows FMS: [drive]:\Program Files\FileMaker\FileMaker Server\Documentation\Admin API Documentation
 //

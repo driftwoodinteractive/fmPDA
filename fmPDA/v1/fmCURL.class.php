@@ -106,7 +106,7 @@ class fmCURL
       $postData = '';
       if ($data != '') {
          if (($method == METHOD_GET) || ($method == METHOD_DELETE)) {
-            $url .= '?'. $data;
+            $url .= '?'. (($data[0] == '&') ? substr($data, 1) : $data);
          }
          else {
             if ($options['encodeAsJSON']) {
@@ -200,7 +200,7 @@ class fmCURL
       }
 
       $length = number_format(strlen($curlResult), 0, '.', ',');
-      $bytesSec = number_format((floatval(strlen($curlResult) / $this->callTime)) / 1024, 0, '.', ',');
+      $bytesSec = ($this->callTime > 0) ? number_format((floatval(strlen($curlResult) / $this->callTime)) / 1024, 0, '.', ',') : '0';
 
       if ($options['logCallInfo']) {
          fmLogger('————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————');

@@ -184,9 +184,7 @@ class fmDataAPI extends fmAPI
    // *********************************************************************************************************************************
    public function apiGetRecord($layout, $recordID, $data = '')
    {
-      $data = ($data != '') ? '?' . $data : '';
-
-      return $this->fmAPI($this->getAPIPath(PATH_RECORD, $layout) .'/'. $recordID . $data, METHOD_GET);
+      return $this->fmAPI($this->getAPIPath(PATH_RECORD, $layout) .'/'. $recordID, METHOD_GET, $data);
    }
 
    // *********************************************************************************************************************************
