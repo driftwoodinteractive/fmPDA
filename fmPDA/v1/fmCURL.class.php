@@ -73,6 +73,7 @@ class fmCURL
       $this->options['maxAttempts']             = 1;
       $this->options['encodeAsJSON']            = false;
       $this->options['decodeAsJSON']            = false;
+      $this->options['logCallInfo']             = true;
       $this->options['logSentHeaders']          = false;
       $this->options['logSentData']             = false;
       $this->options['logPostData']             = true;
@@ -201,8 +202,10 @@ class fmCURL
       $length = number_format(strlen($curlResult), 0, '.', ',');
       $bytesSec = number_format((floatval(strlen($curlResult) / $this->callTime)) / 1024, 0, '.', ',');
 
-      fmLogger('————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————');
-      fmLogger('{HTTP: '. $this->httpCode .'} ['. $method .'] ('. round($this->callTime, 3) .'s&#8644;, '. $length .' bytes, '. $bytesSec .'k/s) '. $url);
+      if ($options['logCallInfo']) {
+         fmLogger('————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————');
+         fmLogger('{HTTP: '. $this->httpCode .'} ['. $method .'] ('. round($this->callTime, 3) .'s&#8644;, '. $length .' bytes, '. $bytesSec .'k/s) '. $url);
+      }
 
       if ($options['logSentHeaders']) {
          fmLogger('HTTP header:'. '<br>'. print_r($this->curlInfo['request_header'], true)); // CURLOPT_HTTPHEADER only gives what we add
@@ -228,7 +231,9 @@ class fmCURL
          fmLogger('curlInfo='. print_r($this->curlInfo, true));
       }
 
-      fmLogger('————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————');
+      if ($options['logCallInfo']) {
+         fmLogger('————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————');
+      }
 
       return $result;
    }

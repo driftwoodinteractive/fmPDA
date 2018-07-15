@@ -102,18 +102,24 @@ class fmLogger
    }
 
    // *********************************************************************************************************************************
-   public function log($data, $logLevel = null)
+   public function convertToText($data)
+   {
+      if (is_array($data)) {
+         $data = ((count($data) == 1) ? '1 Element' : count($data) .' Elements')  ."\n". print_r($data, 1);
+      }
+      else if (is_object($data)) {
+         $data = "\n". print_r($data, 1);
+      }
+
+      return $data;
+   }
+
+   // *********************************************************************************************************************************
+   public function log($data = '', $logLevel = null)
    {
       if ($this->logging) {
 
-         if (is_array($data)) {
-            $data = ((count($data) == 1) ? '1 Element' : count($data) .' Elements')  ."\n". print_r($data, 1);
-         }
-         else if (is_object($data)) {
-            $data = "\n". print_r($data, 1);
-         }
-
-         $this->log  .= date('Y-m-d') .' '. strftime('%H:%M:%S') .' '. $data ."\n";
+         $this->log  .= date('Y-m-d') .' '. strftime('%H:%M:%S') .' '. $this->convertToText($data) ."\n";
 
          if ($this->logToSystem) {
             error_log($data, 0);

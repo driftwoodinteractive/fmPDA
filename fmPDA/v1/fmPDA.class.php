@@ -83,7 +83,7 @@ else {
 //
 class fmPDALogger extends fmLogger
 {
-   public function log($data, $logLevel = null)
+   public function log($data = '', $logLevel = null)
    {
       if ($this->logging) {
 
