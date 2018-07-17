@@ -118,7 +118,7 @@ class fmDataAPI extends fmAPI
    public $database;                                              // Database name (should NOT include .fmp12)
    public $authenticationMethod;                                  // How to authenticate to the server
    public $oauth;                                                 // Where we store OAuth data
-   public $dataSource;                                            // Where the external authentication/OAuth data is stored
+   public $dataSources;                                           // Where the external authentication/OAuth data is stored
 
    function __construct($database, $host, $username, $password, $options = array())
    {
@@ -130,6 +130,10 @@ class fmDataAPI extends fmAPI
       $options['version']         = array_key_exists('version', $options) ? $options['version'] : FM_VERSION_1;
 
       $authentication = array_key_exists('authentication', $options) ? $options['authentication'] : array('method' => 'default');
+
+      if (! array_key_exists('method', $authentication)) {
+         $authentication['method'] = 'default';
+      }
 
       $authentication['username'] = array_key_exists('username', $authentication) ? $authentication['username'] : $username;
       $authentication['password'] = array_key_exists('password', $authentication) ? $authentication['password'] : $password;
@@ -368,8 +372,8 @@ class fmDataAPI extends fmAPI
          case 'default': {
             $options[FM_AUTHORIZATION_BASIC] = $this->credentials;
 
-            if ($this->dataSource != '') {
-               $data = $this->dataSource;
+            if ($this->dataSources != '') {
+               $data = $this->dataSources;
             }
             break;
          }
@@ -377,8 +381,8 @@ class fmDataAPI extends fmAPI
             $options[FM_OAUTH_REQUEST_ID]         = $this->oauth[FM_OAUTH_REQUEST_ID];
             $options[FM_OAUTH_REQUEST_IDENTIFIER] = $this->oauth[FM_OAUTH_REQUEST_IDENTIFIER];
 
-            if ($this->dataSource != '') {
-               $data = $this->dataSource;
+            if ($this->dataSources != '') {
+               $data = $this->dataSources;
             }
             break;
          }
@@ -420,7 +424,7 @@ class fmDataAPI extends fmAPI
       $this->authenticationMethod = array_key_exists('method', $data) ? strtolower($data['method']) : 'default';
 
       $this->credentials = '';
-      $this->dataSource = '';
+      $this->dataSources = '';
       $this->oauth = '';
 
       switch ($this->authenticationMethod) {
@@ -430,15 +434,12 @@ class fmDataAPI extends fmAPI
                $this->credentials = base64_encode(utf8_decode($data['username']) .':'. utf8_decode($data['password']));
 
                // See if there's any external authentiation we need to add.
-               // This allows us to access another database on the same server in addition to the one we're connecting to.
-               $externalDataBase = array_key_exists('externalDataBase', $data) ? $data['externalDataBase'] : '';
-               $externalUserName = array_key_exists('externalUserName', $data) ? $data['externalUserName'] : '';
-               $externalPassword = array_key_exists('externalPassword', $data) ? $data['externalPassword'] : '';
-
-               if (($externalDataBase != '') && ($externalUserName != '') && ($externalPassword != '')) {
-                  $source = array('database' => $externalDataBase, 'username' => $externalUserName, 'password' => $externalPassword);
-                  $this->dataSource = array();
-                  $this->dataSource[FM_DATASOURCE][] = $source;
+               // This allows us to access other database(s) on the same server in addition to the one we're connecting to.
+               if (array_key_exists('sources', $data) && (count($data['sources']) > 0)) {
+                  $this->dataSources = array();
+                  foreach($data['sources'] as $source) {
+                     $this->dataSources[FM_DATASOURCE][] = array('database' => $source['database'], 'username' => $source['username'], 'password' => $source['password']);
+                  }
                }
             }
             break;

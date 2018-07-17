@@ -32,7 +32,7 @@
 require_once 'fmLogger.class.php';
 
 // *********************************************************************************************************************************
-define('CURL_USER_AGENT',              'fmCURL/1.0');             // Our user agent string
+define('CURL_USER_AGENT',              'fmCURLphp/1.0');          // Our user agent string
 
 // *********************************************************************************************************************************
 define('METHOD_DELETE',                'DELETE');

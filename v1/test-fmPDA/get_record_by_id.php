@@ -42,18 +42,21 @@ $output = '';
 // in the session. In that case you should pass in a valid token and set storeTokenInSession => false. If you do this,
 // you'll be responsible for storage of the token which you can retrieve with $fm->getToken().
 $options = array(
-                  'version'             => DATA_API_VERSION,
-                  'storeTokenInSession' => true,
-                  'token'               => ''  //'BAD-ROBOT'
-               );
+   'version'               => DATA_API_VERSION,
+   'storeTokenInSession'   => true,                  // This defaults to true - here for debugging only
+   'token'                 => '',  //'BAD-ROBOT',
 
-// This wasn't possible before but the Data API supports this now...
-$options['authentication'] = array(
-                                    'externalDataBase'  => 'externaldb',      // should NOT include .fmp12
-                                    'externalUserName'  => 'externaluser',
-                                    'externalPassword'  => 'externalpass'
-                                   );
-
+   'authentication'        => array(                                                // Couldn't do this before!
+/*                                  'method'  => 'default', */
+                                    'sources' => array(
+                                          array(
+                                             'database'  => 'externaldb',      // should NOT include .fmp12
+                                             'username'  => 'externaluser',
+                                             'password'  => 'externalpass'
+                                          )
+                                       )
+                                    )
+);
 
 $fm = new fmPDA(FM_DATABASE, FM_HOST, FM_USERNAME, FM_PASSWORD, $options);
 
