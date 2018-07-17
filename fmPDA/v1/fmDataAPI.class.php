@@ -227,10 +227,18 @@ class fmDataAPI extends fmAPI
    // Execute a script. We do this by doing a apiGetRecords() call for the first record on the specified layout.
    // For this to work, *YOU MUST* have at least one record in this table or the script *WILL NOT EXECUTE*.
    // For efficiency, you may want to create a table with just one record and no fields.
+   // Typically you'll call this with an $layout set to a layout with nothing on it and then use $layoutResponse
+   // to indicate where you expect the result from the script to have put the record(s).
    //
-   public function apiPerformScript($layout, $scriptName, $params = '')
+   public function apiPerformScript($layout, $scriptName, $params = '', $layoutResponse = '')
    {
-      $data = '&script='. rawurlencode($scriptName);
+      $data = '_limit=1';
+
+      if ($layoutResponse != '') {
+         $data .= '&layout.response='. rawurlencode($layoutResponse);
+      }
+
+      $data .= '&script='. rawurlencode($scriptName);
 
       if ($params != '') {
          $data .= '&script.param='. rawurlencode($params);

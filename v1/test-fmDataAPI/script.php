@@ -47,7 +47,7 @@ $params = 'some';     // 'all' or 'some'
 
 $fm = new fmDataAPI(FM_DATABASE, FM_HOST, FM_USERNAME, FM_PASSWORD, $options);
 
-$apiResult = $fm->apiPerformScript('Web_Project', $script, $params);
+$apiResult = $fm->apiPerformScript('Web_Empty', $script, $params, 'Web_Project');
 
 if (! $fm->getIsError($apiResult)) {
 
@@ -64,7 +64,7 @@ if (! $fm->getIsError($apiResult)) {
    fmLogger('scriptResult='. $response['scriptResult']);
    fmLogger('scriptError='. $response['scriptError']);
 
-   $responseData = $fm->getResponseData($apiResult);;
+   $responseData = $fm->getResponseData($apiResult);
 // fmLogger($responseData);
    foreach ($responseData as $record) {
       fmLogger('Project Name = '. $record[FM_FIELD_DATA]['Name']);
