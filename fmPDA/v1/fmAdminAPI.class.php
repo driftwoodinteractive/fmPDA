@@ -50,7 +50,7 @@ require_once 'fmAPI.class.php';
 define('DATA_ADMIN_API_USER_AGENT',     'fmAdminAPIphp/1.0');     // Our user agent string
 
 // How to get server information. This does not require authentication - just go a GET
-define('PATH_SERVER_INFO',             'fmws/serverinfo');
+define('PATH_SERVER_INFO',             '/fmws/serverinfo');
 
 define('PATH_FMS_SERVER_API_BASE',     '/fmi');                   // Cloud doesn't have this, only FMS on Mac/Windows
 
