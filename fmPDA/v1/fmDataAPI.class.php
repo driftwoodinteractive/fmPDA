@@ -73,6 +73,7 @@ define('FM_FIELD_DATA',                'fieldData');
 define('FM_PORTAL_DATA',               'portalData');
 define('FM_RECORD_ID',                 'recordId');
 define('FM_MOD_ID',                    'modId');
+define('FM_GLOBAL_FIELDS',             'globalFields');
 
 define('FM_FIELD_REPETITION_1',        1);
 
@@ -250,7 +251,18 @@ class fmDataAPI extends fmAPI
    // *********************************************************************************************************************************
    public function apiSetGlobalFields($layout, $data)
    {
-      return $this->fmAPI($this->getAPIPath(PATH_GLOBAL, $layout), METHOD_PATCH, $data);
+      $payload = array();
+
+      if (! array_key_exists(FM_GLOBAL_FIELDS, $data)) {            // If there's no ['globalFields'], add it now
+         $payload[FM_GLOBAL_FIELDS] = $data;
+      }
+      else {
+         // The caller passed in a structure that has the ['globalFields'] element.
+         // As such, there's nothing for us to do - the caller knows best.
+         $payload = $data;
+      }
+
+      return $this->fmAPI($this->getAPIPath(PATH_GLOBAL, $layout), METHOD_PATCH, $payload);
    }
 
    // *********************************************************************************************************************************
