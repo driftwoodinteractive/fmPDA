@@ -134,7 +134,11 @@ class fmAdminAPI extends fmAPI
   // *********************************************************************************************************************************
    public function apiGetServerInfo()
    {
-      return $this->fmAPI($this->getAPIPath(PATH_SERVER_INFO), METHOD_GET);
+      $apiOptions = array();
+      $apiOptions[FM_CONTENT_TYPE]  = CONTENT_TYPE_JSON;
+      $apiOptions['decodeAsJSON']   = true;
+
+      return $this->curlAPI($this->getAPIPath(PATH_SERVER_INFO), METHOD_GET, '', $apiOptions);
    }
 
   // *********************************************************************************************************************************
