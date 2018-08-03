@@ -32,8 +32,7 @@ require_once 'fmFind.class.php';
 // *********************************************************************************************************************************
 class fmFindQuery extends fmFind
 {
-   public $compoundRequests;                             // Non-compound find will only have one of these
-   public $omit;
+   public $requests;                             // Non-compound find will only have one of these
 
    function __construct($fm, $layout)
    {
@@ -42,26 +41,33 @@ class fmFindQuery extends fmFind
       $this->clearFindCriteria();
    }
 
-   function execute()
+   function getAPIParams()
    {
-      $data = $this->createPostParams();
+      $params = parent::getAPIParams();
 
-      if (count($this->compoundRequests) > 0) {
+      if (count($this->requests) > 0) {
          $requests = array();
-         foreach ($this->compoundRequests as $request) {
+         foreach ($this->requests as $findRequest) {
             $query = array();
+            $request = $findRequest->getRequest();
+            $fields = array();
             foreach ($request as $requestParts) {
-               $query[$requestParts['fieldName']] = $this->jsonEscapeValue($requestParts['value']);
+               $fields[$requestParts['fieldName']] = $requestParts['value'];
             }
-            if ($this->omit || (array_key_exists('omit', $requestParts) && $requestParts['omit'])) {
-               $query['omit'] = 'true';
+            if ($findRequest->omit) {
+               $fields['omit'] = 'true';
             }
-            $requests[] = $query;
+            $requests[] = $fields;
          }
-         $data['query'] = $requests;
+         $params['query'] = $requests;
       }
 
-      $apiResult = $this->fm->apiFindRecords($this->layout, $data);
+      return $params;
+   }
+
+   function execute()
+   {
+      $apiResult = $this->fm->apiFindRecords($this->layout, '', $this->getAPIParams());
 
       if ($this->fm->getTranslateResult()) {
          if (fmGetIsError($apiResult)) {
@@ -81,32 +87,35 @@ class fmFindQuery extends fmFind
 
    function add($precedence, $findRequest)
    {
-      $fields = array();
+      $request = new fmFindRequest($this->fm, $this->layout);
+      $request->request = $findRequest->getRequest();
+      $request->omit = $findRequest->getOmit();
 
-      $requests = $findRequest->getRequest();
-      foreach ($requests as $request) {
-         $fields[] = array('fieldName' => $request['fieldName'], 'value' => $request['value'], 'omit' => $findRequest->getOmit());
-      }
-
-      $this->compoundRequests[$precedence - 1] = $fields;
+      $this->requests[$precedence - 1] = $request;
    }
 
    function setOmit($value)
    {
-      $this->omit = $value;
-   }
+      $request = $this->requests[0];
+      $request->setOmit($value);
+
+      $this->add(1, $request);
+  }
 
    function addFindCriterion($fieldName, $value)
    {
-      $this->compoundRequests[0][] = array('fieldName' => $fieldName, 'value' => $value);
+      $request = $this->requests[0];
+
+      $request->addFindCriterion($fieldName, $value);
+
+      $this->requests[0] = $request;
    }
 
    function clearFindCriteria()
    {
-      $this->compoundRequests = array();
-      $this->compoundRequests[] = array();
+      $this->requests = array();
 
-      $this->omit = false;
+      $this->requests[0] = new fmFindRequest($this->fm, $this->layout);
    }
 
 }

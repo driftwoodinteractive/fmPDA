@@ -277,14 +277,13 @@ class fmDataAPI extends fmCURL
          if (is_array($result) && array_key_exists(FM_ERROR_CODE, $result) && ($result[FM_ERROR_CODE] != 0)) {
             $isError = true;
          }
-         else if ($this->curlErrNum != '') {
-            $isError = true;
-         }
-
          if (is_array($result) && array_key_exists(FM_ERROR_MESSAGE, $result) && ($result[FM_ERROR_MESSAGE] != '')) {
             $isError = true;
          }
-         else if ($this->curlErrMsg != '') {
+      }
+
+      if (! $isError) {
+         if (($this->curlErrNum != '') && ($this->curlErrMsg != '')) {
             $isError = true;
          }
       }

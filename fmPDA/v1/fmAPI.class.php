@@ -241,7 +241,7 @@ class fmAPI extends fmCURL
    // *********************************************************************************************************************************
    // Returns true if the error result indicates the token is bad.
    //
-   public function getIsBadToken($result)
+   protected function getIsBadToken($result)
    {
       $isBadToken = false;
 
@@ -357,10 +357,10 @@ class fmAPI extends fmCURL
          $theMessage = (array_key_exists(FM_MESSAGE, $message) && ($message[FM_MESSAGE] != '')) ? $message[FM_MESSAGE] : '';
 
          if ($theCode != 0) {
-            $messageInfo[] = array(FM_CODE => $theCode, FM_MESSAGE => $theMessage);
+            $messageInfo[] = $message;
          }
          else if (($theMessage != '') && ($theMessage != FM_MESSAGE_OK)) {
-            $messageInfo[] = array(FM_CODE => $theCode, FM_MESSAGE => $theMessage);
+            $messageInfo[] = $message;
          }
       }
 

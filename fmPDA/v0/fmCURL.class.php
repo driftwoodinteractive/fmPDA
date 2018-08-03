@@ -79,6 +79,8 @@ class fmCURL
    //
    public function curl($url, $method = METHOD_GET, $data = '', $options = array())
    {
+      $result = '';
+
       $options[CURLOPT_HTTPHEADER]     = array_key_exists(CURLOPT_HTTPHEADER, $options) ? $options[CURLOPT_HTTPHEADER] : array();
       $options[CURLOPT_CONNECTTIMEOUT] = array_key_exists(CURLOPT_CONNECTTIMEOUT, $options) ? $options[CURLOPT_CONNECTTIMEOUT] : CURL_CONNECTION_TIMEOUT;
       $options[CURLOPT_USERAGENT]      = array_key_exists(CURLOPT_USERAGENT, $options) ? $options[CURLOPT_USERAGENT] : CURL_USER_AGENT;
@@ -115,6 +117,7 @@ class fmCURL
       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+      curl_setopt($ch, CURLOPT_MAXREDIRS, 20);
       curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
       curl_setopt($ch, CURLINFO_HEADER_OUT, 1);

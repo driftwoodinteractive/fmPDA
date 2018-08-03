@@ -2,3 +2,5 @@ Demo.fmp12
 
 username:     demo
 password:     demo
+
+*** 'demo' is a full access acount ***

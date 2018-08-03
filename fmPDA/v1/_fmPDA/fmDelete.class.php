@@ -49,7 +49,7 @@ class fmDelete extends fmCommand
 
       if ($this->fm->getTranslateResult()) {
          if (fmGetIsValid($record)) {
-            $apiResult = $this->fm->apiDeleteRecord($this->layout, $this->recordID);
+            $apiResult = $this->fm->apiDeleteRecord($this->layout, $this->recordID, $this->getAPIParams());
 
             if (fmGetIsError($apiResult)) {
                $result = $apiResult;

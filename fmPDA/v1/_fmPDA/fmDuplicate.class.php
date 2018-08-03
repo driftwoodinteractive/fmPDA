@@ -48,11 +48,14 @@ class fmDuplicate extends fmCommand
 
    function execute()
    {
-      $apiResult = $this->fm->apiGetRecord($this->layout, $this->recordID, $this->createGetParams());
+      $apiResult = $this->fm->apiGetRecord($this->layout, $this->recordID, '', $this->getAPIParams());
 
       if ($this->fm->getTranslateResult()) {
          if (! fmGetIsError($apiResult)) {
 
+            // The Data API enforces returning the record you requested regardless of what your script does,
+            // so your Duplicate script should return the recordID of the duplicated record. Then we do another
+            // getRecordByID to return the duplicated record data.
             $response = $this->fm->getResponse($apiResult);
             $apiResult = $this->fm->apiGetRecord($this->layout, $response['scriptResult']);
 

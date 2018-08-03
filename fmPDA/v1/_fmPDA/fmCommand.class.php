@@ -61,94 +61,23 @@ class fmCommand
       $this->resultLayout = '';
    }
 
-   function createGetParams($returnAsString = true)
+   function getAPIParams()
    {
-      $data = array();
+      $params =
+            array(
+               'limit'                  => $this->range,
+               'offset'                 => $this->offset,
+               'sort'                   => $this->sort,
+               'script'                 => $this->script,
+               'scriptParams'           => $this->scriptParams,
+               'scriptPrerequest'       => $this->preScript,
+               'scriptPrerequestParams' => $this->preScriptParams,
+               'scriptPresort'          => $this->preSortScript,
+               'scriptPresortParams'    => $this->preSortScriptParams,
+               'layoutResponse'         => $this->resultLayout
+            );
 
-      if ($this->offset != 0) {
-         $data[] = '_offset='. $this->offset;
-      }
-      if ($this->range != 0) {
-         $data[] = '_limit='. $this->range;
-      }
-      if (count($this->sort) > 0) {
-         $sort = array();
-         foreach ($this->sort as $sortItem) {
-            $sort[] = array('fieldName' => rawurlencode($sortItem['fieldName']), 'sortOrder' => $sortItem['sortOrder']);
-         }
-         $data[] = '_sort='. json_encode($sort);
-      }
-      if ($this->script != '') {
-         $data[] = 'script='. rawurlencode($this->script);
-         if ($this->scriptParams != '') {
-            $data[] = 'script.param='. rawurlencode($this->scriptParams);
-         }
-      }
-      if ($this->preScript != '') {
-         $data[] = 'script.prerequest='. rawurlencode($this->preScript);
-         if ($this->preScriptParams != '') {
-            $data[] = 'script.prerequest.param='. rawurlencode($this->preScriptParams);
-         }
-      }
-      if ($this->preSortScript != '') {
-         $data[] = 'script.presort='. rawurlencode($this->preSortScript);
-         if ($this->preSortScriptParams != '') {
-            $data[] = 'script.presort.param='. rawurlencode($this->preSortScriptParams);
-         }
-      }
-
-      if ($this->resultLayout != '') {
-         $data[] = 'layout.response='. rawurlencode($this->resultLayout);
-      }
-
-      if ($returnAsString) {
-         $data = implode('&', $data);
-      }
-
-      return $data;
-   }
-
-   function createPostParams()
-   {
-      $data = array();
-
-      if ($this->offset != 0) {
-         $data['offset'] = (string)$this->offset;
-      }
-      if ($this->range != 0) {
-         $data['limit'] = (string)$this->range;
-      }
-      if (count($this->sort) > 0) {
-         $sort = array();
-         foreach ($this->sort as $sortItem) {
-            $sort[] = array('fieldName' => $sortItem['fieldName'], 'sortOrder' => $sortItem['sortOrder']);
-         }
-         $data['sort'] = $sort;
-      }
-      if ($this->script != '') {
-         $data['script'] = rawurlencode($this->script);
-         if ($this->scriptParams != '') {
-            $data['script.param'] = rawurlencode($this->scriptParams);
-         }
-      }
-      if ($this->preScript != '') {
-         $data['script.prerequest'] = rawurlencode($this->preScript);
-         if ($this->preScriptParams != '') {
-            $data['script.prerequest.param'] = rawurlencode($this->preScriptParams);
-         }
-      }
-      if ($this->preSortScript != '') {
-         $data['script.presort'] = rawurlencode($this->preSortScript);
-         if ($this->preSortScriptParams != '') {
-            $data['script.presort.param'] = rawurlencode($this->preSortScriptParams);
-         }
-      }
-
-      if ($this->resultLayout != '') {
-         $data['layout.response'] = rawurlencode($this->resultLayout);
-      }
-
-      return $data;
+      return $params;
    }
 
   function execute()

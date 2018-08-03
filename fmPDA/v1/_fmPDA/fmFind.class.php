@@ -34,7 +34,7 @@ class fmFind extends fmCommand
 {
    function execute()
    {
-      $apiResult = $this->fm->apiGetRecords($this->layout, $this->createGetParams());
+      $apiResult = $this->fm->apiGetRecords($this->layout, '', $this->getAPIParams());
 
       if ($this->fm->getTranslateResult()) {
          if (fmGetIsError($apiResult)) {

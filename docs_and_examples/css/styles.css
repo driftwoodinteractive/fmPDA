@@ -1,0 +1,267 @@
+html, body {
+   font-family: "Open Sans", "Helvetica Neue", Helvetica, Tahoma, Arial, Geneva, sans-serif;
+   background-color: #ffffff;
+   height: 100%;
+   margin: 0;
+   padding: 0;
+}
+
+a {
+   color: #000000;
+   padding: 3px;
+   font-size: 1em;
+   text-decoration: none;
+   cursor: pointer;
+}
+
+a:hover
+{
+   text-decoration: none;
+   padding: 3px;
+   color: #0066CC;
+   -webkit-transition-delay: 0s;
+   -webkit-transition-duration: 0.30000001192092896s;
+   -webkit-transition-property: background;
+   -webkit-transition-timing-function: cubic-bezier(0, 0, 0.58, 1);
+   -moz-transition-delay: 0s;
+   -moz-transition-duration: 0.30000001192092896s;
+   -moz-transition-property: background;
+   -moz-transition-timing-function: cubic-bezier(0, 0, 0.58, 1);
+   -o-transition-delay: 0s;
+   -o-transition-duration: 0.30000001192092896s;
+   -o-transition-property: background;
+   -o-transition-timing-function: cubic-bezier(0, 0, 0.58, 1);
+   border-radius:          5px 5px 5px 5px;
+   -moz-border-radius:     5px 5px 5px 5px;
+   -webkit-border-radius:  5px 5px 5px 5px;
+}
+
+img {
+   border: 0;
+}
+
+header {
+   position: fixed;
+   top: 0;
+   height: 50px !important;
+   width: 100%;
+   padding: 10px;
+
+   background: #0066CC;
+   color: #ffffff;
+   font-size: 1.5em;
+
+   -moz-box-sizing: border-box;
+   -webkit-box-sizing: border-box;
+   -o-box-sizing: border-box;
+   -ms-box-sizing: border-box;
+   box-sizing: border-box;
+}
+
+.content {
+   height: 100%;
+   width: 100%;
+   padding-top: 50px;
+   padding-bottom: 50px;
+   padding-left: 0px;
+   margin:0 auto 0 auto;
+
+   -moz-box-sizing: border-box;
+   -webkit-box-sizing: border-box;
+   -o-box-sizing: border-box;
+   -ms-box-sizing: border-box;
+   box-sizing: border-box;
+}
+
+.navigation-left {
+   top: 50px;
+   bottom: 50px;
+   width: 250px;
+   position: absolute;
+   padding-left: 0px;
+   background: #0066CC;
+   color: #ffffff;
+   border-top: 1px solid #cccccc;
+   border-right: 1px solid #cccccc;
+   font-size: 14px;
+   line-height: 19px;
+
+   left: 0;
+   overflow-x: hidden;
+}
+
+.navigation-right {
+   top: 50px;
+   bottom: 50px;
+   width: 250px;
+   position: absolute;
+   right: 0;
+
+   background: #0066CC;
+   color: #ffffff;
+}
+
+/* Style the navigation-left links and the dropdown button */
+.navigation-left a, .dropdown-btn {
+   width: 100%;
+   padding: 0px;
+   padding-left: 5px;
+   padding-top: 0px;
+   padding-bottom: 0px;
+   border-right: 1px solid #cccccc;
+   font-size: 14px;
+   line-height: 20px;
+
+   background: #0066CC;
+   color: #ffffff;
+   display: block;
+   border: none;
+   background: none;
+   text-align: left;
+   outline: none;
+   cursor: pointer;
+}
+
+/* On mouse-over */
+.navigation-left a:hover, .dropdown-btn:hover {
+   color: #0066CC;
+   background-color: #ffffff;
+}
+
+.navigation-header1 {
+   padding-left: 0px;
+   padding-right: 0px;
+   font-size: 1.0em;
+}
+
+.navigation-header2 {
+   padding-left: 10px;
+   padding-right: 0px;
+   font-size: .9em;
+}
+
+.indent-1 {
+   padding-left: 30px;
+}
+
+/* Add an active class to the active dropdown button */
+.active {
+}
+
+/* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
+.dropdown-container {
+   display: none;
+}
+
+/* Optional: Style the caret down icon */
+.fa-caret-down {
+   float: right;
+   padding-right: 10px;
+}
+
+
+/* Some media queries for responsiveness */
+@media screen and (max-height: 450px) {
+   /*
+   .navigation-left {padding-top: 15px;}
+   .navigation-left a {font-size: 18px;}
+   */
+}
+
+.fmPDA-heart {
+   color: #ff0000;
+}
+
+.caution {
+   color: #CA9008;
+}
+
+.main {
+   height: 100%;
+   margin-left: 250px;
+/* margin-right: 250px; add this if you have navigation-right */
+   padding-left: 10px;
+   padding-right: 10px;
+   overflow: auto;
+}
+
+.main-header {
+   background: #0066CC;
+   color: #ffffff;
+   font-size: .8em;
+   font-weight: 700;
+   text-align: center;
+   padding: 5px;
+   margin-top: 5px;
+   margin-bottom: 5px;
+   border-radius:          5px 5px 5px 5px;
+   -moz-border-radius:     5px 5px 5px 5px;
+   -webkit-border-radius:  5px 5px 5px 5px;
+}
+
+.main-sub-header-1  {
+   font-size: .8em;
+   text-align: left;
+}
+
+
+
+
+.api-object {
+   background: #0066CC;
+   color: #ffffff;
+   padding: 2px;
+   margin-top: 20px;
+   margin-bottom: 20px;
+   border-radius:          5px 5px 5px 5px;
+   -moz-border-radius:     5px 5px 5px 5px;
+   -webkit-border-radius:  5px 5px 5px 5px;
+}
+
+.api-header {
+   padding-left: 10px;
+   font-size: 1.0em;
+   font-weight: 700;
+   text-align: left;
+}
+
+.api-description {
+   text-align: left;
+   font-size: 0.8em;
+}
+
+.api-example-output-header {
+   padding: 10px;
+   text-align: left;
+   background-color: #999999;
+   color: #fffff;
+   border-radius:          5px 5px 0px 0px;
+   -moz-border-radius:     5px 5px 0px 0px;
+   -webkit-border-radius:  5px 5px 0px 0px;
+}
+
+.api-example-output {
+   padding: 10px;
+   text-align: left;
+   background: #ffffff;
+   color: #000000;
+   border: 1px solid #bbbbbb;
+   border-radius:          0px 0px 5px 5px;
+   -moz-border-radius:     0px 0px 5px 5px;
+   -webkit-border-radius:  0px 0px 5px 5px;
+}
+
+
+footer {
+   height: 50px;
+   bottom: 0;
+   width: 100%;
+   position: fixed;
+
+   background: #000000;
+   color: #ffffff;
+   text-align: center;
+   font-size: .6em;
+}
+
+

@@ -40,7 +40,7 @@ class fmAdd extends fmAddEdit
 
    function execute($returnRecord = true)
    {
-      $apiResult = $this->fm->apiCreateRecord($this->layout, $this->fields);
+      $apiResult = $this->fm->apiCreateRecord($this->layout, $this->fields, $this->getAPIParams());
 
       if ($this->fm->getTranslateResult()) {
          if (fmGetIsError($apiResult)) {

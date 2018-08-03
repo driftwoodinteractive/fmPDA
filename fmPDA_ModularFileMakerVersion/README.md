@@ -22,10 +22,10 @@ INSTALLATION
 ------------
 1. Import the following custom functions into your solution:
     fmPDA.jsonGet()   - This is a wrapper for the JSONGetElement but returns "" instead
-                                    of a JSON error string on error. We added the fmPDA. prefix to
-                                    avoid any namespace collisions with other custom functions.
-    #()                          - Part of the incredibly useful #Parameters module
-    #Assign()                - Part of the incredibly useful #Parameters module
+                        of a JSON error string on error. We added the fmPDA. prefix to
+                        avoid any namespace collisions with other custom functions.
+    #()               - Part of the incredibly useful #Parameters module
+    #Assign()         - Part of the incredibly useful #Parameters module
 2. Copy/Import the fmPDA.v1 folder to your solution.
 3. That's it - no layouts, tables, or TO's to add!
 

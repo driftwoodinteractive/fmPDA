@@ -74,6 +74,8 @@ define('FM_PORTAL_DATA',               'portalData');
 define('FM_RECORD_ID',                 'recordId');
 define('FM_MOD_ID',                    'modId');
 
+define('FM_GLOBAL_FIELDS',             'globalFields');
+
 define('FM_FIELD_REPETITION_1',        1);
 
 
@@ -115,11 +117,43 @@ define('FILEMAKER_SORT_DESCEND', 'descend');
 // *********************************************************************************************************************************
 class fmDataAPI extends fmAPI
 {
-   public $database;                                              // Database name (should NOT include .fmp12)
    public $authenticationMethod;                                  // How to authenticate to the server
-   public $oauth;                                                 // Where we store OAuth data
+   public $database;                                              // Database name (do NOT include .fmp12)
    public $dataSources;                                           // Where the external authentication/OAuth data is stored
+   public $oauth;                                                 // Where we store OAuth data
 
+   /***********************************************************************************************************************************
+    *
+    * __construct($database, $host, $username, $password, $options = array())
+    *
+    *    Constructor for fmDataAPI.
+    *
+    *    Parameters:
+    *       (string)  $database         The name of the database (do NOT include the .fmpNN extension)
+    *       (string)  $host             The host name typically in the format of https://HOSTNAME
+    *       (string)  $username         The user name of the account to authenticate with
+    *       (string)  $password         The password of the account to authenticate with
+    *       (array)   $options          Optional parameters
+    *                                       ['version'] Version of the API to use (1, 2, etc. or 'Latest')
+    *
+    *                                       ['authentication'] set to 'oauth' for oauth authentication
+    *                                       ['oauthID'] oauthID
+    *                                       ['oauthIdentifier'] oauth identifier
+    *
+    *                                       ['sources'] => array(
+    *                                                        array(
+    *                                                          'database'  => '',      // do NOT include .fmpNN
+    *                                                          'username'  => '',
+    *                                                          'password'  => ''
+    *                                                        )
+    *                                                      )
+    *
+    *    Returns:
+    *       The newly created object.
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    */
    function __construct($database, $host, $username, $password, $options = array())
    {
       $this->database = $database;
@@ -147,25 +181,119 @@ class fmDataAPI extends fmAPI
       return;
    }
 
-   // *********************************************************************************************************************************
-   public function apiCreateRecord($layout, $fields)
+   /***********************************************************************************************************************************
+    *
+    * apiCreateRecord($layout, $fields, $options = array())
+    *
+    *    Create a new record.
+    *
+    *    Parameters:
+    *       (string)  $layout           The name of the layout
+    *       (array)   $fields           An array of field name/value pairs
+    *       (array)   $options          Additional API parameters. Valid options:
+    *                                     ['script']
+    *                                     ['scriptParams']
+    *                                     ['scriptPrerequest']
+    *                                     ['scriptPrerequestParams']
+    *                                     ['scriptPresort']
+    *                                     ['scriptPresortParams']
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['response'] If the call succeeds:
+    *                       ['modId'] Modification ID (should be 0)
+    *                       ['recordId'] Record ID of the newly created record
+    *          ['response']
+    *          ['messages'] Array of code/message pairs
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $fields = array();
+    *       $fields['Name'] = 'Test';
+    *       $fields['ColorIndex'] = 999;
+    *       $apiResult = $fm->apiCreateRecord('Web_Project', $fields);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiCreateRecord($layout, $fields, $options = array())
    {
-      $data = array();
+      $data = $this->getAPIParams($options, METHOD_POST);
       $data[FM_FIELD_DATA] = $fields;
 
       return $this->fmAPI($this->getAPIPath(PATH_RECORD, $layout), METHOD_POST, $data);
    }
 
-   // *********************************************************************************************************************************
-   public function apiDeleteRecord($layout, $recordID)
+   /***********************************************************************************************************************************
+    *
+    * apiDeleteRecord($layout, $recordID, $options = array())
+    *
+    *    Delete a record.
+    *
+    *    Parameters:
+    *       (string)  $layout           The name of the layout
+    *       (integer) $recordID         The recordID of the record to delete
+    *       (array)   $options          Additional API parameters. Valid options:
+    *                                     ['script']
+    *                                     ['scriptParams']
+    *                                     ['scriptPrerequest']
+    *                                     ['scriptPrerequestParams']
+    *                                     ['scriptPresort']
+    *                                     ['scriptPresortParams']
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['response'] Typically this will be empty
+    *          ['messages'] Array of code/message pairs
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $apiResult = $fm->apiDeleteRecord('Web_Project', 5);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiDeleteRecord($layout, $recordID, $options = array())
    {
-      return $this->fmAPI($this->getAPIPath(PATH_RECORD, $layout) .'/'. $recordID, METHOD_DELETE);
+      return $this->fmAPI($this->getAPIPath(PATH_RECORD, $layout) .'/'. $recordID, METHOD_DELETE, $this->getAPIParams($options, METHOD_DELETE));
    }
 
-   // *********************************************************************************************************************************
-   public function apiEditRecord($layout, $recordID, $data)
+  /***********************************************************************************************************************************
+    *
+    * apiEditRecord($layout, $recordID, $data, $options = array())
+    *
+    *    Edit a record.
+    *
+    *    Parameters:
+    *       (string)  $layout           The name of the layout
+    *       (integer) $recordID         The recordID of the record to edit
+    *       (array)   $data             Array of field name/value pairs
+    *       (array)   $options          Additional API parameters. Valid options:
+    *                                     ['script']
+    *                                     ['scriptParams']
+    *                                     ['scriptPrerequest']
+    *                                     ['scriptPrerequestParams']
+    *                                     ['scriptPresort']
+    *                                     ['scriptPresortParams']
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['response'] If the call succeeds:
+    *                       ['modId'] The new modification ID of the edited record
+    *          ['messages'] Array of code/message pairs
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $fields = array();
+    *       $fields['ColorIndex'] = 48;
+    *       $apiResult = $fm->apiEditRecord('Web_Project', 5, $fields);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiEditRecord($layout, $recordID, $data = array(), $options = array())
    {
-      $payload = array();
+      $payload = $this->getAPIParams($options, METHOD_PATCH);
 
       if (! array_key_exists(FM_FIELD_DATA, $data)) {        // If there's no ['fieldData'], add it now
          $payload[FM_FIELD_DATA] = $data;
@@ -173,39 +301,213 @@ class fmDataAPI extends fmAPI
       else {
          // The caller passed in a structure that has the ['fieldData'] element and likely ['portalData'].
          // As such, there's nothing for us to do - the caller knows best.
-         $payload = $data;
+         $payload = array_merge($data, $options);
       }
 
       return $this->fmAPI($this->getAPIPath(PATH_RECORD, $layout) .'/'. $recordID, METHOD_PATCH, $payload);
    }
 
-   // *********************************************************************************************************************************
-   public function apiFindRecords($layout, $data)
+  /***********************************************************************************************************************************
+    *
+    * apiFindRecords($layout, $data, $options = array())
+    *
+    *    Find record(s) with a query which can be a non-compound or a compound find.
+    *
+    *    Parameters:
+    *       (string)  $layout           The name of the layout
+    *       (array)   $data             An array of query parameters in the format the Data API expects.
+    *                                   Currently this is the same format as $options['query'].
+    *       (array)   $options          Additional API parameters. Valid options:
+    *                                     ['limit']
+    *                                     ['offset']
+    *                                     ['sort']
+    *                                     ['script']
+    *                                     ['scriptParams']
+    *                                     ['scriptPrerequest']
+    *                                     ['scriptPrerequestParams']
+    *                                     ['scriptPresort']
+    *                                     ['scriptPresortParams']
+    *                                     ['layoutResponse']
+    *                                     ['portals']
+    *                                     ['portalLimits']
+    *                                     ['portalOffsets']
+    *                                     ['query']
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['response'] The record(s) data
+    *          ['messages'] Array of code/message pairs
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $data = array(
+    *                'query'=> array(
+    *                            array('Name' => 'Test', 'ColorIndex' => '5', 'omit' => 'true'),
+    *                            array('ColorIndex' => '20')
+    *                          )
+    *               );
+    *       $apiResult = $fm->apiFindRecords('Web_Project', $data);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiFindRecords($layout, $data, $options = array())
    {
-      return $this->fmAPI($this->getAPIPath(PATH_FIND, $layout), METHOD_POST, $data);
+      $payload = $this->getAPIParams($options, METHOD_POST);
+
+      $payload = is_array($data) ? array_merge($data, $payload) : $payload;
+
+      return $this->fmAPI($this->getAPIPath(PATH_FIND, $layout), METHOD_POST, $payload);
    }
 
-   // *********************************************************************************************************************************
-   public function apiGetRecord($layout, $recordID, $data = '')
+   /***********************************************************************************************************************************
+    *
+    * apiGetRecord($layout, $recordID, $params = '', $options = array())
+    *
+    *    Get the record specified by $recordID.
+    *
+    *    Parameters:
+    *       (string)  $layout           The name of the layout
+    *       (integer) $recordID         The recordID of the record to retrieve
+    *       (string)  $params           The raw GET parameters to modify the call. Typically done with $options [optional]
+    *       (array)   $options          Additional API parameters. Valid options:
+    *                                     ['limit']
+    *                                     ['offset']
+    *                                     ['sort']
+    *                                     ['script']
+    *                                     ['scriptParams']
+    *                                     ['scriptPrerequest']
+    *                                     ['scriptPrerequestParams']
+    *                                     ['scriptPresort']
+    *                                     ['scriptPresortParams']
+    *                                     ['layoutResponse']
+    *                                     ['portals']
+    *                                     ['portalLimits']
+    *                                     ['portalOffsets']
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['response'] The record data
+    *          ['messages'] Array of code/message pairs
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $apiResult = $fm->apiGetRecord('Web_Project', 1);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiGetRecord($layout, $recordID, $params = '', $options = array())
    {
-      return $this->fmAPI($this->getAPIPath(PATH_RECORD, $layout) .'/'. $recordID, METHOD_GET, $data);
+      $payload = $this->getAPIParams($options, METHOD_GET);
+
+      $payload = $payload . ((($payload != '') && ($params != '')) ? '&' : '') . $params;
+
+      return $this->fmAPI($this->getAPIPath(PATH_RECORD, $layout) .'/'. $recordID, METHOD_GET, $payload);
    }
 
-   // *********************************************************************************************************************************
-   public function apiGetRecords($layout, $data = '')
+   /***********************************************************************************************************************************
+    *
+    * apiGetRecords($layout, $params = '', $options = array())
+    *
+    *    Get a series of records. By default the first 100 records will be returned.
+    *
+    *    Parameters:
+    *       (string)  $layout           The name of the layout
+    *       (string)  $params           The raw GET parameters (ie: '&_limit=50&_offset=10')
+    *                                   to modify the call. Typically done with
+    *                                   $options [optional]
+    *       (array)   $options          Additional API parameters. Valid options:
+    *                                     ['script']
+    *                                     ['scriptParams']
+    *                                     ['scriptPrerequest']
+    *                                     ['scriptPrerequestParams']
+    *                                     ['scriptPresort']
+    *                                     ['scriptPresortParams']
+    *                                     ['layoutResponse']
+    *                                     ['portals']
+    *                                     ['portalLimits']
+    *                                     ['portalOffsets']
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['response'] The record(s) data
+    *          ['messages'] Array of code/message pairs
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $apiResult = $fm->apiGetRecords('Web_Project', array('limit' => 50, 'offset' => 10));
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiGetRecords($layout, $params = '', $options = array())
    {
-      return $this->fmAPI($this->getAPIPath(PATH_RECORD, $layout), METHOD_GET, $data);
+      $payload = $this->getAPIParams($options, METHOD_GET);
+
+      $payload = $payload . ((($payload != '') && ($params != '')) ? '&' : '') . $params;
+
+      return $this->fmAPI($this->getAPIPath(PATH_RECORD, $layout), METHOD_GET, $payload);
    }
 
-   // *********************************************************************************************************************************
+   /***********************************************************************************************************************************
+    *
+    * apiLogin()
+    *
+    *    Create a new session on the server. Authentication parameters were previously passed to the  __construct method.
+    *    Normally you will not call this method as the other apiNNNNNN() methods take care of logging in when appropriate.
+    *    By default, the authentication token is stored within this class and reused for all further calls. If the server
+    *    replies that the token is not longer valid (FM_ERROR_INVALID_TOKEN - 952), this class will automatically login
+    *    again to get a new token.
+    *
+    *    The server expires a timer after approximately 15 minutes, but the timer is reset each time you make a call to
+    *    the server. You should not assume it is always 15 minutes; a later version of FileMaker Server may change this
+    *    time. Let this class handle the expiration in a graceful manner.
+    *
+    *    Parameters:
+    *       None
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['response'] If the call succeeds, the ['token'] element contains the authentication token.
+    *          ['messages'] Array of code/message pairs
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $apiResult = $fm->apiLogin();
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
    public function apiLogin()
    {
       return $this->login();
    }
 
-   // *********************************************************************************************************************************
-   // Typically you do not need/want to log out - you want to keep using your token for best performance.
-   // Only logout if you know you're completely done with the session. This will also clear the stored username/password.
+   /***********************************************************************************************************************************
+    *
+    * apiLogout()
+    *
+    *    Logs out of the current session and clears the username, password, and authentication token.
+    *    Any global variables previously set will be restored to their previous values by the server.
+    *
+    *    Normally you will not call this method so that you can keep re-using the authentication token for future calls.
+    *    Only logout if you know you are completely done with the session. This will also clear the stored username/password.
+    *
+    *    Parameters:
+    *       None
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['response'] Typically this will be empty
+    *          ['messages'] Array of code/message pairs
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $apiResult = $fm->apiLogout();
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
    public function apiLogout()
    {
       if ($this->getToken() == '') {
@@ -221,49 +523,178 @@ class fmDataAPI extends fmAPI
       return $apiResult;
    }
 
-   // *********************************************************************************************************************************
-   // apiPerformScript
-   //
-   // Execute a script. We do this by doing a apiGetRecords() call for the first record on the specified layout.
-   // For this to work, *YOU MUST* have at least one record in this table or the script *WILL NOT EXECUTE*.
-   // For efficiency, you may want to create a table with just one record and no fields.
-   // Typically you'll call this with an $layout set to a layout with nothing on it and then use $layoutResponse
-   // to indicate where you expect the result from the script to have put the record(s).
-   //
+   /***********************************************************************************************************************************
+    *
+    * apiPerformScript($layout, $scriptName, $params = '', $layoutResponse = '')
+    *
+    *    Execute a script. We do this by doing a apiGetRecords() call for the first record on the specified layout.
+    *    For this to work, *YOU MUST* have at least one record in this table or the script *WILL NOT EXECUTE*.
+    *    For efficiency, you may want to create a table with just one record and no fields.
+    *    Typically you'll call this with an $layout set to a layout with nothing on it and then use $layoutResponse
+    *    to indicate where you expect the result from the script to have put the record(s).
+    *
+    *    Parameters:
+    *       (string)  $layout           The name of the layout
+    *       (string)  $scriptName       The name of the FileMaker script to execute
+    *       (string)  $params           The script parameter
+    *       (string)  $layoutResponse   The name of the layout that any found set will be returned from
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['response'] Returns any record(s) in ['data'] if there's a found set.
+    *                       ['scriptError'] has any scripting error
+    *                       ['scriptResult'] is the value returned from the Exit Script[] script step
+    *          ['messages'] Array of code/message pairs
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $apiResult = $fm->apiPerformScript('Web_Global', 'Test', 'some', 'Web_Project');
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
    public function apiPerformScript($layout, $scriptName, $params = '', $layoutResponse = '')
    {
-      $data = '_limit=1';
-
-      if ($layoutResponse != '') {
-         $data .= '&layout.response='. rawurlencode($layoutResponse);
-      }
-
-      $data .= '&script='. rawurlencode($scriptName);
+      $options = array();
+      $options['limit'] = 1;
+      $options['script'] = $scriptName;
 
       if ($params != '') {
-         $data .= '&script.param='. rawurlencode($params);
+         $options['scriptParams'] = $params;
       }
 
-      return $this->apiGetRecords($layout, $data);
+      if ($layoutResponse != '') {
+         $options['layoutResponse'] = $layoutResponse;
+      }
+
+      return $this->apiGetRecords($layout, '', $options);
    }
 
-   // *********************************************************************************************************************************
+   /***********************************************************************************************************************************
+    *
+    * apiSetGlobalFields($layout, $data)
+    *
+    *    Set global variable(s). The values retain their value throughout the session until you logout or the token expires.
+    *
+    *    Parameters:
+    *       (string)  $layout           The name of the layout
+    *       (array)   $data             An array of field name/value pairs
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['response'] Typically this will be empty
+    *          ['messages'] Array of code/message pairs
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $apiResult = $fm->apiSetGlobalFields('Web_Global', array('Project::gGlobal' => 5));
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
    public function apiSetGlobalFields($layout, $data)
    {
-      return $this->fmAPI($this->getAPIPath(PATH_GLOBAL, $layout), METHOD_PATCH, $data);
+      $payload = array();
+
+      if (! array_key_exists(FM_GLOBAL_FIELDS, $data)) {            // If there's no ['globalFields'], add it now
+         $payload[FM_GLOBAL_FIELDS] = $data;
+      }
+      else {
+         // The caller passed in a structure that has the ['globalFields'] element.
+         // As such, there's nothing for us to do - the caller knows best.
+         $payload = $data;
+      }
+
+      return $this->fmAPI($this->getAPIPath(PATH_GLOBAL, $layout), METHOD_PATCH, $payload);
    }
 
-   // *********************************************************************************************************************************
-   // apiUploadContainer
-   //
-   // Upload a file to a container field.
-   //
-   // $file is an array of information about the file to be uploaded. You specify ['path'] or ['contents']:
-   //       $file['path']       The path to the file to upload (use this or ['contents'])
-   //       $file['contents']   The file contents (use this or ['path'])
-   //       $file['name']       The file name (required if you use ['contents'] otherwise it will be determined)
-   //       $file['mimeType']   The MIME type
-   //
+  /***********************************************************************************************************************************
+    *
+    * apiGetContainer($layout, $recordID, $fieldName, $fieldRepetition = FM_FIELD_REPETITION_1, $options = array())
+    *
+    *    Get the contents of a container field for the specified field. This is more of a 'utility' method used
+    *    in cases where you only have the recordID for the record and want the container contents. If you already have
+    *    the record contents to access the URL for the field, call the getFile() method (which is a fmCURL method).
+    *
+    *    Parameters:
+    *       (string)  $layout           The name of the layout
+    *       (integer) $recordID         The recordID of the record to retrieve the container URL from field $fieldName
+    *       (string)  $fieldName        The field name where the file will be stored
+    *       (integer) $fieldRepetition  The field repetition number
+    *       (array)   $options          The options array as defined by fmCURL::getFile(), additionally:
+    *                                     ['fileNameField'] The field name where the file name is stored on the record
+    *                                                       This lets the caller specify the downloaded filename
+    *                                                       if [action'] = 'download'
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['response'] Typically this will be empty
+    *          ['messages'] Array of code/message pairs
+    *
+    *       ALSO: the contents of the file will be stored in $this->file to avoid copying/memory consumption
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $apiResult = $fm->apiDownloadContainer(layout, $recordID, $fieldName);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          file contents are in $curl->file *not* $result
+    *          ...
+    *       }
+    */
+   public function apiGetContainer($layout, $recordID, $fieldName, $fieldRepetition = FM_FIELD_REPETITION_1, $options = array())
+   {
+      $options = array_merge(array('retryOn401Error' => true), $options);
+
+      $apiResult = $this->apiGetRecord($layout, $recordID);
+
+      if (! $this->getIsError($apiResult)) {
+         $responseData = $this->getResponseData($apiResult);
+
+         $fieldName = ($fieldRepetition == FM_FIELD_REPETITION_1) ? $fieldName : $fieldName .'('. $fieldRepetition .')';
+
+         $url = $responseData[0][FM_FIELD_DATA][$fieldName];
+         if (array_key_exists('fileNameField', $options)) {
+            $options['fileName'] = $responseData[0][FM_FIELD_DATA][$options['fileNameField']];
+         }
+
+         $apiResult = $this->getFile($url, $options);
+      }
+
+      return $apiResult;
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * apiUploadContainer($layout, $recordID, $fieldName, $fieldRepetition, $file)
+    *
+    *    Upload a file to a container field.
+    *
+    *    Parameters:
+    *       (string)  $layout           The name of the layout
+    *       (integer) $recordID         The recordID of the record to store the file in
+    *       (string)  $fieldName        The field name where the file will be stored
+    *       (integer) $fieldRepetition  The field repetition number
+    *       (string)  $file             An array of information about the file to be uploaded. You specify ['path'] or ['contents']:
+    *                                      $file['path']       The path to the file to upload (use this or ['contents'])
+    *                                      $file['contents']   The file contents (use this or ['path'])
+    *                                      $file['name']       The file name (required if you use ['contents'] otherwise
+    *                                                          it will be determined)
+    *                                      $file['mimeType']   The MIME type
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['response'] Typically this will be empty
+    *          ['messages'] Array of code/message pairs
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $file = array();
+    *       $file['path'] = 'sample_files/sample.png';
+    *       $apiResult = $fm->apiUploadContainer('Web_Project', 1, 'Photo', FM_FIELD_REPETITION_1, $file);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
    public function apiUploadContainer($layout, $recordID, $fieldName, $fieldRepetition, $file)
    {
       $data = '';
@@ -308,21 +739,6 @@ class fmDataAPI extends fmAPI
 
 
    // *********************************************************************************************************************************
-   // Returns true if the error result indicates the token is bad.
-   //
-   public function getIsBadToken($result)
-   {
-      $isBadToken = false;
-
-      if ($this->getCodeExists($result, FM_ERROR_INVALID_TOKEN)) {
-         fmLogger('FM_ERROR_INVALID_TOKEN');
-         $isBadToken = true;
-      }
-
-      return $isBadToken;
-   }
-
-   // *********************************************************************************************************************************
    // Returns an array of response messages returned in the result from the server. It's possible that more than one error could be
    // returned, so you'll either need to walk the array or look for a specific code with the getCodeExists() method.
    //
@@ -364,6 +780,15 @@ class fmDataAPI extends fmAPI
 
       return $responseData;
    }
+
+
+   /***********************************************************************************************************************************
+    *
+    * Methods below are typically for internal use.
+    *
+    ***********************************************************************************************************************************
+    */
+
 
    // *********************************************************************************************************************************
    // This method is called internally whenever no or an invalid token is passed to the Data API.
@@ -424,6 +849,155 @@ class fmDataAPI extends fmAPI
       $path = $this->host . str_replace($search, $replace, $requestPath);
 
       return $path;
+   }
+
+   // *********************************************************************************************************************************
+   // getAPIParams
+   //
+   // Creates a list of parameters for the request to the Data API.
+   //
+   // $params is an array with any/all of the following indices.
+   //       array(
+   //          'limit'                  => <number>,
+   //          'offset'                 => <number>,
+   //          'sort'                   => array(array('fieldName' => '<string>'[, 'sortOrder' => '<ascend|descend>']), ... ),
+   //          'script'                 => '<string>',
+   //          'scriptParams'           => '<string>',
+   //          'scriptPrerequest'       => '<string>',
+   //          'scriptPrerequestParams' => '<string>',
+   //          'scriptPresort'          => '<string>',
+   //          'scriptPresortParams'    => '<string>',
+   //          'layoutResponse'         => '<string>',
+   //          'portals'                => array('<string>', ...),
+   //          'portalLimits'           => array(array('name' => '<string>', 'limit' => '<number>'), ...)
+   //          'portalOffsets'          => array(array('name' => '<string>', 'offset' => '<number>'), ...)
+   //          'query'                  => array(array('<fieldName>' => '<value>', '<fieldName>' => '<value>', ..., 'omit' => '<boolean>'), ... )
+   //       )
+   public function getAPIParams($params = array(), $method, $returnAs = '')
+   {
+      // Some GET parameters have underscores in front of them while POST never does, we need a mapping table
+      $keys = array(
+            'get'  => array('offset' => '_offset', 'limit' => '_limit', 'sort' => '_sort',
+                           'script' => 'script', 'scriptParams' => 'script.param',
+                           'scriptPrerequest' => 'script.prerequest', 'scriptPrerequestParams' => 'script.prerequest.param',
+                           'scriptPresort' => 'script.presort', 'scriptPresortParams' => 'script.presort.param',
+                           'layoutResponse' => 'layout.response',
+                           'portals' => 'portal', 'portalLimits' => '_limit', 'portalOffsets' => '_offset'
+                     ),
+
+            'post' => array('offset' => 'offset', 'limit' => 'limit', 'sort' => 'sort',
+                           'script' => 'script', 'scriptParams' => 'script.param',
+                           'scriptPrerequest' => 'script.prerequest', 'scriptPrerequestParams' => 'script.prerequest.param',
+                           'scriptPresort' => 'script.presort', 'scriptPresortParams' => 'script.presort.param',
+                           'layoutResponse' => 'layout.response',
+                           'portals' => 'portal', 'portalLimits' => 'limit', 'portalOffsets' => 'offset',
+                           'query' => 'query'
+                     )
+      );
+
+      $method = strtoupper($method);
+
+      $key = (($method == METHOD_GET) || ($method == METHOD_DELETE)) ? 'get' : 'post';
+
+      if (($returnAs == '') && ($key == 'get')) {
+         $returnAs = 'text';
+      }
+
+      $data = array();
+
+      if (array_key_exists('offset', $params) && ($params['offset'] != 0)) {
+         $data[$keys[$key]['offset']] = $params['offset'];
+      }
+
+      if (array_key_exists('limit', $params) && ($params['limit'] != 0)) {
+         $data[$keys[$key]['limit']] = $params['limit'];
+      }
+
+      if (array_key_exists('sort', $params) && (count($params['sort']) > 0)) {
+         $sort = array();
+         foreach ($params['sort'] as $sortItem) {
+            $sort[] = array('fieldName' => rawurlencode($sortItem['fieldName']),
+                            'sortOrder' => array_key_exists('sortOrder', $sortItem) ? $sortItem['sortOrder'] : 'ascend');
+         }
+         $data[$keys[$key]['sort']] = ($key == 'get') ? rawurlencode(json_encode($sort)) : $sort;
+      }
+
+      if (array_key_exists('script', $params) && ($params['script'] != '')) {
+         $data[$keys[$key]['script']] = rawurlencode($params['script']);
+         if (array_key_exists('scriptParams', $params) && ($params['scriptParams'] != '')) {
+            $data[$keys[$key]['scriptParams']] = rawurlencode($params['scriptParams']);
+         }
+      }
+
+      if (array_key_exists('scriptPrerequest', $params) && ($params['scriptPrerequest'] != '')) {
+         $data[$keys[$key]['scriptPrerequest']] = rawurlencode($params['scriptPrerequest']);
+         if (array_key_exists('scriptPrerequestParams', $params) && ($params['scriptPrerequestParams'] != '')) {
+            $data[$keys[$key]['scriptPrerequestParams']] = rawurlencode($params['scriptPrerequestParams']);
+         }
+      }
+
+      if (array_key_exists('scriptPresort', $params) && ($params['scriptPresort'] != '')) {
+         $data[$keys[$key]['scriptPresort']] = rawurlencode($params['scriptPresort']);
+         if (array_key_exists('scriptPresortParams', $params) && ($params['scriptPresortParams'] != '')) {
+            $data[$keys[$key]['scriptPresortParams']] = rawurlencode($params['scriptPresortParams']);
+         }
+      }
+
+      if (array_key_exists('layoutResponse', $params) && ($params['layoutResponse'] != '')) {
+         $data[$keys[$key]['layoutResponse']] = rawurlencode($params['layoutResponse']);
+      }
+
+      if (array_key_exists('portals', $params) && (count($params['portals']) > 0)) {
+         $portals = '';
+         foreach ($params['portals'] as $portal) {
+            $portals .= '"'. $portal .'",';                  // Wrap each portal within quotes
+         }
+         $data[$keys[$key]['portals']] = rawurlencode('['. rtrim($portals, ',') .']');
+      }
+
+      if (array_key_exists('portalLimits', $params) && (count($params['portalLimits']) > 0)) {
+         foreach ($params['portalLimits'] as $portal) {
+            $data[$keys[$key]['portalLimits']. rawurlencode($portal['name'])] = rawurlencode($portal['limit']);
+         }
+      }
+
+      if (array_key_exists('portalOffsets', $params) && (count($params['portalOffsets']) > 0)) {
+         foreach ($params['portalOffsets'] as $portal) {
+            $data[$keys[$key]['portalOffsets']. rawurlencode($portal['name'])] = rawurlencode($portal['offset']);
+         }
+      }
+
+      if (array_key_exists('query', $params) && (count($params['query']) > 0)) {
+         $data[$keys[$key]['query']] = $params['query'];
+      }
+
+      if ($returnAs == 'text') {
+         $query = '';
+         foreach ($data as $key => $value) {
+           $query .= $key .'='. $value .'&';
+         }
+         $data = rtrim($query, '&');
+      }
+      else if ($returnAs == 'json') {
+         $data = json_encode($data);
+      }
+
+      return $data;
+   }
+
+   // *********************************************************************************************************************************
+   // Returns true if the error result indicates the token is bad.
+   //
+   protected function getIsBadToken($result)
+   {
+      $isBadToken = false;
+
+      if ($this->getCodeExists($result, FM_ERROR_INVALID_TOKEN)) {
+         fmLogger('FM_ERROR_INVALID_TOKEN');
+         $isBadToken = true;
+      }
+
+      return $isBadToken;
    }
 
    // *********************************************************************************************************************************

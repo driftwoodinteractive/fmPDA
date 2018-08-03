@@ -35,12 +35,13 @@ class fmScript extends fmCommand
    public $script;
    public $params;
 
-   function __construct($fm, $layout, $scriptName, $scriptParameters = '')
+   function __construct($fm, $layout, $scriptName, $scriptParameters = '', $layoutResponse = '')
    {
       parent::__construct($fm, $layout);
 
       $this->script = $scriptName;
       $this->params = $scriptParameters;
+      $this->resultLayout = $layoutResponse;
    }
 
    // Execute a script. We do this by doing a apiGetRecords() call for the first record on the specified layout.
@@ -48,11 +49,17 @@ class fmScript extends fmCommand
    // For efficiency, you may want to create a table with just one record and no fields.
    function execute()
    {
-      $apiResult = $this->fm->apiPerformScript($this->layout, $this->script, $this->params);
+      $apiResult = $this->fm->apiPerformScript($this->layout, $this->script, $this->params, $this->resultLayout);
 
       if ($this->fm->getTranslateResult()) {
          if (! fmGetIsError($apiResult)) {
+
             $responseData = $this->fm->getResponseData($apiResult);
+
+            if ($this->resultLayout != '') {
+               $this->layout = $this->resultLayout;
+            }
+
             $result = $this->fm->newResult($this->layout, array_key_exists(0, $responseData) ? $responseData : array());
          }
          else {

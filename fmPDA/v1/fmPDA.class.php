@@ -105,7 +105,38 @@ class fmPDA extends fmPDAGlue
    public $translateResult;                            // If true, this class will translate the data returned from the Data API
                                                        // into the 'old' FileMaker API For PHP objects. The default is true.
 
-   // *********************************************************************************************************************************
+   /***********************************************************************************************************************************
+    *
+    * __construct($database, $host, $username, $password, $options = array())
+    *
+    *    Constructor for fmDataAPI.
+    *
+    *    Parameters:
+    *       (string)  $database         The name of the database (do NOT include the .fmpNN extension)
+    *       (string)  $host             The host name typically in the format of https://HOSTNAME
+    *       (string)  $username         The user name of the account to authenticate with
+    *       (string)  $password         The password of the account to authenticate with
+    *       (array)   $options          Optional parameters
+    *                                       ['version'] Version of the API to use (1, 2, etc. or 'Latest')
+    *
+    *                                       ['authentication'] set to 'oauth' for oauth authentication
+    *                                       ['oauthID'] oauthID
+    *                                       ['oauthIdentifier'] oauth identifier
+    *
+    *                                       ['sources'] => array(
+    *                                                        array(
+    *                                                          'database'  => '',      // do NOT include .fmpNN
+    *                                                          'username'  => '',
+    *                                                          'password'  => ''
+    *                                                        )
+    *                                                      )
+    *
+    *    Returns:
+    *       The newly created object.
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    */
    function __construct($database, $host, $username, $password, $options = array())
    {
       // Create our override of the standard logging object so we get the one that knows about fmRecord.
@@ -125,6 +156,420 @@ class fmPDA extends fmPDAGlue
       fmLogger('fmPDA: translateResult='. ($this->translateResult ? 'true' : 'false'));
 
       return;
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * createRecord($layout, $fieldValues = array())
+    *
+    *    Create a record object. The record's Commit() method will send the data to the server.
+    *
+    *    Parameters:
+    *       (string)  $layout           The name of the layout
+    *       (array)   $fieldValues      An array of field name/value pairs
+    *
+    *    Returns:
+    *       The newly created record object.
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $record = $fm->createRecord($layout, $fieldValues);
+    */
+   public function createRecord($layout, $fieldValues = array())
+   {
+      $data = array();
+      $data[FM_FIELD_DATA] = $fieldValues;
+
+      if ($this->translateResult) {
+         return new fmRecord($this, $layout, $data);
+      }
+      else {
+         return $data;
+      }
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * getContainerData($containerURL, $options)
+    *
+    *    Returns the contents of the container field. Given the changes with the Data API, you can bypass this entirely if you are
+    *    simply wanting to display the container with an <img tag. Just take the url returned in the field and feed that into the
+    *    <img tag.
+    *
+    *    Note that the $options parameter is new to fmPDA - it does not exist in the FileMaker API for PHP.
+    *
+    *    Parameters:
+    *       (string)  $containerURL      The URL to the container
+    *       (array)   $options           The options array as defined by fmCURL::getFile(), additionally:
+    *                                     ['fileNameField'] The field name where the file name is stored on the record
+    *                                                       This lets the caller specify the downloaded filename
+    *                                                       if [action'] = 'download'
+    *
+    *    Returns:
+    *       The contents of the container field
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $contents = $fm->getContainerData($containerURL);
+    */
+   public function getContainerData($containerURL, $options = array())
+   {
+      $options = array_merge(array('retryOn401Error' => true), $options);
+
+      $result = $this->getFile($containerURL, $options);
+
+      return $this->file;
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * getContainerDataURL($graphicURL)
+    *
+    *    This is not needed anymore - just use the URL return in the field data directly. Your existing code will continue to work
+    *    but it would be best for performance if you modify your code to simply use the URL returned from getFieldUnencoded() and
+    *    place it in the <img tag directly.
+    *
+    *    Parameters:
+    *       (string)  $graphicURL           The URL to the container
+    *
+    *    Returns:
+    *       The same URL passed in
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $url = $fm->getContainerDataURL($graphicURL);
+    */
+   public function getContainerDataURL($graphicURL)
+   {
+      return $graphicURL;
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * getRecordById($layout, $recordID = '')
+    *
+    *    Get the record specified by $recordID. If you omit the recordID, the first record in the table is returned.
+    *
+    *    Parameters:
+    *       (string)  $layout           The name of the layout
+    *       (integer) $recordID         The recordID of the record to retrieve
+    *
+    *    Returns:
+    *       An fmRecord or fmError object
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $result = $fm->getRecordById('Web_Project', 1);
+    *       if (! $fm->getIsError($result)) {
+    *          ...
+    *       }
+    */
+   public function getRecordById($layout, $recordID = '')
+   {
+      $apiResult = $this->apiGetRecord($layout, $recordID);
+
+      if ($this->translateResult) {
+         if (fmGetIsError($apiResult)) {
+            if ($this->getCodeExists($apiResult, FM_ERROR_RECORD_IS_MISSING)) {
+               $result = null;                                                      // Old API returns null for a missing record
+            }
+            else {
+               $result = $apiResult;
+            }
+         }
+         else {
+            $responseData = $this->getResponseData($apiResult);
+            $result = new fmRecord($this, $layout, array_key_exists(0, $responseData) ? $responseData[0] : array());
+         }
+      }
+      else {
+         $result = $apiResult;
+      }
+
+      return $result;
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * newFindCommand($layoutName)
+    *
+    *    Create a new find object.
+    *
+    *    Parameters:
+    *       (string)  $layoutName           The name of the layout
+    *
+    *    Returns:
+    *       A fmFindQuery object
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $findCommand = $fm->newFindCommand($layoutName);
+    */
+   public function newFindCommand($layoutName)
+   {
+      return new fmFindQuery($this, $layoutName);
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * newCompoundFindCommand($layoutName)
+    *
+    *    Create a new compound find object.
+    *
+    *    Parameters:
+    *       (string)  $layoutName           The name of the layout
+    *
+    *    Returns:
+    *       A fmFindQuery object
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $findCommand = $fm->newCompoundFindCommand($layoutName);
+    */
+   public function newCompoundFindCommand($layoutName)
+   {
+      return new fmFindQuery($this, $layoutName);
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * newFindRequest($layoutName)
+    *
+    *    Create a find request object.
+    *
+    *    Parameters:
+    *       (string)  $layoutName           The name of the layout
+    *
+    *    Returns:
+    *       A fmFindRequest object
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $findCommand = $fm->newFindRequest($layoutName);
+    */
+   public function newFindRequest($layoutName)
+   {
+      return new fmFindRequest($this, $layoutName);
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * newFindAllCommand($layoutName)
+    *
+    *    Create a new find all object.
+    *
+    *    Parameters:
+    *       (string)  $layoutName           The name of the layout
+    *
+    *    Returns:
+    *       A fmFind object
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $findAllCommand = $fm->newFindAllCommand($layoutName);
+    */
+   public function newFindAllCommand($layoutName)
+   {
+      return new fmFind($this, $layoutName);
+   }
+
+    /***********************************************************************************************************************************
+    *
+    * newFindAnyCommand($layoutName)
+    *
+    *    Create a new find any object.
+    *
+    *    Parameters:
+    *       (string)  $layoutName           The name of the layout
+    *
+    *    Returns:
+    *       A fmFind object
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $findAnyCommand = $fm->newFindAnyCommand($layoutName);
+    */
+   public function newFindAnyCommand($layoutName)
+   {
+      return new fmFindAny($this, $layoutName);
+   }
+
+    /***********************************************************************************************************************************
+    *
+    * newAddCommand($layoutName)
+    *
+    *    Create a new add record object.
+    *
+    *    Parameters:
+    *       (string)  $layoutName           The name of the layout
+    *
+    *    Returns:
+    *       A fmAdd object
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $addCommand = $fm->newAddCommand($layoutName);
+    */
+   public function newAddCommand($layoutName)
+   {
+      return new fmAdd($this, $layoutName);
+   }
+
+    /***********************************************************************************************************************************
+    *
+    * newEditCommand($layoutName, $recordID)
+    *
+    *    Create a new edit record object.
+    *
+    *    Parameters:
+    *       (string)  $layoutName           The name of the layout
+    *       (integer) $recordID             The recordID of the record to edit
+    *
+    *    Returns:
+    *       A fmEdit object
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $findAnyCommand = $fm->newEditCommand($layoutName, $recordID);
+    */
+   public function newEditCommand($layoutName, $recordID)
+   {
+      return new fmEdit($this, $layoutName, $recordID);
+   }
+
+    /***********************************************************************************************************************************
+    *
+    * newDeleteCommand($layoutName, $recordID)
+    *
+    *    Create a new delete record object.
+    *
+    *    Parameters:
+    *       (string)  $layoutName           The name of the layout
+    *       (integer) $recordID             The recordID of the record to delete
+    *
+    *    Returns:
+    *       A fmDelete object
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $findAnyCommand = $fm->newDeleteCommand($layoutName, $recordID);
+    *       $result = $findAnyCommand->execute();
+    *       if (! $fm->getIsError($result)) {
+    *          ...
+    *       }
+    */
+   public function newDeleteCommand($layoutName, $recordID)
+   {
+      return new fmDelete($this, $layoutName, $recordID);
+   }
+
+    /***********************************************************************************************************************************
+    *
+    * newDuplicateCommand($layoutName, $recordID, $duplicateScript)
+    *
+    *    Create a new duplicate record object. The Data API does not support record duplication so we simulate this by using a
+    *    caller-provided FileMaker script that performs the actual duplication and returns the recordID of the newly duplicated record.
+    *
+    *    Parameters:
+    *       (string)  $layoutName           The name of the layout
+    *       (integer) $recordID             The recordID of the record to duplicate
+    *       (integer) $duplicateScript      The FileMaker script name that handles the actual duplication.
+    *
+    *    Returns:
+    *       A fmDuplicate object
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $newDuplicateCommand = $fm->newDuplicateCommand($layoutName, $recordID, $duplicateScript);
+    *       $result = $newDuplicateCommand->execute();
+    *       if (! $fm->getIsError($result)) {
+    *          ...
+    *       }
+    */
+   public function newDuplicateCommand($layoutName, $recordID, $duplicateScript)
+   {
+      return new fmDuplicate($this, $layoutName, $recordID, $duplicateScript);
+   }
+
+    /***********************************************************************************************************************************
+    *
+    * newPerformScriptCommand($layout, $scriptName, $params = '')
+    *
+    *    Execute a script. For this to work, *YOU MUST* have at least one record in this table or the script *WILL NOT EXECUTE*.
+    *    For efficiency, you may want to create a table with just one record and no fields.
+    *
+    *    Parameters:
+    *       (string)  $layoutName           The name of the layout
+    *       (string)  $scriptName           The name of the FileMaker script to execute
+    *       (string)  $params               The script parameter
+    *
+    *    Returns:
+    *       A fmScript object
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $performScriptCommand = $fm->newPerformScriptCommand($layout, $scriptName, $params);
+    *       $result = $performScriptCommand->execute();
+    *       if (! $fm->getIsError($result)) {
+    *          ...
+    *       }
+    */
+   public function newPerformScriptCommand($layout, $scriptName, $params = '')
+   {
+      return new fmScript($this, $layout, $scriptName, $params);
+   }
+
+    /***********************************************************************************************************************************
+    *
+    * newUploadContainerCommand($layout, $recordID, $fieldName, $fieldRepetition, $file)
+    *
+    *    Upload a file to a container field.
+    *    This method does not exist in FileMaker's API For PHP but is provided as the Data API now directly supports this.
+    *
+    *    Parameters:
+    *       (string)  $layout               The name of the layout
+    *       (integer) $recordID             The recordID of the record to edit
+    *       (string)  $fieldName            The field name where the file will be stored
+    *       (integer) $fieldRepetition      The field repetition number
+    *       (string)  $file                 An array of information about the file to be uploaded. You specify ['path'] or ['contents']:
+    *                                           $file['path']       The path to the file to upload (use this or ['contents'])
+    *                                           $file['contents']   The file contents (use this or ['path'])
+    *                                           $file['name']       The file name (required if you use ['contents'] otherwise
+    *                                                               it will be determined)
+    *                                           $file['mimeType']   The MIME type
+    *
+    *    Returns:
+    *       A fmUpload object
+    *
+    *    Example:
+    *       $fm = new fmPDA($database, $host, $username, $password);
+    *       $file = array();
+    *       $file['path'] = 'sample_files/sample.png';
+    *       $uploadContainerCommand = $fm->newUploadContainerCommand($layout, $recordID, $fieldName, $fieldRepetition, $file);
+    *       $result = $performScriptCommand->execute();
+    *       if (! $fm->getIsError($result)) {
+    *          ...
+    *       }
+    */
+   public function newUploadContainerCommand($layout, $recordID, $fieldName, $fieldRepetition, $file)
+   {
+      return new fmUpload($this, $layout, $recordID, $fieldName, $fieldRepetition, $file);
+   }
+
+   // *********************************************************************************************************************************
+   // Create the fmError object. Override this to use your own class and/or throw the error from here.
+   //
+   public function newError($message = null, $code = null)
+   {
+      return new fmError($this, $message, $code);
+   }
+
+   // *********************************************************************************************************************************
+   // Create the standard fmResult object to store the response from FileMaker. Override this if you want to return a different structure.
+   //
+   public function newResult($layout, $data = array())
+   {
+      return new fmResult($this, $layout, $data);
    }
 
    // *********************************************************************************************************************************
@@ -182,152 +627,6 @@ class fmPDA extends fmPDAGlue
    function getTranslateResult()
    {
       return $this->translateResult;
-   }
-
-   // *********************************************************************************************************************************
-   // Create the fmError object. Override this to use your own class and/or throw the error from here.
-   //
-   public function newError($message = null, $code = null)
-   {
-      return new fmError($this, $message, $code);
-   }
-
-   // *********************************************************************************************************************************
-   // Create the standard fmResult object to store the response from FileMaker. Override this if you want to return a different structure.
-   //
-   public function newResult($layout, $data = array())
-   {
-      return new fmResult($this, $layout, $data);
-   }
-
-   // *********************************************************************************************************************************
-   public function createRecord($layout, $fieldValues = array())
-   {
-      $data = array();
-      $data[FM_FIELD_DATA] = $fieldValues;
-
-      if ($this->translateResult) {
-         return new fmRecord($this, $layout, $data);
-      }
-      else {
-         return $data;
-      }
-   }
-
-   // *********************************************************************************************************************************
-   // This is not needed anymore - just use the URL return in the field data directly. No more need for the 'Container Bridge' file!
-   // Your existing code will continue to work but it would be best for performance if you modify your code to simply use the URL
-   // returned from getFieldUnencoded() and place it in the <img tag directly.
-   //
-   public function getContainerData($containerURL)
-   {
-      return $containerURL;
-   }
-
-   // *********************************************************************************************************************************
-   // This is not needed anymore - just use the URL return in the field data directly.
-   //
-   public function getContainerDataURL($graphicURL)
-   {
-      return $graphicURL;
-   }
-
-   // *********************************************************************************************************************************
-   // Retrieve a record by the internal recordID. If you omit the recordID, the Data API returns the first record in the table.
-   //
-   public function getRecordById($layout, $recordID = '')
-   {
-      $apiResult = $this->apiGetRecord($layout, $recordID);
-
-      if ($this->translateResult) {
-         if (fmGetIsError($apiResult)) {
-            if ($this->getCodeExists($apiResult, FM_ERROR_RECORD_IS_MISSING)) {
-               $result = null;                                                      // Old API returns null for a missing record
-            }
-            else {
-               $result = $apiResult;
-            }
-         }
-         else {
-            $responseData = $this->getResponseData($apiResult);
-            $result = new fmRecord($this, $layout, array_key_exists(0, $responseData) ? $responseData[0] : array());
-         }
-      }
-      else {
-         $result = $apiResult;
-      }
-
-      return $result;
-   }
-
-   // *********************************************************************************************************************************
-   public function newFindCommand($layoutName)
-   {
-      return new fmFindQuery($this, $layoutName);
-   }
-
-   // *********************************************************************************************************************************
-   public function newCompoundFindCommand($layoutName)
-   {
-      return new fmFindQuery($this, $layoutName);
-   }
-
-   // *********************************************************************************************************************************
-   public function newFindRequest($layoutName)
-   {
-      return new fmFindRequest($this, $layoutName);
-   }
-
-   // *********************************************************************************************************************************
-   public function newFindAllCommand($layoutName)
-   {
-      return new fmFind($this, $layoutName);
-   }
-
-   // *********************************************************************************************************************************
-   public function newFindAnyCommand($layoutName)
-   {
-      return new fmFindAny($this, $layoutName);
-   }
-
-   // *********************************************************************************************************************************
-   public function newAddCommand($layoutName)
-   {
-      return new fmAdd($this, $layoutName);
-   }
-
-   // *********************************************************************************************************************************
-   public function newEditCommand($layoutName, $recordID)
-   {
-      return new fmEdit($this, $layoutName, $recordID);
-   }
-
-   // *********************************************************************************************************************************
-   public function newDeleteCommand($layoutName, $recordID)
-   {
-      return new fmDelete($this, $layoutName, $recordID);
-   }
-
-   // *********************************************************************************************************************************
-   public function newDuplicateCommand($layoutName, $recordID, $duplicateScript)
-   {
-      return new fmDuplicate($this, $layoutName, $recordID, $duplicateScript);
-   }
-
-   // *********************************************************************************************************************************
-   // Execute a script. We do this by doing a apiGetRecords() call for the first record on the specified layout.
-   // For this to work, *YOU MUST* have at least one record in this table or the script *WILL NOT EXECUTE*.
-   // For efficiency, you may want to create a table with just one record and no fields.
-   //
-   public function newPerformScriptCommand($layout, $scriptName, $params = '')
-   {
-      return new fmScript($this, $layout, $scriptName, $params);
-   }
-
-   // *********************************************************************************************************************************
-   public function newUploadContainerCommand($layout, $recordID, $fieldName, $fieldRepetition, $file)
-   {
-      return new fmUpload($this, $layout, $recordID, $fieldName, $fieldRepetition, $file);
    }
 
 }
