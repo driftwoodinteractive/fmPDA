@@ -186,7 +186,6 @@ define('HIGHEST_VERSION',  (DATA_API_VERSION == 'Latest') ? SUPPORTED_API_VERSIO
                      <h3 class="caution"><i class="fas fa-exclamation-triangle"></i> Caution</h3>
                      <ul>
                         <li><code>fmRecord::getFieldAsTimestamp() (FileMaker_Record::getFieldAsTimestamp() in the old API)</code> can't automatically determine the field type as the Data API doesn't return field metadata. There is now a new third parameter (<code>$fieldType</code>) to tell the method how to convert the field data. See <code>FMRecord.class.php</code> for details.</li>
-                        <li><code>fmPDA::getContainerData()</code> and <code>fmPDA::getContainerDataURL()</code> now return the full URL - no need for the 'ContainerBridge' file! See container_data.php or container_data_url.php for an example.</li>
                      </ul>
                      <br>
 

@@ -206,10 +206,6 @@ Caution
   ($fieldType) to tell the method how to convert the field data.
   See FMRecord.class.php for details.
 
-- fmPDA::getContainerData() and fmPDA::getContainerDataURL() now return
-  the full URL - no need for the 'ContainerBridge' file! See container_data.php
-  or container_data_url.php for an example.
-
 
 
 

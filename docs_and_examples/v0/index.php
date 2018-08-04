@@ -171,7 +171,6 @@ require_once 'nav.inc.php';
                         <li>Do not name a field called omit; that name is used in a find query to omit records.</li>
                         <li>Do not name a field called deleteRelated; that name is used when editing a record to delete a related record.</li>
                         <li><code>fmRecord::getFieldAsTimestamp() (FileMaker_Record::getFieldAsTimestamp() in the old API)</code> can't automatically determine the field type as the Data API doesn't return field metadata. There is now a new third parameter (<code>$fieldType</code>) to tell the method how to convert the field data. See <code>FMRecord.class.php</code> for details.</li>
-                        <li><code>fmPDA::getContainerData()</code> and <code>fmPDA::getContainerDataURL()</code> now return the full URL - no need for the 'ContainerBridge' file! See container_data.php or container_data_url.php for an example.</li>
                      </ul>
                      <br>
                   </ul>
