@@ -54,6 +54,7 @@ $output = '';
 $output .= GetTheRecord($fm, 1);
 $output .= GetTheRecord($fm, 55555);            // Will fail - record doesn't exist
 
+fmLogger($output);
 
 function GetTheRecord($fm, $recordID, $showRecordData = false)
 {
