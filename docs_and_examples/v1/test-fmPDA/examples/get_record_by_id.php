@@ -62,11 +62,9 @@ function GetTheRecord($fm, $recordID, $showRecordData = false)
 
    $result = $fm->getRecordById('Web_Project', $recordID);
    if (! fmGetIsError($result)) {
+      $output .= '<strong>Record ID '. $recordID .' Name:</strong><br>'. $result->getFieldUnencoded('Name') .'<br><br>';
       if ($showRecordData) {
          $output .= $result->dumpRecord();
-      }
-      else {
-         $output .= '<strong>Record ID '. $recordID .' Name:</strong><br>'. $result->getFieldUnencoded('Name') .'<br><br>';
       }
    }
    else if (is_null($result)) {

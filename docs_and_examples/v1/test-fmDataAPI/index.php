@@ -152,7 +152,6 @@ define('DATA_API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED
                </div>
             </div>
 
-
             <div id="apiLogin" class="api-object">
                <div class="api-header">
                   fmDataAPI::apiLogin()

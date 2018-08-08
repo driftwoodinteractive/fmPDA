@@ -163,7 +163,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiLogout();
+                           $apiResult = $fm->apiLogout();
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -197,7 +197,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host);
-                           $apiResult = new apiGetServerInfo();
+                           $apiResult = $fm->apiGetServerInfo();
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -231,7 +231,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiGetServerStatus();
+                           $apiResult = $fm->apiGetServerStatus();
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -264,7 +264,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiSetServerStatus($data);
+                           $apiResult = $fm->apiSetServerStatus($data);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -294,7 +294,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiGetPHPConfiguration();
+                           $apiResult = $fm->apiGetPHPConfiguration();
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -329,7 +329,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
                            $fm = new fmAdminAPI($host, $username, $password);
                            $option = array();
                            $option[ ... ] = '';
-                           $apiResult = new apiSetPHPConfiguration($data);
+                           $apiResult = $fm->apiSetPHPConfiguration($data);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -358,7 +358,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiGetXMLConfiguration();
+                           $apiResult = $fm->apiGetXMLConfiguration();
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -393,7 +393,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
                            $fm = new fmAdminAPI($host, $username, $password);
                            $option = array();
                            $option['enabled'] = 'true';
-                           $apiResult = new apiSetXMLConfiguration($data);
+                           $apiResult = $fm->apiSetXMLConfiguration($data);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -422,7 +422,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiGetServerGeneralConfiguration();
+                           $apiResult = $fm->apiGetServerGeneralConfiguration();
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -455,7 +455,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiSetServerGeneralConfiguration($data);
+                           $apiResult = $fm->apiSetServerGeneralConfiguration($data);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -484,7 +484,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiGetServerSecurityConfiguration();
+                           $apiResult = $fm->apiGetServerSecurityConfiguration();
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -517,7 +517,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiSetServerSecurityConfiguration($data);
+                           $apiResult = $fm->apiSetServerSecurityConfiguration($data);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -546,7 +546,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiListDatabases();
+                           $apiResult = $fm->apiListDatabases();
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -581,7 +581,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiOpenDatabase($databaseID);
+                           $apiResult = $fm->apiOpenDatabase($databaseID);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -610,7 +610,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiCloseDatabase($databaseID, 'Down for maintenance. Be back in an hour!');
+                           $apiResult = $fm->apiCloseDatabase($databaseID, 'Down for maintenance. Be back in an hour!');
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -638,7 +638,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiPauseDatabase($databaseID);
+                           $apiResult = $fm->apiPauseDatabase($databaseID);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -666,7 +666,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiResumeDatabase($databaseID);
+                           $apiResult = $fm->apiResumeDatabase($databaseID);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -696,7 +696,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiDisconnectClient($data);
+                           $apiResult = $fm->apiDisconnectClient($data);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -724,7 +724,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiDisconnectClient($data);
+                           $apiResult = $fm->apiDisconnectClient($data);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -753,7 +753,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiListSchedules();
+                           $apiResult = $fm->apiListSchedules();
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -787,7 +787,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiCreateSchedule($data);
+                           $apiResult = $fm->apiCreateSchedule($data);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -816,7 +816,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiDeleteSchedule($scheduleID);
+                           $apiResult = $fm->apiDeleteSchedule($scheduleID);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -845,7 +845,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiDuplicateSchedule($scheduleID);
+                           $apiResult = $fm->apiDuplicateSchedule($scheduleID);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -874,7 +874,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiEnableSchedule($scheduleID);
+                           $apiResult = $fm->apiEnableSchedule($scheduleID);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -903,7 +903,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiDisableSchedule($scheduleID);
+                           $apiResult = $fm->apiDisableSchedule($scheduleID);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -932,7 +932,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiRunSchedule($scheduleID);
+                           $apiResult = $fm->apiRunSchedule($scheduleID);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -961,7 +961,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiGetSchedule($scheduleID);
+                           $apiResult = $fm->apiGetSchedule($scheduleID);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -996,7 +996,7 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = new apiSetSchedule($scheduleID, $data);
+                           $apiResult = $fm->apiSetSchedule($scheduleID, $data);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }
@@ -1022,28 +1022,42 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
 
       <script>
          $(".run_php_script").click(function() {
+            target = $(this).attr("target");
             theID = $(this).attr("phpscript");
             outputID = $(this).attr("output");
             if (outputID == null) {
                outputID = theID;
             }
-            theURL = "examples/"+ theID + ".php?v=<?php echo API_VERSION; ?>";
-            $.ajax({
-                 url: theURL,
-                 dataType: 'html',
-                 success: function(data, textStatus, jqXHR) {
-                     if (data != null) {
-                        $("#output_" + outputID).append(data);
-                     }
-                 },
-                 error: function(jqXHR, textStatus, errorThrown) {
-                     $("#output_" + outputID).html(textStatus +" "+ errorThrown);
-                 }
+
+            theURL = "examples/"+ theID;
+            if (theID.indexOf(".php") == -1) {
+               theURL += ".php";
+            }
+            questionMark = "?";
+            if (theID.indexOf(questionMark) == -1) {
+               theURL += "?";
+            }
+            theURL += "&v=<?php echo API_VERSION; ?>";
+
+            if (target == "_blank") {
+               window.open(theURL);
+            }
+            else {
+               $.ajax({
+                    url: theURL,
+                    dataType: 'html',
+                    success: function(data, textStatus, jqXHR) {
+                        if (data != null) {
+                           $("#output_" + outputID).append(data);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) { alert("error!");
+                        $("#output_" + outputID).html(textStatus +" "+ errorThrown);
+                    }
                });
-            });
+            }
+         });
       </script>
-
-
 
    </body>
 </html>
