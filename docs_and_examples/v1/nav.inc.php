@@ -104,6 +104,8 @@ function GetNavigationMenu($numLevelsToRoot = 0, $apiVersion = 1)
                <a href="'. $path .'test-fmAdminAPI/index.php?v='. $apiVersion .'#apiGetServerStatus"><span class="indent-1">Get Server Status</span></a>
                <a href="'. $path .'test-fmAdminAPI/index.php?v='. $apiVersion .'#apiSetServerStatus"><span class="indent-1">Set Server Status</span></a>
 
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $apiVersion .'#apiGetLog"><span class="indent-1">Get Server Log</span></a>
+
                <a href="'. $path .'test-fmAdminAPI/index.php?v='. $apiVersion .'#apiGetPHPConfig"><span class="indent-1">Get PHP Configuration</span></a>
                <a href="'. $path .'test-fmAdminAPI/index.php?v='. $apiVersion .'#apiSetPHPConfig"><span class="indent-1">Set PHP Configuration</span></a>
 

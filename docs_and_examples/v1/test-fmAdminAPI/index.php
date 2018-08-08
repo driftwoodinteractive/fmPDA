@@ -272,6 +272,62 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
                </div>
             </div>
 
+            <div id="apiGetLog" class="api-object">
+               <div class="api-header">
+                  fmAdminAPI::apiGetLog($url, $type, $format)
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiGetLog($type, $format, $url = '')
+
+                        Get a FileMaker Server log.
+
+                        This is an 'extension' to the Admin API.
+                        To make this work, you must be running the fmPDA class files on your FMS server *or* install
+                        the 'get_fms_log.php' file on your FMS server. Both this method andget_fms_log.php will authenticate
+                        through the Admin API by sending a apiGetServerStatus() request.
+
+                        Parameters:
+                        (string) type           The type of log to return
+                                                      'access'
+                                                      'event'
+                                                      'fmdapi'
+                                                      'stderr'
+                                                      'stdout'
+                                                      'topcallstats'
+                                                      'wpedebug'
+                                                      'wpe'
+                        (string) format         The format of the log data:
+                                                      'raw'         The contents of the file as read from disk (default)
+                                                      'html'        Convert \r and \n to HTML &lt;br&gt; tags
+                                                      'html-table'  HTML table
+                        (string) url            If blank, fmPDA must reside on the same server as FileMaker server
+                                                so that it has access to the log files directory. If fmPDA is on a separate server
+                                                you will need to install get_fms_log.php resides on your FMS server and then pass
+                                                the URL to that location here.
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['result']         0 if successful else an error code
+                              ['message']        The error message
+                              ['log']            The log file, in whatever form specified by type in the request payload
+
+                        Example:
+                           $fm = new fmAdminAPI($host, $username, $password);
+                           $apiResult = $fm->apiGetLog($url, $type, $format);
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+
+               <div class="api-example-output-header">
+                 <button type="button" class="btn btn-primary run_php_script" phpscript="get_log.php?type=event&format=html-table" output="get_log" >Run Example</button> Get Server 'Event' Log
+               </div>
+               <div id="output_get_log" class="api-example-output"></div>
+            </div>
+
             <div id="apiGetPHPConfig" class="api-object">
                <div class="api-header">
                   fmAdminAPI::apiGetPHPConfiguration()

@@ -877,6 +877,168 @@ class fmAdminAPI extends fmAPI
       return $this->fmAPI($this->getAPIPath(PATH_ADMIN_SCHEDULES) .'/'. $scheduleID, METHOD_PUT, $data);
    }
 
+   /***********************************************************************************************************************************
+    *
+    * apiGetLog($url, $type, $format)
+    *
+    *    Get a FileMaker Server log.
+    *
+    *    This is an 'extension' to the Admin API.
+    *    To make this work, you must be running the fmPDA class files on your FMS server *or* install
+    *    the 'get_fms_log.php' file on your FMS server. Both this method andget_fms_log.php will authenticate
+    *    through the Admin API by sending a apiGetServerStatus() request.
+    *
+    *    Parameters:
+    *    (string) type           The type of log to return (default is 'event')
+    *                                  'access'
+    *                                  'event'
+    *                                  'fmdapi'
+    *                                  'stderr'
+    *                                  'stdout'
+    *                                  'topcallstats'
+    *                                  'wpedebug'
+    *                                  'wpe'
+    *    (string) format         The format of the log data:
+    *                                  'raw'            The contents of the file as read from disk (default)
+    *                                  'html'           htmlspecialchars() encoded and new lines into <br> tags
+    *                                  'html-table'     HTML table, htmlspecialchars() for the data
+    *    (string) url            If blank, fmPDA must reside on the same server as FileMaker server
+    *                            so that it has access to the log files directory. If fmPDA is on a separate server
+    *                            you will need to install get_fms_log.php resides on your FMS server and then pass
+    *                            the URL to that location here.
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['result']         0 if successful else an error code
+    *          ['errorMessage']   Any error message
+    *          ['log']            The log file, in whatever form specified by type in the request payload
+    *
+    *    Example:
+    *       $fm = new fmAdminAPI($host, $username, $password);
+    *       $apiResult = $fm->apiGetLog($url, $type, $format);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiGetLog($type, $format, $url = '')
+   {
+      if ($url == '') {
+         $apiResult = $this->apiGetServerStatus();                                  // Get the server status which validates we're authenticated
+
+         if (! $this->getIsError($apiResult)) {                                     // Were we able to authenticate with un/pw or token?
+            $apiResult = $this->GetFileMakerLog($apiResult, $type, $format);        // Get the log
+         }
+      }
+      else {
+         $data = array();
+         $data['host']     = $this->host;
+         $data['username'] = $this->credentials['username'];
+         $data['password'] = $this->credentials['password'];
+         $data['token']    = $this->getToken();
+         $data['type']     = $type;
+         $data['format']   = $format;
+
+         $apiResult = $this->fmAPI($url, METHOD_POST, $data);
+
+         // get_fms_log.php may generate the token for the first time or get a new one. We want to use that token as well.
+         if (array_key_exists('token', $apiResult)) {
+            $this->setToken($apiResult['token']);
+         }
+
+         if (array_key_exists('fmlog', $apiResult)) {
+            fmLogger($apiResult['fmlog']);                           // $apiResult['fmlog'] is the log data that get_fms_log.php generated
+         }
+      }
+
+      return $apiResult;
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * GetFileMakerLog($apiResult, $type, $format)
+    *
+    */
+   protected function GetFileMakerLog($apiResult, $type, $format)
+   {
+      // Location of your logs directory. If it's different for your server, change it here.
+      if (stristr(PHP_OS, 'darwin')) {		           										  // Check before 'win' since 'win' is in 'darwin'!
+         $logBase = '/Library/FileMaker Server/Logs/';
+      }
+      else if (stristr(PHP_OS, 'win')) {
+         $logBase = 'C:\Program Files\FileMaker\FileMaker Server\Logs\\';
+      }
+      else {
+         $logBase = ''; // Cloud? Not sure what the path is...
+      }
+
+      if ($logBase != '') {                                                       // Define the paths to the log files in the OS
+         $logPaths = array('fmdapi'       => $logBase .'fmdapi.log',
+                           'access'       => $logBase .'Access.log',
+                           'event'        => $logBase .'Event.log',
+                           'stderr'       => $logBase .'stderr',
+                           'stdout'       => $logBase .'stdout',
+                           'topcallstats' => $logBase .'TopCallStats.log',
+                           'wpedebug'     => $logBase .'wpe_debug.log',
+                           'wpe'          => $logBase .'wpe.log'
+                     );
+
+         $logType = strtolower($type);
+         $logPath = array_key_exists($logType, $logPaths) ? $logPaths[$logType] : '';
+
+         if ($logPath != '') {
+            $apiResult['log'] = file_get_contents($logPath);                      // Get the log file
+
+            switch ($format) {
+
+               case 'html-table': {
+
+                  // The class names are defined to that the caller can substitue their own CSS styling
+                  // for the table by defining these CSS styles:
+                  $tableClass = 'fm-log-table';
+                  $rowClass   = 'fm-log-table-row';
+                  $cellClass  = 'fm-log-table-cell';
+
+                  $apiResult['log'] = '<table class="'. $tableClass .'">'.
+                                      '<tr class="'. $rowClass .'">'.
+                                      '<td class="'. $cellClass .'">'.
+
+                                      str_replace(array("\t",
+                                                        "\r",
+                                                        "\n"),
+                                                  array('</td><td class="'. $cellClass .'">',
+                                                        '</td></tr><tr class="'. $rowClass .'"><td class="'. $cellClass .'">',
+                                                        '</td></tr><tr class="'. $rowClass .'"><td class="'. $cellClass .'">'),
+                                                  htmlspecialchars($apiResult['log'])).
+
+                                      '</td>'.
+                                      '</tr>'.
+                                      '</table>';
+                  break;
+               }
+
+               case 'html': {
+                  $apiResult['log'] = nl2br(htmlspecialchars($apiResult['log']));
+                  break;
+               }
+
+               case 'raw':
+               default: {
+                  break;
+               }
+            }
+         }
+         else {
+            $apiResult[FM_RESULT]        = '-5';
+            $apiResult[FM_ERROR_MESSAGE] = 'Invalid log type';
+         }
+      }
+      else {
+         $apiResult[FM_RESULT]        = '-4';
+         $apiResult[FM_ERROR_MESSAGE] = 'Unknown host type (cloud?)';
+      }
+
+      return $apiResult;
+   }
 
    /***********************************************************************************************************************************
     *
