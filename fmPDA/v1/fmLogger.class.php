@@ -155,6 +155,12 @@ class fmLogger
       $this->logging = $allowLogging;
    }
 
+   // *********************************************************************************************************************************
+   function setLogToSystem($logToSystem = true)
+   {
+      $this->logToSystem = $logToSystem;
+   }
+
 }
 
 ?>
