@@ -129,11 +129,16 @@ define('DATA_API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED
                            (string)  $username         The user name of the account to authenticate with
                            (string)  $password         The password of the account to authenticate with
                            (array)   $options          Optional parameters
-                                                         ['version'] Version of the API to use (1, 2, etc. or 'Latest')
+                                                         ['version']           Version of the API to use (1, 2, etc. or 'Latest')
 
-                                                         ['authentication'] set to 'oauth' for oauth authentication
-                                                         ['oauthID'] oauthID
-                                                         ['oauthIdentifier'] oauth identifier
+                                                         ['token']             The token from a previous call. This will normally be
+                                                                               pulled from the session, but cases where there isn't one
+                                                                               (such as called as a web hook), you'll need to provide this
+                                                                               so as to not generate lots of sessions.
+
+                                                         ['authentication']    set to 'oauth' for oauth authentication
+                                                         ['oauthID']           oauthID
+                                                         ['oauthIdentifier']   oauth identifier
 
                                                          ['sources'] => array(
                                                                           array(
