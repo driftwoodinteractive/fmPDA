@@ -103,6 +103,29 @@ class fmAdminAPI extends fmAPI
     *                                       ['version'] Version of the API to use (1, 2, etc. or 'Latest')
     *                                       ['cloud'] Set to true if you're using FileMaker Cloud
     *
+    *                                       Token management - typically you choose none or one of the following 3 options:
+    *                                            ['storeTokenInSession'] and ['sessionTokenKey']
+    *                                            ['tokenFilePath']
+    *                                            ['token']
+    *
+    *                                       ['storeTokenInSession']  If true, the token is stored in the $_SESSION[] array (defaults to true)
+    *                                       ['sessionTokenKey']      If ['storeTokenInSession'] is true, this is the key field to store
+    *                                                                the token in the $_SESSION[] array. Defaults to FM_API_SESSION_TOKEN,
+    *                                                                but fmDataAPI and fmAdminAPI set their own value so you can store
+    *                                                                tokens to each API.
+    *
+    *                                       ['tokenFilePath']        Where to read/write a file containing the token. This is useful
+    *                                                                when you're called as a web hook and don't have a typical
+    *                                                                browser-based session to rely on. You should specify a path that
+    *                                                                is NOT visible to the web. If you need to encrypt/decrypt the token
+    *                                                                in the file, override getTokenFromStorage() and setToken().
+    *
+    *                                       ['token']                The token from a previous call. This will normally be pulled
+    *                                                                from the $_SESSION[] or ['tokenFilePath'], but in cases where
+    *                                                                you need to store it somewhere else, pass it here. You're responsible
+    *                                                                for calling the getToken() method after a successful call to retrieve
+    *                                                                it for your own storage.
+    *
     *    Returns:
     *       The newly created object.
     *
@@ -113,7 +136,7 @@ class fmAdminAPI extends fmAPI
    {
       $options['logCURLResult']   = false;
       $options['host']            = $host;
-      $options['sessionTokenKey'] = FM_ADMIN_SESSION_TOKEN;
+      $options['sessionTokenKey'] = array_key_exists('sessionTokenKey', $options) ? $options['sessionTokenKey'] : FM_ADMIN_SESSION_TOKEN;
       $options['userAgent']       = array_key_exists('userAgent', $options) ? $options['userAgent'] : DATA_ADMIN_API_USER_AGENT;
       $options['version']         = array_key_exists('version', $options) ? $options['version'] : FM_VERSION_1;
 

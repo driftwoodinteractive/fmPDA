@@ -83,6 +83,9 @@ define('FM_ERROR_INVALID_ACCOUNT',         212);                   // Invalid us
 define('FM_ERROR_INVALID_TOKEN',           952);                   // Invalid FileMaker Data API token (Data API)
 define('FM_ERROR_MAX_CALLS_EXCEEDED',      953);                   // Maximum number of FileMaker Data API calls exceeded
 
+// *********************************************************************************************************************************
+define('FM_API_SESSION_TOKEN',            'FM-API-Session-Token'); // Where we store the token in the PHP session
+
 
 // *********************************************************************************************************************************
 class fmAPI extends fmCURL
@@ -92,8 +95,51 @@ class fmAPI extends fmCURL
    public $token;                                                 // The security token returned by the API
    public $storeTokenInSession;                                   // Store the security token in a session variable?
    public $sessionTokenKey;                                       // The key value of where to store the token in the session
+   public $tokenFilePath;                                         // The file path where the token is saved. This is useful when
+                                                                  // your code is called as a web hook for example, where there is
+                                                                  // not a session to store the token in.
    public $version;                                               // What version of the Data API should we use (1, 2, Latest)?
 
+
+   /***********************************************************************************************************************************
+    *
+    * __construct($options = array())
+    *
+    *    Constructor for fmAPI. Normally you will not instatiate an object of this class directly.
+    *
+    *       (array)   $options          Optional parameters
+    *                                       ['version']              Version of the API to use (1, 2, etc. or 'Latest')
+    *                                       ['host']                 The host to connect to. Normally this is passed directly to
+    *                                                                the fmDataAPI or fmAdminAPI constructor.
+    *
+    *                                       Token management - typically you choose one of the following 3 options:
+    *                                            ['storeTokenInSession'] and ['sessionTokenKey']
+    *                                            ['tokenFilePath']
+    *                                            ['token']
+    *
+    *                                       ['storeTokenInSession']  If true, the token is stored in the $_SESSION[] array (defaults to true)
+    *                                       ['sessionTokenKey']      If ['storeTokenInSession'] is true, this is the key field to store
+    *                                                                the token in the $_SESSION[] array. Defaults to FM_API_SESSION_TOKEN,
+    *                                                                but fmDataAPI and fmAdminAPI set their own value so you can store
+    *                                                                tokens to each API.
+    *
+    *                                       ['tokenFilePath']        Where to read/write a file containing the token. This is useful
+    *                                                                when you're called as a web hook and don't have a typical
+    *                                                                browser-based session to rely on. You should specify a path that
+    *                                                                is NOT visible to the web. If you need to encrypt/decrypt the token
+    *                                                                in the file, override decryptToken() and encryptToken().
+    *
+    *                                       ['token']                The token from a previous call. This will normally be pulled
+    *                                                                from the $_SESSION[] or ['tokenFilePath'], but in cases where
+    *                                                                you need to store it somewhere else, pass it here. You're responsible
+    *                                                                for calling the getToken() method after a successful call to retrieve
+    *                                                                it for your own storage.
+    *
+    *                                       ['authentication']       set to 'oauth' for oauth authentication
+    *
+    *    Returns:
+    *       The newly created object.
+    */
    function __construct($options = array())
    {
       $options['userAgent'] = array_key_exists('userAgent', $options) ? $options['userAgent'] : FM_API_USER_AGENT;
@@ -101,8 +147,9 @@ class fmAPI extends fmCURL
       parent::__construct($options);
 
       $this->host                   = array_key_exists('host', $options) ? $options['host'] : '';
-      $this->sessionTokenKey        = array_key_exists('sessionTokenKey', $options) ? $options['sessionTokenKey'] : true;
+      $this->sessionTokenKey        = array_key_exists('sessionTokenKey', $options) ? $options['sessionTokenKey'] : FM_API_SESSION_TOKEN;
       $this->storeTokenInSession    = array_key_exists('storeTokenInSession', $options) ? $options['storeTokenInSession'] : true;
+      $this->tokenFilePath          = array_key_exists('tokenFilePath', $options) ? $options['tokenFilePath'] : '';
       $this->version                = array_key_exists('version', $options) ? $options['version'] : FM_VERSION_LATEST;
 
       $token = array_key_exists('token', $options) ? $options['token'] : '';
@@ -111,10 +158,10 @@ class fmAPI extends fmCURL
          if ((version_compare(PHP_VERSION, '5.4.0', '<') && (session_id() == '')) || (session_status() == PHP_SESSION_NONE)) {
             session_start();
          }
+      }
 
-         if ($token == '') {
-            $token = $this->getTokenFromSession();
-         }
+      if ($token == '') {
+         $token = $this->getTokenFromStorage();
       }
 
       $authentication = array_key_exists('authentication', $options) ? $options['authentication'] : array();
@@ -405,15 +452,19 @@ class fmAPI extends fmCURL
    }
 
    // *********************************************************************************************************************************
-   public function getTokenFromSession()
+   public function getTokenFromStorage()
    {
       $token = '';
 
-      if (array_key_exists($this->sessionTokenKey, $_SESSION) && ($_SESSION[$this->sessionTokenKey] != '')) {
+      if (isset($_SESSION) && array_key_exists($this->sessionTokenKey, $_SESSION) && ($_SESSION[$this->sessionTokenKey] != '')) {
          $token = $_SESSION[$this->sessionTokenKey];
       }
 
-      return $token;
+      if (($token == '') and ($this->tokenFilePath != '') && file_exists($this->tokenFilePath)) {
+         $token = file_get_contents($this->tokenFilePath);
+      }
+
+      return $this->decryptToken($token);
    }
 
    // *********************************************************************************************************************************
@@ -430,11 +481,29 @@ class fmAPI extends fmCURL
    {
       $this->token = $token;
 
-      if ($this->storeTokenInSession) {
-         $_SESSION[$this->sessionTokenKey] = $token;
+      if (isset($_SESSION) && $this->storeTokenInSession) {
+         $_SESSION[$this->sessionTokenKey] = $this->encryptToken($token);
+      }
+
+      if ($this->tokenFilePath != '') {
+         file_put_contents($this->tokenFilePath, $this->encryptToken($token));
       }
 
       return;
+   }
+
+   // *********************************************************************************************************************************
+   // Override this and decryptToken if you want the authentication token encrypted in the $_SESSION and/or local file.
+   //
+   protected function encryptToken($token)
+   {
+      return $token;
+   }
+
+   // *********************************************************************************************************************************
+   protected function decryptToken($token)
+   {
+      return $token;
    }
 
 }

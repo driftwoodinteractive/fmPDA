@@ -89,6 +89,31 @@ define('API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED_API_
                                                             ['version'] Version of the API to use (1, 2, etc. or 'Latest')
                                                             ['cloud'] Set to true if you're using FileMaker Cloud
 
+                                                          Token management - typically you choose none or one of the following 3 options:
+                                                               ['storeTokenInSession'] and ['sessionTokenKey']
+                                                               ['tokenFilePath']
+                                                               ['token']
+
+                                                            ['storeTokenInSession']  If true, the token is stored in the $_SESSION[] array (defaults to true)
+                                                            ['sessionTokenKey']      If ['storeTokenInSession'] is true, this is the key field to store
+                                                                                     the token in the $_SESSION[] array. Defaults to 'FM-Admin-Session-Token'.
+
+                                                            ['tokenFilePath']        Where to read/write a file containing the token. This is useful
+                                                                                     when you are called as a web hook and do not have a typical
+                                                                                     browser-based session to rely on. You should specify a path that
+                                                                                     is NOT visible to the web. If you need to encrypt/decrypt the token
+                                                                                     in the file, override getTokenFromStorage() and setToken().
+
+                                                            ['token']                The token from a previous call. This will normally be pulled
+                                                                                     from the $_SESSION[] or ['tokenFilePath'], but in cases where
+                                                                                     you need to store it somewhere else, pass it here. You are responsible
+                                                                                     for calling the getToken() method after a successful call to retrieve
+                                                                                     it for your own storage.
+
+                                                            ['authentication']       set to 'oauth' for oauth authentication
+                                                            ['oauthID']              oauthID
+                                                            ['oauthIdentifier']      oauth identifier
+
                          Returns:
                             The newly created object.
 
