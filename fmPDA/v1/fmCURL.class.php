@@ -293,12 +293,13 @@ class fmCURL
     *
     *    Parameters:
     *       (string)  $url           The URL where the file is located
-    *       (boolean) $options       An array of options:
+    *       (array)   $options       An array of options:
     *                                  ['action']           One of 3 choices:
     *                                                          get         - Return the file in $this->file (default)
-    *                                                          download    - Send headers download, echo $this->file
-    *                                                          inline      - Send headers for inline viewing, echo $this->file
+    *                                                          download    - Send headers, then echo $this->file
+    *                                                          inline      - Send headers for inline viewing, then echo $this->file
     *                                  ['fileName']         The filename to use in the Content-Disposition header if ['action'] == 'download'
+    *                                                       By default the file name from the URL will be used.
     *                                  ['compress']         If 'gzip', compress the file. Can always do it if ['action'] == 'get'.
     *                                                       For ['action'] == 'download' or ['action'] == 'inline', only if caller
     *                                                       supports gzip compression.
@@ -328,9 +329,15 @@ class fmCURL
     *
     *       ALSO: the contents of the file will be stored in $this->file to avoid copying/memory consumption
     *
-    *    Example:
+    *    Examples:
     *       $curl = new fmCURL();
+    *
     *       $result = $curl->getFile($url);
+    *          or
+    *       $result = $curl->getFile($url, array('action' => 'inline'));
+    *          or
+    *       $result = $curl->getFile($url, array('action' => 'download'));
+    *
     *       if (! $curl->getIsError($result)) {
     *          file contents are in $curl->file *not* $result
     *          ...

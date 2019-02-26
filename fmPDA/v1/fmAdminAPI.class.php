@@ -629,7 +629,7 @@ class fmAdminAPI extends fmAPI
          $data['gracetime'] = $gracetime;
       }
 
-      return $this->fmAPI($this->getAPIPath(PATH_ADMIN_CLIENT) .'/'. $clientID .'/disconnect', METHOD_GET, $data);
+      return $this->fmAPI($this->getAPIPath(PATH_ADMIN_CLIENT) .'/'. $clientID .'/disconnect', METHOD_PUT, $data);
    }
 
    /***********************************************************************************************************************************
@@ -639,7 +639,7 @@ class fmAdminAPI extends fmAPI
     *    Send a messge to a client
     *
     *    Parameters:
-    *       (integer)   $clientID  The client ID
+    *       (integer)   $clientID  The client ID (set to 0 to send to all clients)
     *       (string)    The message to send
     *
     *    Returns:
@@ -908,7 +908,7 @@ class fmAdminAPI extends fmAPI
     *
     *    This is an 'extension' to the Admin API.
     *    To make this work, you must be running the fmPDA class files on your FMS server *or* install
-    *    the 'get_fms_log.php' file on your FMS server. Both this method andget_fms_log.php will authenticate
+    *    the 'get_fms_log.php' file on your FMS server. Both this method and get_fms_log.php will authenticate
     *    through the Admin API by sending a apiGetServerStatus() request.
     *
     *    Parameters:

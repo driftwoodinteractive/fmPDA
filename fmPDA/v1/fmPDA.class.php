@@ -629,6 +629,156 @@ class fmPDA extends fmPDAGlue
       return $this->translateResult;
    }
 
+   // *********************************************************************************************************************************
+   // Returns known properties. All others are ignored and a log message is generated.
+   //
+   function getProperty($prop)
+   {
+      switch ($prop) {
+
+         case 'hostspec': {
+            $value = $this->host;
+            break;
+         }
+
+         case 'database': {
+            $value = $this->database;
+            break;
+         }
+
+         case 'username': {
+            $credentials = explode(':', base64_decode($this->credentials));
+            $value = utf8_encode($credentials[0]);
+            break;
+         }
+
+         case 'password': {
+            $credentials = explode(':', base64_decode($this->credentials));
+            $value = utf8_encode($credentials[1]);
+            break;
+         }
+
+         case 'charset': {
+            $value = 'UTF-8';
+            break;
+         }
+
+         case 'locale': {
+            $value = 'en';
+            break;
+         }
+
+         default: {
+            fmLogger('<br><br>*** getProperty('. $prop .') is not supported. ***<br><br>');
+            $value = '';
+            break;
+         }
+
+      }
+
+      return $value;
+   }
+
+   // *********************************************************************************************************************************
+   // Return all known properties.
+   //
+   function getProperties()
+   {
+      $properties = array();
+      $properties['hostspec']    = $this->getProperty('hostspec');
+      $properties['database']    = $this->getProperty('database');
+      $properties['username']    = $this->getProperty('username');
+      $properties['password']    = $this->getProperty('password');
+      $properties['charset']     = $this->getProperty('charset');
+      $properties['locale']      = $this->getProperty('locale');
+
+      return $properties;
+   }
+
+   // *********************************************************************************************************************************
+   // Set a known property. All others are ignored and a log message is generated.
+   // Caution: setting any of these properties will invalide the Data API token so the
+   // next request will force a new token to be generated.
+   //
+   function setProperty($prop, $value)
+   {
+      switch ($prop) {
+
+         case 'hostspec': {
+            $this->host = $value;
+            $this->setToken('');
+            break;
+         }
+
+         case 'database': {
+            $this->database = $value;
+            $this->setToken('');
+            break;
+         }
+
+         case 'username': {
+            $credentials = array();
+            $credentials['username'] = $value;
+            $credentials['password'] = $this->getProperty('password');
+            $this->setAuthentication($credentials);
+            break;
+         }
+
+         case 'password': {
+            $credentials = array();
+            $credentials['username'] = $this->getProperty('username');
+            $credentials['password'] = $value;
+            $this->setAuthentication($credentials);
+            break;
+         }
+
+         default: {
+            fmLogger('<br><br>*** setProperty('. $prop .') is not supported. ***<br><br>');
+            $value = '';
+            break;
+         }
+
+      }
+
+      return;
+   }
+
+   // *********************************************************************************************************************************
+   function getLayout($prop, $value)
+   {
+      fmLogger('<br><br>*** getLayout is not supported. ***<br><br>');
+      return NULL;
+   }
+
+   // *********************************************************************************************************************************
+   function listDatabases()
+   {
+      fmLogger('<br><br>*** listDatabases is not supported. ***<br><br>');
+      return NULL;
+   }
+
+   // *********************************************************************************************************************************
+   function listScripts($prop, $value)
+   {
+      fmLogger('<br><br>*** listScripts is not supported. ***<br><br>');
+      return;
+   }
+
+   // *********************************************************************************************************************************
+   function listLayouts($prop, $value)
+   {
+      fmLogger('<br><br>*** listLayouts is not supported. ***<br><br>');
+      return;
+   }
+
+   // *********************************************************************************************************************************
+   function setLogger($prop, $value)
+   {
+      fmLogger('<br><br>*** setLogger is not supported. ***<br><br>');
+      return;
+   }
+
+
 }
 
 ?>
