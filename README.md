@@ -200,7 +200,7 @@ What isn't supported
 
 Caution
 -------
-- fmRecord::ggetFieldAsTimestamp() (FileMaker_Record::getFieldAsTimestamp() in
+- fmRecord::getFieldAsTimestamp() (FileMaker_Record::getFieldAsTimestamp() in
   the old API)can't automatically determine the field type as the Data API
   doesn't return field metadata. There is now a new third parameter
   ($fieldType) to tell the method how to convert the field data.
