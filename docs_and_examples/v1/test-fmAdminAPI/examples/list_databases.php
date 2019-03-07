@@ -37,17 +37,37 @@ $apiResult = $fm->apiListDatabases();
 if (! $fm->getIsError($apiResult)) {
    $response = $fm->getResponse($apiResult);
 
+//    fmLogger($response);
+
+   fmLogger($response['fmproCount']    .' Pro Users');
+   fmLogger($response['fmgoCount']     .' Go Users');
+   fmLogger($response['fmwebdCount']   .' Web Direct Users');
+   fmLogger($response['fmdapiCount']   .' Data API Users');
+   fmLogger($response['fmmiscCount']   .' Team Users');
+   fmLogger($response['fmproCount']    .' Misc Users');
+   fmLogger($response['fmdapiCount']   .' Data API Outbound');
+   fmLogger($response['openDBCount']   .' Open Databases');
+   fmLogger($response['time']          .' Server Time');
+   fmLogger('');
+
    fmLogger($response['totalDBCount'] .' Database(s):');
    $files = $response['files']['files'];
    foreach ($files as $file) {
-      fmLogger($file['filename'] .' '. $file['status']);
+      fmLogger($file['filename'] .' '. $file['status'] .' # Clients: '. $file['clients'] .' ['. implode(' ', $file['enabledExtPrivileges']) .'] Size: '. number_format($file['size'], 0, '.', ','));
    }
+
 
    $clients = $response['clients']['clients'];
    fmLogger('');
    fmLogger(count($clients) .' Client(s):');
    foreach ($clients as $client) {
-      fmLogger($client['userName'] .' '. $client['appVersion'] .' '. $client['appType']);
+
+      $files = '';
+      foreach ($client['guestFiles'] as $guestFile) {
+         $files .= $guestFile['filename'] .' ';
+      }
+
+      fmLogger($client['id'] .' '. $client['status'] .' '. $client['userName'] .' '. $client['appVersion'] .' '. $client['appType'] .' '. $client['computerName'] .' '. $client['connectDuration'] .' '. $client['ipaddress'] .' '. $client['operatingSystem'] . (($client['concurrent'] == 1) ? ' Concurrent' : '') . (($client['teamLicensed'] == 1) ? ' Team' : '') .' ['. trim($files) .']');
    }
 
 }

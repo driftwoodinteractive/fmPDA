@@ -279,9 +279,8 @@ define('DATA_API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED
 
                         Example:
                            $fm = new fmPDA($database, $host, $username, $password);
-                           $addCommand = $fm->newAddCommand('Web_Project');
-                           $addCommand->setField('Name', 'Test');
-                           $result = $addCommand->execute();
+                           $record = $fm->createRecord('Web_Project', $fields);
+                           $result = $record->commit();
                   </code></pre>
                </div>
 
@@ -310,8 +309,9 @@ define('DATA_API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED
 
                         Example:
                            $fm = new fmPDA($database, $host, $username, $password);
-                           $record = $fm->createRecord('Web_Project', $fields);
-                           $result = $record->commit();
+                           $addCommand = $fm->newAddCommand('Web_Project');
+                           $addCommand->setField('Name', 'Test');
+                           $result = $addCommand->execute();
                   </code></pre>
                </div>
             </div>
