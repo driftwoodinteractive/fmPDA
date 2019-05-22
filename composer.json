@@ -1,10 +1,11 @@
 {
    "name": "driftwoodinteractive/fmPDA",
    "type": "library",
-   "description": "A replacement class for FileMaker's API for PHP using the Data API",
+   "description": "A set of PHP classes for FileMaker's Data and Admin API. The special sauce, the fmPDA class: a replacement for FileMaker's API For PHP FileMaker class, using the Data API. fmPDA provides method & data structure compatibility with FileMaker's API For PHP classes.",
    "keywords": [
       "FileMaker",
       "PHP",
+      "AdminAPI",
       "DataAPI",
       "REST"
    ],

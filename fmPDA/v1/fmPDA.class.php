@@ -28,7 +28,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2018 Mark DeNyse
+// Copyright (c) 2017 - 2019 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -123,7 +123,7 @@ class fmPDA extends fmPDAGlue
     *                                       ['oauthID'] oauthID
     *                                       ['oauthIdentifier'] oauth identifier
     *
-    *                                       ['sources'] => array(
+    *                                       ['sources'] => array(          External database authentication
     *                                                        array(
     *                                                          'database'  => '',      // do NOT include .fmpNN
     *                                                          'username'  => '',
@@ -135,7 +135,7 @@ class fmPDA extends fmPDAGlue
     *       The newly created object.
     *
     *    Example:
-    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $fm = new fmPDA($database, $host, $username, $password);
     */
    function __construct($database, $host, $username, $password, $options = array())
    {
@@ -706,13 +706,13 @@ class fmPDA extends fmPDAGlue
 
          case 'hostspec': {
             $this->host = $value;
-            $this->setToken('');
+            $this->setToken();
             break;
          }
 
          case 'database': {
             $this->database = $value;
-            $this->setToken('');
+            $this->setToken();
             break;
          }
 

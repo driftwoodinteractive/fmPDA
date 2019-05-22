@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2018 Mark DeNyse
+// Copyright (c) 2017 - 2019 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -98,6 +98,9 @@
                </tr>
                <tr>
                   <td>1.1</td><td>Jun 13, 2018</td><td>Support for FileMaker Server 17/v1 Data API, added fmAdminAPI.</td>
+               </tr>
+               <tr>
+                  <td>2.0</td><td>May 22, 2019</td><td>Support for FileMaker Server 18 Data API v1, fmAdminAPI v2.</td>
                </tr>
             </table>
 

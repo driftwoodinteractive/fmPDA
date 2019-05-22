@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2018 Mark DeNyse
+// Copyright (c) 2017 - 2019 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -180,7 +180,7 @@ define('HIGHEST_VERSION',  (DATA_API_VERSION == 'Latest') ? SUPPORTED_API_VERSIO
                         <li>Validation</li>
                         <li>Value Lists</li>
                         <li>Using <code>Commit()</code> to commit data on portals.</li>
-                        <li>was made</li>
+                        <li><code>getTableRecordCount()</code> and <code>getFoundSetCount()</code> - fmPDA will create a <code>fmLogger()</code> message and return <code>getFetchCount()</code>. One suggestion as a workaround was made to create an unstored calculation field in your table to return these values and place them on your layout.</li>
                      </ul>
 
                      <h3 class="caution"><i class="fas fa-exclamation-triangle"></i> Caution</h3>

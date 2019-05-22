@@ -19,7 +19,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2018 Mark DeNyse
+// Copyright (c) 2017 - 2019 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -726,7 +726,7 @@ class fmDataAPI extends fmAPI
          $pathInfo = pathinfo($file['path']);
 
          $file['name']     = (array_key_exists('name', $file) && ($file['name'] != '')) ? $file['name'] : $pathInfo['basename'];
-         $file['mimeType'] = (array_key_exists('mimeType', $file) && ($file['mimeType'] != '')) ? $file['mimeType'] : mime_content_type($file['path']);
+         $file['mimeType'] = (array_key_exists('mimeType', $file) && ($file['mimeType'] != '')) ? $file['mimeType'] : $this->get_mime_content_type($file['path']);
          $file['contents'] = file_get_contents($file['path']);
       }
 
@@ -738,7 +738,7 @@ class fmDataAPI extends fmAPI
 
       $data .= '--'. $boundaryID ."\r\n";
 
-      $data .= 'Content-Disposition: name="upload" filename="'. $file['name'] .'"' ."\r\n";
+      $data .= 'Content-Disposition: form-data; name="upload"; filename="'. $file['name'] .'"' ."\r\n";
       if (array_key_exists('mimeType', $file) && ($file['mimeType'] != '')) {
          $data .= 'Content-Type: '. $file['mimeType'] ."\r\n";
       }
@@ -751,7 +751,7 @@ class fmDataAPI extends fmAPI
 
       $options = array();
       $options[FM_CONTENT_TYPE]  = CONTENT_TYPE_MULTIPART_FORM .'; boundary='. $boundaryID;
-      $options['CURLOPT_POST']     = 1;
+      $options['CURLOPT_POST']   = 1;
       $options['encodeAsJSON']   = false;
       $options['decodeAsJSON']   = true;
 
@@ -818,9 +818,9 @@ class fmDataAPI extends fmAPI
    //
    protected function login()
    {
-      $data = array();
+      $data = '';
 
-      $this->setToken('');
+      $this->setToken();
 
       $options = array();
 
@@ -891,7 +891,8 @@ class fmDataAPI extends fmAPI
    //          'scriptPresort'          => '<string>',
    //          'scriptPresortParams'    => '<string>',
    //          'layoutResponse'         => '<string>',
-   //          'portals'                => array('<string>', ...),
+   //          'portal'                 => array('<string>', ...),
+   //          'portals'                => array('<string>', ...),   <-- For backward compatibility, use 'portal' going forward
    //          'portalLimits'           => array(array('name' => '<string>', 'limit' => '<number>'), ...)
    //          'portalOffsets'          => array(array('name' => '<string>', 'offset' => '<number>'), ...)
    //          'query'                  => array(array('<fieldName>' => '<value>', '<fieldName>' => '<value>', ..., 'omit' => '<boolean>'), ... )
@@ -905,7 +906,8 @@ class fmDataAPI extends fmAPI
                            'scriptPrerequest' => 'script.prerequest', 'scriptPrerequestParams' => 'script.prerequest.param',
                            'scriptPresort' => 'script.presort', 'scriptPresortParams' => 'script.presort.param',
                            'layoutResponse' => 'layout.response',
-                           'portals' => 'portal', 'portalLimits' => '_limit', 'portalOffsets' => '_offset'
+                           'portals' => 'portal', /* For backward compatibility, use 'portal' going forward */
+                           'portal' => 'portal', 'portalLimits' => '_limit', 'portalOffsets' => '_offset'
                      ),
 
             'post' => array('offset' => 'offset', 'limit' => 'limit', 'sort' => 'sort',
@@ -913,7 +915,8 @@ class fmDataAPI extends fmAPI
                            'scriptPrerequest' => 'script.prerequest', 'scriptPrerequestParams' => 'script.prerequest.param',
                            'scriptPresort' => 'script.presort', 'scriptPresortParams' => 'script.presort.param',
                            'layoutResponse' => 'layout.response',
-                           'portals' => 'portal', 'portalLimits' => 'limit', 'portalOffsets' => 'offset',
+                           'portals' => 'portal', /* For backward compatibility, use 'portal' going forward */
+                           'portal' => 'portal', 'portalLimits' => 'limit', 'portalOffsets' => 'offset',
                            'query' => 'query'
                      )
       );
@@ -970,6 +973,15 @@ class fmDataAPI extends fmAPI
          $data[$keys[$key]['layoutResponse']] = rawurlencode($params['layoutResponse']);
       }
 
+      if (array_key_exists('portal', $params) && (count($params['portal']) > 0)) {
+         $portals = '';
+         foreach ($params['portal'] as $portal) {
+            $portals .= '"'. $portal .'",';                  // Wrap each portal within quotes
+         }
+         $data[$keys[$key]['portal']] = rawurlencode('['. rtrim($portals, ',') .']');
+      }
+
+      // This is for backward compatiblity Please use $params['portal'] moving forward as this matches the Data API.
       if (array_key_exists('portals', $params) && (count($params['portals']) > 0)) {
          $portals = '';
          foreach ($params['portals'] as $portal) {
@@ -1067,7 +1079,7 @@ class fmDataAPI extends fmAPI
          }
       }
 
-      $this->setToken('');                                                                        // Invalidate token
+      $this->setToken();                                                                        // Invalidate token
 
       return;
    }

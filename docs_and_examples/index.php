@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2018 Mark DeNyse
+// Copyright (c) 2017 - 2019 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -59,9 +59,9 @@
                <div class="navigation-header1">Versions<i class="fas fa-caret-down"></i></div>
             </button>
             <div class="dropdown-container">
-               <a href="v0/index.php"><span class="indent-1">v0</span></a>
+               <a href="v2/index.php?v=2"><span class="indent-1">vLatest</span></a>
+               <a href="v2/index.php?v=2"><span class="indent-1">v2</span></a>
                <a href="v1/index.php?v=1"><span class="indent-1">v1</span></a>
-               <a href="v1/index.php?v=Latest"><span class="indent-1">vLatest</span></a>
             </div>
             <br>
 
@@ -103,16 +103,18 @@
 
 
             <h4>Choose the version based on your FileMaker Server version:</h4>
-            <a href="v0/">Version '0' (FileMaker Server 16) - this was the initial trial release and is not available on FileMaker Server 17 or later.</a><br>
+            <a href="v1/index.php?dataAPIVersion=Latest&adminAPIVersion=Latest">Version Latest: - The latest supported version for each API (v1 for Data, v2 for Admin).</a><br>
             <br>
-            <a href="v1/index.php?v=1">Version 1 (FileMaker Server 17 and later) - Version 1 was released with FileMaker Server 17</a><br>
+            <a href="v2/index.php?dataAPIVersion=1&adminAPIVersion=2">Version '2': Data API v1 FileMaker Server 17+, Admin API v2 FileMaker Server 18+. Admin API v2 was released with FileMaker Server 18. </a><br>
             <br>
-            <a href="v1/index.php?v=Latest">Version Latest - The latest supported version</a><br>
+            <a href="v1/index.php?dataAPIVersion=1&adminAPIVersion=1">Version 1: FileMaker Server 17 and later - Version 1 was released with FileMaker Server 17. Admin API v1 beta trial expires on September 27, 2019.</a><br>
+            <br>
+            Version '0': FileMaker Server 16 - this was the initial trial release and is not available on FileMaker Server 17 or later.<br>
             <br>
 
 
             <h4>PHP Compatibility</h4>
-            fmPDA has been tested with PHP versions 5.2.17 through 7.1.6.<br>
+            fmPDA has been tested with PHP versions 5.2.17 through 7.3.3.<br>
             <br>
 
 
@@ -123,7 +125,8 @@
 
             Mark DeNyse<br>
             Driftwood Interactive<br>
-            fmpda@driftwoodinteractive.com<br>
+            <a href="mailto:fmpda@driftwoodinteractive.com">fmpda@driftwoodinteractive.com</a><br>
+            <br>
 
          </div>
 
@@ -134,7 +137,7 @@
       <!-- Always at the end of the page -->
       <footer>
          <a href="http://www.driftwoodinteractive.com"><img src="img/di.png" height="32" width="128" alt="Driftwood Interactive" style="vertical-align:text-bottom"></a><br>
-         Copyright &copy; <?php echo date('Y'); ?> Mark DeNyse Released Under the MIT License.
+         Copyright &copy; 2017 - <?php echo date('Y'); ?> Mark DeNyse Released Under the MIT License.
       </footer>
 
       <script>

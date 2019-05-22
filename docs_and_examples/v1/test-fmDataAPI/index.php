@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2018 Mark DeNyse
+// Copyright (c) 2017 - 2019 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -156,7 +156,7 @@ define('DATA_API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED
                                                          ['oauthID']              oauthID
                                                          ['oauthIdentifier']      oauth identifier
 
-                                                         ['sources'] => array(
+                                                         ['sources'] => array(         External database authentication
                                                                           array(
                                                                             'database'  => '',      // do NOT include .fmpNN
                                                                             'username'  => '',

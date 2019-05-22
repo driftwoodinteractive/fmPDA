@@ -4,7 +4,7 @@
 // fmAPI.class.php
 //
 // fmAPI provides direct access to FileMaker's API (REST interface). This is a 'base' class that fmDataAPI and fmAdminAPI
-// extend to provide access to the Data and Admin APIs.
+// extend to provide access to the Data and Admin APIs. You will typically not instantiate this class directly.
 //
 // FileMaker's Data API documentation can be found here:
 // https://support.filemaker.com/s/answerview?language=en_US&anum=000025925#issues
@@ -21,7 +21,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2018 Mark DeNyse
+// Copyright (c) 2017 - 2019 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -48,9 +48,11 @@ require_once 'fmCURL.class.php';
 // *********************************************************************************************************************************
 define('FM_API_USER_AGENT',            'fmAPIphp/1.0');            // Our user agent string
 
-define('FM_VERSION_LATEST',            'Latest');                  // By default we'll always use the latest version
-define('FM_VERSION_0',                 '0');                       // Version 0 was released with FileMaker Server 16
+define('FM_VERSION_0',                 '0');                       // Version 0 was released with FileMaker Server 16 (now removed)
 define('FM_VERSION_1',                 '1');                       // Version 1 was released with FileMaker Server 17
+define('FM_VERSION_2',                 '2');                       // Version 2 of the Admin API was released with FileMaker Server 18
+
+define('FM_VERSION_LATEST',            'Latest');                  // The latest version
 
 
 // *********************************************************************************************************************************
@@ -64,7 +66,8 @@ define('FM_OAUTH_REQUEST_ID',          'X-FM-Data-OAuth-Request-Id: ');
 define('FM_OAUTH_REQUEST_IDENTIFIER',  'X-FM-Data-OAuth-Identifier: ');
 
 // *********************************************************************************************************************************
-define('FM_TOKEN',                     'token');                  // Token passed back from FileMaker
+define('FM_TOKEN',                     'token');                    // Token passed back from FileMaker
+define('FM_ACCESS_TOKEN',              'X-FM-Access-Token');        // Token when returned in HTTP response header
 
 define('FM_RESULT',                    'result');
 define('FM_ERROR_MESSAGE',             'errorMessage');
@@ -72,34 +75,42 @@ define('FM_ERROR_MESSAGE',             'errorMessage');
 define('FM_MESSAGES',                  'messages');
 define('FM_CODE',                      'code');
 define('FM_MESSAGE',                   'message');
+define('FM_TEXT',                      'text');
 
 define('FM_RESPONSE',                  'response');
 
 
 // *********************************************************************************************************************************
-define('FM_MESSAGE_OK',                   'OK');                   // All is good -- this is *not* an error
+define('FM_MESSAGE_OK',                'OK');                      // All is good -- this is *not* an error
 
-define('FM_ERROR_INVALID_ACCOUNT',         212);                   // Invalid user account and/or password
-define('FM_ERROR_INVALID_TOKEN',           952);                   // Invalid FileMaker Data API token (Data API)
-define('FM_ERROR_MAX_CALLS_EXCEEDED',      953);                   // Maximum number of FileMaker Data API calls exceeded
+define('FM_ERROR_INVALID_ACCOUNT',      212);                      // Invalid user account and/or password
+define('FM_ERROR_INVALID_TOKEN',        952);                      // Invalid FileMaker Data API token (Data API)
+define('FM_ERROR_MAX_CALLS_EXCEEDED',   953);                      // Maximum number of FileMaker Data API calls exceeded
 
 // *********************************************************************************************************************************
-define('FM_API_SESSION_TOKEN',            'FM-API-Session-Token'); // Where we store the token in the PHP session
+define('FM_API_SESSION_TOKEN',         'FM-API-Session-Token');    // Where we store the token in the PHP session
 
+
+define('FM_MAX_TOKEN_AGE',              (60 * 30));                // How long (in seconds) to wait before we consider a token to
+                                                                   // be too old. The Data and Admin APIs both time out the token
+                                                                   // after 15 minutes, but we will set this higher, as it's possible
+                                                                   // the value could change in the future without us knowing.
 
 // *********************************************************************************************************************************
 class fmAPI extends fmCURL
 {
    public $host;                                                  // Host
    public $credentials;                                           // base64 encoded username/password
+   public $sendCredentialsIfNoToken;                              // If true and there's no token send credentials on call without
+                                                                  // doing a login. Admin API v2 supports this (Data API v1 doesn't)
    public $token;                                                 // The security token returned by the API
+   public $tokenTimeStamp;                                        // The last time the token was used.
    public $storeTokenInSession;                                   // Store the security token in a session variable?
    public $sessionTokenKey;                                       // The key value of where to store the token in the session
    public $tokenFilePath;                                         // The file path where the token is saved. This is useful when
                                                                   // your code is called as a web hook for example, where there is
                                                                   // not a session to store the token in.
    public $version;                                               // What version of the Data API should we use (1, 2, Latest)?
-
 
    /***********************************************************************************************************************************
     *
@@ -108,34 +119,44 @@ class fmAPI extends fmCURL
     *    Constructor for fmAPI. Normally you will not instatiate an object of this class directly.
     *
     *       (array)   $options          Optional parameters
-    *                                       ['version']              Version of the API to use (1, 2, etc. or 'Latest')
-    *                                       ['host']                 The host to connect to. Normally this is passed directly to
-    *                                                                the fmDataAPI or fmAdminAPI constructor.
+    *                                       ['version']                    Version of the API to use (1, 2, etc. or 'Latest')
+    *                                       ['host']                       The host to connect to. Normally this is passed directly to
+    *                                                                      the fmDataAPI or fmAdminAPI constructor.
     *
     *                                       Token management - typically you choose one of the following 3 options:
     *                                            ['storeTokenInSession'] and ['sessionTokenKey']
     *                                            ['tokenFilePath']
     *                                            ['token']
     *
-    *                                       ['storeTokenInSession']  If true, the token is stored in the $_SESSION[] array (defaults to true)
-    *                                       ['sessionTokenKey']      If ['storeTokenInSession'] is true, this is the key field to store
-    *                                                                the token in the $_SESSION[] array. Defaults to FM_API_SESSION_TOKEN,
-    *                                                                but fmDataAPI and fmAdminAPI set their own value so you can store
-    *                                                                tokens to each API.
+    *                                       ['sendCredentialsIfNoToken']   If true and no token is passed or can be retrieved, the fmAPI()
+    *                                                                      will send a Authorization: Basic header with the credentials.
+    *                                                                      The Admin API v2 supports this while the Data API v1 does not.
+    *                                                                      If the call is valid, the token is returned by the host and it
+    *                                                                      will be stored for you.
     *
-    *                                       ['tokenFilePath']        Where to read/write a file containing the token. This is useful
-    *                                                                when you're called as a web hook and don't have a typical
-    *                                                                browser-based session to rely on. You should specify a path that
-    *                                                                is NOT visible to the web. If you need to encrypt/decrypt the token
-    *                                                                in the file, override decryptToken() and encryptToken().
     *
-    *                                       ['token']                The token from a previous call. This will normally be pulled
-    *                                                                from the $_SESSION[] or ['tokenFilePath'], but in cases where
-    *                                                                you need to store it somewhere else, pass it here. You're responsible
-    *                                                                for calling the getToken() method after a successful call to retrieve
-    *                                                                it for your own storage.
+    *                                       ['storeTokenInSession']        If true, the token is stored in the $_SESSION[] array (defaults to true)
+    *                                       ['sessionTokenKey']            If ['storeTokenInSession'] is true, this is the key field to store
+    *                                                                      the token in the $_SESSION[] array. Defaults to FM_API_SESSION_TOKEN,
+    *                                                                      but fmDataAPI and fmAdminAPI set their own value so you can store
+    *                                                                      tokens to each API.
+    *                                       ['sessionTokenKeyTime']        If ['storeTokenInSession'] is true, this is the key field to store
+    *                                                                      the last used time stamp of the token.
     *
-    *                                       ['authentication']       set to 'oauth' for oauth authentication
+    *                                       ['tokenFilePath']              Where to read/write a file containing the token. This is useful
+    *                                                                      when you're called as a web hook and don't have a typical
+    *                                                                      browser-based session to rely on. You should specify a path that
+    *                                                                      is NOT visible to the web. If you need to encrypt/decrypt the token
+    *                                                                      in the file, override decryptTokenData() and encryptTokenData().
+    *
+    *                                       ['token']                      The token from a previous call. This will normally be pulled
+    *                                                                      from the $_SESSION[] or ['tokenFilePath'], but in cases where
+    *                                                                      you need to store it somewhere else, pass it here. You're responsible
+    *                                                                      for calling the getToken() method after a successful call to retrieve
+    *                                                                      it for your own storage.
+    *                                       ['tokenTimeStamp']             The last used timestamp for the token.
+    *
+    *                                       ['authentication']             set to 'oauth' for oauth authentication
     *
     *    Returns:
     *       The newly created object.
@@ -146,13 +167,12 @@ class fmAPI extends fmCURL
 
       parent::__construct($options);
 
-      $this->host                   = array_key_exists('host', $options) ? $options['host'] : '';
-      $this->sessionTokenKey        = array_key_exists('sessionTokenKey', $options) ? $options['sessionTokenKey'] : FM_API_SESSION_TOKEN;
-      $this->storeTokenInSession    = array_key_exists('storeTokenInSession', $options) ? $options['storeTokenInSession'] : true;
-      $this->tokenFilePath          = array_key_exists('tokenFilePath', $options) ? $options['tokenFilePath'] : '';
-      $this->version                = array_key_exists('version', $options) ? $options['version'] : FM_VERSION_LATEST;
-
-      $token = array_key_exists('token', $options) ? $options['token'] : '';
+      $this->host                      = array_key_exists('host', $options) ? $options['host'] : '';
+      $this->sendCredentialsIfNoToken  = array_key_exists('sendCredentialsIfNoToken', $options) ? $options['sendCredentialsIfNoToken'] : false;
+      $this->sessionTokenKey           = array_key_exists('sessionTokenKey', $options) ? $options['sessionTokenKey'] : FM_API_SESSION_TOKEN;
+      $this->storeTokenInSession       = array_key_exists('storeTokenInSession', $options) ? $options['storeTokenInSession'] : true;
+      $this->tokenFilePath             = array_key_exists('tokenFilePath', $options) ? $options['tokenFilePath'] : '';
+      $this->version                   = array_key_exists('version', $options) ? $options['version'] : FM_VERSION_LATEST;
 
       if ($this->storeTokenInSession) {
          if ((version_compare(PHP_VERSION, '5.4.0', '<') && (session_id() == '')) || (session_status() == PHP_SESSION_NONE)) {
@@ -160,15 +180,22 @@ class fmAPI extends fmCURL
          }
       }
 
-      if ($token == '') {
-         $token = $this->getTokenFromStorage();
+      $token = array_key_exists('token', $options) ? $options['token'] : '';
+      $tokenTimeStamp = array_key_exists('tokenTimeStamp', $options) ? $options['tokenTimeStamp'] : '';
+
+      if ($token == '') {                                            // Token wasn't passed in, see if we have it stored
+         $tokenData = $this->getTokenDataFromStorage();
+         if (is_array($tokenData)) {
+            $token = array_key_exists('token', $tokenData) ? $tokenData['token'] : '';
+            $tokenTimeStamp = array_key_exists('tokenTimeStamp', $tokenData) ? $tokenData['tokenTimeStamp'] : '';
+         }
       }
 
       $authentication = array_key_exists('authentication', $options) ? $options['authentication'] : array();
 
       $this->setAuthentication($authentication);
 
-      $this->setToken($token);
+      $this->setToken($token, $tokenTimeStamp);
 
       fmLogger('fmAPI: PHP v'. PHP_VERSION);
 
@@ -223,6 +250,16 @@ class fmAPI extends fmCURL
 
       $options['CURLOPT_HTTPHEADER'] = $header;
 
+      if (! array_key_exists('CURLOPT_POST', $options) && $this->getIsMethodPost($method)) {
+         $options['CURLOPT_POST'] = 1;
+      }
+
+      // The Data API is very finicky if passed an empty array as 'no' data.
+      // In this case we'll set it to an empty string so nothing will be sent.
+      if (is_array($data) && (count($data) == 0)) {
+         $data = '';
+      }
+
       $result = $this->curl($url, $method, $data, $options);
 
       return $result;
@@ -246,15 +283,26 @@ class fmAPI extends fmCURL
 
       $apiOptions = array_merge($apiOptions, $options);
 
-      if ($apiOptions[FM_TOKEN] == '') {                                         // No token, first time caller (love your show!)
-         $result = $this->login();                                               // Login and save token if valid credentials
-         if ($this->getIsError($result)) {
-            return $result;
-         }
-         $apiOptions[FM_TOKEN] = $this->getToken();                              // Logged in, so grab our token
+      $tokenAge = $this->getTokenAge();
+      if (($tokenAge > 0) && ($tokenAge > FM_MAX_TOKEN_AGE)) {                   // If the token is too old, don't use it.
+         $this->setToken();
+         $apiOptions[FM_TOKEN] = '';
       }
 
-      $result = $this->curlAPI($url, $method, $data, $apiOptions);              // Call into FileMaker's API...
+      if ($apiOptions[FM_TOKEN] == '') {                                         // No token, first time caller (love your show!)
+         if ($this->sendCredentialsIfNoToken && ($this->credentials != '')) {    // AdminAPI v2 supports sending credentials without login
+            $apiOptions[FM_AUTHORIZATION_BASIC] = $this->credentials;
+         }
+         else {
+            $result = $this->login();                                            // Login and save token if valid credentials
+            if ($this->getIsError($result)) {
+               return $result;
+            }
+            $apiOptions[FM_TOKEN] = $this->getToken();                           // Logged in, so grab our token
+         }
+      }
+
+      $result = $this->curlAPI($url, $method, $data, $apiOptions);               // Call into FileMaker's API...
 
       // If the API told us the token is invalid it's typically going to be that it 'timed out' (approximately 15 minutes of no use),
       // so request a new token by logging in again, then reissuing our request to the API.
@@ -262,7 +310,18 @@ class fmAPI extends fmCURL
          $result = $this->login();
          if (! $this->getIsError($result)) {
             $apiOptions[FM_TOKEN] = $this->getToken();
-            $result = $this->curlAPI($url, $method, $data, $apiOptions);        // Send the request (again)
+            $result = $this->curlAPI($url, $method, $data, $apiOptions);         // Send the request (again)
+         }
+      }
+
+      // If there's a token in the HTTP header, update our token with it. This covers the case where we don't have it
+      // stored or it changed(!) on the server. Either way we're covered. setToken() will also update the time stamp.
+      else if (! $this->getIsError($result)) {
+         if (array_key_exists(FM_ACCESS_TOKEN, $this->httpHeaders) && array_key_exists(0, $this->httpHeaders[FM_ACCESS_TOKEN])) {
+            $this->setToken($this->httpHeaders[FM_ACCESS_TOKEN][0]);
+         }
+         else {
+            $this->setToken($this->getToken());                                 // Update the time stamp
          }
       }
 
@@ -281,6 +340,7 @@ class fmAPI extends fmCURL
       // $this->curlErrMsg
       // $this->curlInfo
       // $this->httpCode
+      // $this->httpHeaders
 
       return $result;
    }
@@ -437,10 +497,7 @@ class fmAPI extends fmCURL
    // *********************************************************************************************************************************
    public function getAPIPath($requestPath)
    {
-      $search  = array('%%%VERSION%%%');
-      $replace = array($this->version);
-
-      $path = $this->host . str_replace($search, $replace, $requestPath);
+      $path = $this->host . str_replace('%%%VERSION%%%', $this->version, $requestPath);
 
       return $path;
    }
@@ -452,58 +509,96 @@ class fmAPI extends fmCURL
    }
 
    // *********************************************************************************************************************************
-   public function getTokenFromStorage()
+   public function getTokenAge()
    {
-      $token = '';
+      $age = -1;
+
+      if (($this->token != '') && ($this->tokenTimeStamp != '')) {
+         $age = time() - $this->tokenTimeStamp;
+      }
+
+      return $age;
+   }
+
+   // *********************************************************************************************************************************
+   public function getTokenDataFromStorage()
+   {
+      $tokenData = array();
 
       if (isset($_SESSION) && array_key_exists($this->sessionTokenKey, $_SESSION) && ($_SESSION[$this->sessionTokenKey] != '')) {
-         $token = $_SESSION[$this->sessionTokenKey];
+         $theData = $this->decryptTokenData(unserialize($_SESSION[$this->sessionTokenKey]));
+         if (is_array($theData)) {
+            $tokenData = $theData;
+         }
       }
 
-      if (($token == '') and ($this->tokenFilePath != '') && file_exists($this->tokenFilePath)) {
-         $token = file_get_contents($this->tokenFilePath);
+      if ((count($tokenData) == 0) and ($this->tokenFilePath != '') && file_exists($this->tokenFilePath)) {
+         $theData = $this->decryptTokenData(unserialize(file_get_contents($this->tokenFilePath)));
+         if (is_array($theData)) {
+            $tokenData = $theData;
+         }
       }
 
-      return $this->decryptToken($token);
+      return $tokenData;
    }
 
    // *********************************************************************************************************************************
    public function setAuthentication($data = array())
    {
       $this->credentials = '';
-      $this->setToken('');                                                                        // Invalidate token
+      $this->setToken();                                                                        // Invalidate token
 
       return;
    }
 
    // *********************************************************************************************************************************
-   protected function setToken($token)
+   protected function setToken($token = '', $tokenTimeStamp = '')
    {
       $this->token = $token;
 
+      if ($tokenTimeStamp != '') {
+         $this->tokenTimeStamp = $tokenTimeStamp;
+      }
+      else {
+         $this->tokenTimeStamp = ($token != '') ? time() : 0;
+      }
+
+      $this->setTokenDataInStorage();
+
+      return;
+   }
+
+   // *********************************************************************************************************************************
+   protected function setTokenDataInStorage()
+   {
+      $tokenData = array();
+      $tokenData['token']          = $this->token;
+      $tokenData['tokenTimeStamp'] = $this->tokenTimeStamp;
+      $serialized = serialize($tokenData);
+
       if (isset($_SESSION) && $this->storeTokenInSession) {
-         $_SESSION[$this->sessionTokenKey] = $this->encryptToken($token);
+         $_SESSION[$this->sessionTokenKey] = $this->encryptTokenData($serialized);
       }
 
       if ($this->tokenFilePath != '') {
-         file_put_contents($this->tokenFilePath, $this->encryptToken($token));
+         file_put_contents($this->tokenFilePath, $this->encryptTokenData($serialized));
       }
 
       return;
    }
 
    // *********************************************************************************************************************************
-   // Override this and decryptToken if you want the authentication token encrypted in the $_SESSION and/or local file.
+   // Override this and decryptTokenData if you want the authentication token encrypted in the $_SESSION and/or local file.
    //
-   protected function encryptToken($token)
+   protected function encryptTokenData($tokenData)
    {
-      return $token;
+      return $tokenData;
    }
 
    // *********************************************************************************************************************************
-   protected function decryptToken($token)
+   protected function decryptTokenData($tokenData)
    {
-      return $token;
+      return $tokenData;
    }
 
 }

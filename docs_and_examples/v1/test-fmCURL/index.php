@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2018 Mark DeNyse
+// Copyright (c) 2017 - 2019 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -154,7 +154,7 @@ require_once '../nav.inc.php';
                                                                            is returned the first time (sometimes with FM Data API).
                                                                            Defaults to false.
                                                       ['getMimeType']      If true, the file will be written to the tmp directory so that
-                                                                           mime_content_type() can be used to properly determine the mime type.
+                                                                           fmCURL::get_mime_content_type() can be used to properly determine the mime type.
                                                                            Defaults to true.
 
                         Returns:

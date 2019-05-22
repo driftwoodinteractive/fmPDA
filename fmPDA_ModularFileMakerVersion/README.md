@@ -10,6 +10,10 @@ underlying constructs of how to make each call. The curl module wraps around Ins
 to handle all the error checking, automatic retries, etc. You can use this on any host, not just
 FileMaker's APIs.
 
+
+Version 2 will be released shortly - v1 works fine with Data API in FMS 17 and later.
+
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
@@ -50,13 +54,12 @@ have suggestions for improvements. I'll do my best to respond to all queries.
 Mark DeNyse
 DriftwoodInteractive.com
 github.com/driftwoodinteractive
-modularfilemaker.org/module/fmpda/
 info@driftwoodinteractive.com
 
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-Copyright (c) 2017 - 2018 Mark DeNyse
+Copyright (c) 2017 - 2019 Mark DeNyse
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

@@ -178,24 +178,19 @@ What is supported
 - Get Container Data
 - Get Container Data URL
 - Script execution
-- Duplicate record (The duplicate.php example file shows how to do this with a
-  simple FM script)
+- Duplicate record
 - Uploading a container (this is an extension thanks to the Data API); use
   fmPDA::newUploadContainerCommand(...)
+- (FMS 18+) List databases, can also use fmAdminAPI::apiListDatabases()
+- (FMS 18+) List scripts
+- (FMS 18+) List layouts
+- (FMS 18+) getTableRecordCount(), getFoundSetCount(), and getFetchCount()
 
 What isn't supported
 --------------------
-- List scripts
-- List databases - in v1 or later, use fmAdminAPI::apiListDatabases()
-- List layouts
-- Get layout metadata (some of it is available through an undocumented API)
+- Get layout metadata (you can use fmDataAPI::apiLayoutMetadata() to retreive most of the data on your own now)
 - Validation
-- Value Lists
-- Using Commit() to commit data on portals.
-- getTableRecordCount() and getFoundSetCount() - fmPDA will create a fmLogger()
-  message and return getFetchCount(). One suggestion as a workaround was made
-  to create an unstored calculation field in your table to return these
-  values and place them on your layout.
+- Value Lists (you can retrieve some of this now with fmDataAPI::apiLayoutMetadata())
 
 
 Caution
@@ -252,7 +247,7 @@ keep FileMaker's old classes in your include tree. You Have Been Warned.
 
 PHP Compatibility
 -----------------
-fmPDA has been tested with PHP versions 5.2.17 through 7.1.6.
+fmPDA has been tested with PHP versions 5.2.17 through 7.3.3.
 
 
 
@@ -270,7 +265,7 @@ fmpda@driftwoodinteractive.com
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-Copyright (c) 2017 - 2018 Mark DeNyse
+Copyright (c) 2017 - 2019 Mark DeNyse
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

@@ -16,7 +16,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2018 Mark DeNyse
+// Copyright (c) 2017 - 2019 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -65,6 +65,7 @@ define('PATH_ADMIN_XML',               PATH_ADMIN_API_BASE .'/xml/config');
 
 // *********************************************************************************************************************************
 define('FM_ERROR_INSUFFICIENT_PRIVILEGES',   9);                       // Insufficient privileges (bad token for the Admin API)
+
 
 // *********************************************************************************************************************************
 define('FM_ADMIN_SESSION_TOKEN',      'FM-Admin-Session-token');       // Where we store the token in the PHP session
@@ -150,6 +151,13 @@ class fmAdminAPI extends fmAPI
       $this->convertBooleanStrings = array_key_exists('convertBooleanStrings', $options) ? $options['convertBooleanStrings'] : true;
 
       fmLogger('fmAdminAPI: v'. $this->version);
+
+      if (time() > mktime(0, 0, 0, 9, 27, 2019)) {
+         fmLogger('ALERT: The Admin API v1 is a beta which expired on September 27, 2019. Please upgrade to FMS 18 or later.');
+      }
+      else {
+         fmLogger('WARNING: The Admin API v1 is a beta which will expire on September 27, 2019. Please upgrade to at least FMS 18 before that date.');
+      }
 
       return;
    }
@@ -1171,14 +1179,9 @@ class fmAdminAPI extends fmAPI
       $data = array();
       $options = array();
 
-      $this->setToken('');
+      $this->setToken();
 
       $data = $this->credentials;
-
-      $options[FM_CONTENT_TYPE] = CONTENT_TYPE_JSON;
-      $options['encodeAsJSON']  = true;
-      $options['decodeAsJSON']  = true;
-      $options['logPostData']   = false;                     // Don't want plan text username & password showing in log
 
       $result = $this->curlAPI($this->getAPIPath(PATH_ADMIN_LOGIN), METHOD_POST, $data, $options);
 
@@ -1231,7 +1234,7 @@ class fmAdminAPI extends fmAPI
          $this->credentials['password'] = $data['password'];
       }
 
-      $this->setToken('');                                                                        // Invalidate token
+      $this->setToken();                                                                        // Invalidate token
 
       return;
    }
