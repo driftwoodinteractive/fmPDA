@@ -32,7 +32,7 @@
 require_once 'startup.inc.php';
 
 // Put your own Google Maps Directions API key here
-define('GOOGLEAPIKEY', 'AIzaSyBuVWsg6XAa2IqD8thcDBT5w0sLjjcn4AY');
+define('GOOGLEAPIKEY', 'YOUR-API-KEY-HERE');
 
 $hotelName = 'Gaylord Texan Resort';
 $hotel = '1501 Gaylord Trail, Grapevine, TX 76051';

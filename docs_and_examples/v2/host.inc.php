@@ -30,8 +30,6 @@
 // As before with the old API, include only the protocol, domain, and port (optional), ie:
 // https://www.example.com:8888
 
-//define('FM_HOST',                      'https://fm.driftwoodinteractive.com:4165');
-
 define('FM_HOST',                       'https://localhost');
 
 define('FM_DATABASE',                  'demo');
