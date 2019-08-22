@@ -215,7 +215,7 @@ define('ADMIN_API_VERSION', 2);
                   <pre><code class="language-php">
                      function apiListDatabases()
 
-                        Retrieve a list of hosted FileMaker databases that the given credentails.
+                        Retrieve a list of hosted FileMaker databases with the specified credentails.
 
                         Parameters:
                            None

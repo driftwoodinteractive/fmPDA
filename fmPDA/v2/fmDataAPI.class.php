@@ -11,7 +11,7 @@
 // FileMaker API For PHP, use the fmPDA class.
 //
 // FileMaker's Data API documentation can be found here:
-// Web: http://fmhelp.filemaker.com/docs/17/en/dataapi/
+// Web: http://fmhelp.filemaker.com/docs/18/en/dataapi/
 // Mac FMS: /Library/FileMaker Server/Documentation/Data API Documentation
 // Windows FMS: [drive]:\Program Files\FileMaker\FileMaker Server\Documentation\Data API Documentation
 //

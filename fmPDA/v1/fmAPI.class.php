@@ -199,6 +199,12 @@ class fmAPI extends fmCURL
 
       fmLogger('fmAPI: PHP v'. PHP_VERSION);
 
+      if (strpos(strtolower($this->host), 'http:') !== false) {
+         fmLogger('Warning: You are attempting to use http:// with the Data or Admin API. Both require https:// and the request may fail.');
+         fmLogger('Warning: Your server may redirect to https but you SHOULD change your code to avoid an extra roundtrip.');
+         fmLogger('Host = '. $this->host);
+      }
+
       return;
    }
 

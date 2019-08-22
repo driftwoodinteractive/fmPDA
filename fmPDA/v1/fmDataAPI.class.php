@@ -942,7 +942,7 @@ class fmDataAPI extends fmAPI
       if (array_key_exists('sort', $params) && (count($params['sort']) > 0)) {
          $sort = array();
          foreach ($params['sort'] as $sortItem) {
-            $sort[] = array('fieldName' => rawurlencode($sortItem['fieldName']),
+            $sort[] = array('fieldName' => $sortItem['fieldName'],
                             'sortOrder' => array_key_exists('sortOrder', $sortItem) ? $sortItem['sortOrder'] : 'ascend');
          }
          $data[$keys[$key]['sort']] = ($key == 'get') ? rawurlencode(json_encode($sort)) : $sort;

@@ -43,6 +43,9 @@ define('METHOD_POST',                  'POST');
 
 // *********************************************************************************************************************************
 define('HTTP_SUCCESSS',                200);                      // Success
+define('HTTP_REDIRECT_PERMANENT',      301);                      // HTTP Header when there's a permanent redirect
+define('HTTP_REDIRECT_TEMPORARY',      302);                      // HTTP Header when there's a temporary redirect
+define('HTTP_NO_DATA',                 204);                      // No content ('success', but no data)
 define('HTTP_BAD_REQUREST',            400);                      // Bad Request
 define('HTTP_UNAUTHORIZED',            401);                      // Unauthorized (bad credentials)
 define('HTTP_NOT_FOUND',               404);                      // Not found
@@ -118,6 +121,9 @@ class fmCURL
       $this->httpCode      = '';
       $this->httpHeaders   = array();
       $this->callTime      = 0;
+
+      $curlVersion = curl_version();
+      fmLogger('fmCURL: curl v'. $curlVersion['version'] .'; OpenSSL v'. $curlVersion['ssl_version'] .'; Libz v'. $curlVersion['libz_version'] .'; Host '. $curlVersion['host']);
    }
 
    /***********************************************************************************************************************************
@@ -170,6 +176,15 @@ class fmCURL
 
       $ch = curl_init();                                                      // Initialize curl and specify all options
       curl_setopt($ch, CURLOPT_URL, $url);
+
+      // The Data API has some issues if there isn't a Content-Length: 0 on a POST with no content (ie: Login) so we explictly set the length to 0.
+      if ($this->getIsMethodPost($method)) {                              // Patch, Put, or Post?
+         if (! is_array($options['CURLOPT_HTTPHEADER'])) {
+            $options['CURLOPT_HTTPHEADER'] = array();
+         }
+         $options['CURLOPT_HTTPHEADER'][] = 'Content-Length: '. strlen($postData);
+      }
+
       if (is_array($options['CURLOPT_HTTPHEADER']) && array_key_exists('CURLOPT_HTTPHEADER', $options) && (count($options['CURLOPT_HTTPHEADER']) > 0)) {
          curl_setopt($ch, CURLOPT_HTTPHEADER, $options['CURLOPT_HTTPHEADER']);
       }
@@ -203,7 +218,7 @@ class fmCURL
       }
 
       if ($this->getIsMethodPost($method)) {                                   // Patch, Put, or Post?
-         curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);                     // Always set even if no data so Content-Length is set!
+         curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);                      // Always set even if no data so Content-Length is set!
       }
 
       if ($this->options['createCookieJar']) {
@@ -261,6 +276,45 @@ class fmCURL
             $this->curlErrNum = $this->curlInfo['http_code'];
             $this->curlErrMsg = 'Request Timeout';
          }
+         else if (($this->curlInfo['http_code'] >= 400) && ($this->curlInfo['http_code'] < 600)) {
+            $this->curlErrNum = $this->curlInfo['http_code'];
+            $this->curlErrMsg = 'HTTP code = '. $this->curlInfo['http_code'];
+         }
+      }
+
+      // See if we had any redirects. Could be useful to let the caller know especially if it's permanent.
+      $didRedirect = false;
+      $isPermanenttRedirect = false;
+      if (count($this->httpHeaders) > 0) {
+         foreach ($this->httpHeaders as $httpHeader) {
+
+            if (is_array($httpHeader)) {
+               foreach ($httpHeader as $httpElement) {
+                  if (strpos(strtolower($httpElement), strval(HTTP_REDIRECT_PERMANENT)) !== false) {
+                     $didRedirect = true;
+                     $isPermanenttRedirect = true;
+                     break;
+                 }
+                 else if (strpos(strtolower($httpElement), strval(HTTP_REDIRECT_TEMPORARY)) !== false) {
+                     $didRedirect = true;
+                     break;
+                  }
+               }
+            }
+            else if (strpos(strtolower($httpHeader), strval(HTTP_REDIRECT_PERMANENT)) !== false) {
+               $didRedirect = true;
+               $isPermanenttRedirect = true;
+               break;
+            }
+            else if (strpos(strtolower($httpHeader), strval(HTTP_REDIRECT_TEMPORARY)) !== false) {
+               $didRedirect = true;
+               break;
+            }
+
+            if ($didRedirect) {
+               break;
+            }
+         }
       }
 
       if ($curlResult != '') {
@@ -273,6 +327,10 @@ class fmCURL
       if ($options['logCallInfo']) {
          fmLogger('————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————');
          fmLogger('{HTTP: '. $this->httpCode .'} ['. $method .'] ('. round($this->callTime, 3) .'s&#8644;, '. $length .' bytes, '. $bytesSec .'k/s) '. $url);
+      }
+
+      if ($didRedirect) {
+         fmLogger('Request was '. ($isPermanenttRedirect ? 'permanently' : 'temporarily') .' redirected to: '. $this->curlInfo['url']);
       }
 
       if ($options['logSentHeaders'] && array_key_exists('request_header', $this->curlInfo)) {
