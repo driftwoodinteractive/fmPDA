@@ -102,6 +102,11 @@ class fmRecord
       return $result;
    }
 
+   function delete()
+   {
+      return $this->fm->apiDeleteRecord($this->layout, $this->getRecordId());
+   }
+
    private function getFieldData($field, $repetition = 0, $decode = true)
    {
       $result = '';

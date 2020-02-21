@@ -289,8 +289,20 @@ class fmAPI extends fmCURL
 
       $apiOptions = array_merge($apiOptions, $options);
 
+      // If the token is too old, throw it away and request a new one. Typically speaking we should let the server tell us
+      // this rather than trying to do this on our own. If the server changes the time out value, or code could become
+      // confused and request a token too early or too late.
+      //
+      // For the v1 and v2 Data API we do not time out our token.
+      //
+      // For the v2 Admin API we can since we're able to pass the credentials directly in the call and get a new token back.
+      // We puroposely use a time out value of 30 minutes which is longer than what FileMaker is currently using. This
+      // allows us to err on the side of having the server tell us the token is no longer valid, but it's better than being
+      // too quick and needlessly requesting a new token when not needed. When we do detect our token has aged out, we will
+      // save two calls (normal API call which fails with bad token and the request for new token) since we're able to directly
+      // pass the credentials to the API call we're trying to make.
       $tokenAge = $this->getTokenAge();
-      if (($tokenAge > 0) && ($tokenAge > FM_MAX_TOKEN_AGE)) {                   // If the token is too old, don't use it.
+      if ($this->sendCredentialsIfNoToken && ($tokenAge > 0) && ($tokenAge > FM_MAX_TOKEN_AGE)) {  // If the token is too old, don't use it.
          $this->setToken();
          $apiOptions[FM_TOKEN] = '';
       }

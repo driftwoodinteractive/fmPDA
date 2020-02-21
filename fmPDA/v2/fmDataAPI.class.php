@@ -419,7 +419,7 @@ class fmDataAPI extends fmAPI
          $options['scriptParams'] = $params;
       }
 
-      return $this->fmAPI($this->getAPIPath(PATH_SCRIPT, $layout) .'/'. $script, METHOD_GET, $this->getAPIParams($options, METHOD_GET));
+      return $this->fmAPI($this->getAPIPath(PATH_SCRIPT, $layout) .'/'. rawurlencode($script), METHOD_GET, $this->getAPIParams($options, METHOD_GET));
    }
 
 
