@@ -111,14 +111,18 @@ class fmRecord
    {
       $result = '';
 
-      if (array_key_exists($field, $this->data[FM_FIELD_DATA])) {
-         if ($repetition == 0) {
-            $result =  $this->data[FM_FIELD_DATA][$field];
-         }
-         else {
+      if (array_key_exists($field .'('. $repetition .')', $this->data[FM_FIELD_DATA])) {              // Try exact repetition
             $result =  $this->data[FM_FIELD_DATA][$field .'('. $repetition .')'];
          }
+
+      else if (($repetition == 0) && array_key_exists($field .'(1)', $this->data[FM_FIELD_DATA])) {   // See if it's really rep 1
+         $result =  $this->data[FM_FIELD_DATA][$field .'(1)'];
       }
+
+      else if (array_key_exists($field, $this->data[FM_FIELD_DATA])) {                                // No repetition
+         $result =  $this->data[FM_FIELD_DATA][$field];
+      }
+
       else {
          fmLogger(__METHOD__ .'(): '. $field .' does not exist. Is it missing from your FileMaker layout?');
       }
