@@ -1198,36 +1198,36 @@ class fmDataAPI extends fmAPI
       if (array_key_exists('sort', $params) && (count($params['sort']) > 0)) {
          $sort = array();
          foreach ($params['sort'] as $sortItem) {
-            $sort[] = array('fieldName' => rawurlencode($sortItem['fieldName']),
+            $sort[] = array('fieldName' => $this->rawurlencodeifneeded($sortItem['fieldName'], $key),
                             'sortOrder' => array_key_exists('sortOrder', $sortItem) ? $sortItem['sortOrder'] : 'ascend');
          }
-         $data[$keys[$key]['sort']] = ($key == 'get') ? rawurlencode(json_encode($sort)) : $sort;
+         $data[$keys[$key]['sort']] = ($key == 'get') ? $this->rawurlencodeifneeded(json_encode($sort), $key) : $sort;
       }
 
       if (array_key_exists('script', $params) && ($params['script'] != '')) {
-         $data[$keys[$key]['script']] = rawurlencode($params['script']);
+         $data[$keys[$key]['script']] = $this->rawurlencodeifneeded($params['script'], $key);
       }
 
       if (array_key_exists('scriptParams', $params) && ($params['scriptParams'] != '')) {
-         $data[$keys[$key]['scriptParams']] = rawurlencode($params['scriptParams']);
+         $data[$keys[$key]['scriptParams']] = $this->rawurlencodeifneeded($params['scriptParams'], $key);
       }
 
       if (array_key_exists('scriptPrerequest', $params) && ($params['scriptPrerequest'] != '')) {
-         $data[$keys[$key]['scriptPrerequest']] = rawurlencode($params['scriptPrerequest']);
+         $data[$keys[$key]['scriptPrerequest']] = $this->rawurlencodeifneeded($params['scriptPrerequest'], $key);
          if (array_key_exists('scriptPrerequestParams', $params) && ($params['scriptPrerequestParams'] != '')) {
-            $data[$keys[$key]['scriptPrerequestParams']] = rawurlencode($params['scriptPrerequestParams']);
+            $data[$keys[$key]['scriptPrerequestParams']] = $this->rawurlencodeifneeded($params['scriptPrerequestParams'], $key);
          }
       }
 
       if (array_key_exists('scriptPresort', $params) && ($params['scriptPresort'] != '')) {
-         $data[$keys[$key]['scriptPresort']] = rawurlencode($params['scriptPresort']);
+         $data[$keys[$key]['scriptPresort']] = $this->rawurlencodeifneeded($params['scriptPresort'], $key);
          if (array_key_exists('scriptPresortParams', $params) && ($params['scriptPresortParams'] != '')) {
-            $data[$keys[$key]['scriptPresortParams']] = rawurlencode($params['scriptPresortParams']);
+            $data[$keys[$key]['scriptPresortParams']] = $this->rawurlencodeifneeded($params['scriptPresortParams'], $key);
          }
       }
 
       if (array_key_exists('layoutResponse', $params) && ($params['layoutResponse'] != '')) {
-         $data[$keys[$key]['layoutResponse']] = rawurlencode($params['layoutResponse']);
+         $data[$keys[$key]['layoutResponse']] = $this->rawurlencodeifneeded($params['layoutResponse'], $key);
       }
 
       if (array_key_exists('portal', $params) && (count($params['portal']) > 0)) {
@@ -1235,7 +1235,7 @@ class fmDataAPI extends fmAPI
          foreach ($params['portal'] as $portal) {
             $portals .= '"'. $portal .'",';                  // Wrap each portal within quotes
          }
-         $data[$keys[$key]['portal']] = rawurlencode('['. rtrim($portals, ',') .']');
+         $data[$keys[$key]['portal']] = $this->rawurlencodeifneeded('['. rtrim($portals, ',') .']', $key);
       }
 
       // This is for backward compatiblity Please use $params['portal'] moving forward as this matches the Data API.
@@ -1244,18 +1244,18 @@ class fmDataAPI extends fmAPI
          foreach ($params['portals'] as $portal) {
             $portals .= '"'. $portal .'",';                  // Wrap each portal within quotes
          }
-         $data[$keys[$key]['portals']] = rawurlencode('['. rtrim($portals, ',') .']');
+         $data[$keys[$key]['portals']] = $this->rawurlencodeifneeded('['. rtrim($portals, ',') .']', $key);
       }
 
       if (array_key_exists('portalLimits', $params) && (count($params['portalLimits']) > 0)) {
          foreach ($params['portalLimits'] as $portal) {
-            $data[$keys[$key]['portalLimits']. rawurlencode($portal['name'])] = rawurlencode($portal['limit']);
+            $data[$keys[$key]['portalLimits']. $this->rawurlencodeifneeded($portal['name'], $key)] = $this->rawurlencodeifneeded($portal['limit'], $key);
          }
       }
 
       if (array_key_exists('portalOffsets', $params) && (count($params['portalOffsets']) > 0)) {
          foreach ($params['portalOffsets'] as $portal) {
-            $data[$keys[$key]['portalOffsets']. rawurlencode($portal['name'])] = rawurlencode($portal['offset']);
+            $data[$keys[$key]['portalOffsets']. $this->rawurlencodeifneeded($portal['name'], $key)] = $this->rawurlencodeifneeded($portal['offset'], $key);
          }
       }
 
@@ -1264,7 +1264,7 @@ class fmDataAPI extends fmAPI
          foreach ($params['deleteRelated'] as $to) {
             $deleteList .= "'". $to['table'] .'.'. $to['recordID'] ."',";  // Wrap each item within quotes
          }
-         $data[$keys[$key]['deleteRelated']] = rawurlencode('['. rtrim($deleteList, ',') .']');
+         $data[$keys[$key]['deleteRelated']] = $this->rawurlencodeifneeded('['. rtrim($deleteList, ',') .']');
       }
 
       if (array_key_exists('query', $params) && (count($params['query']) > 0)) {
@@ -1284,6 +1284,14 @@ class fmDataAPI extends fmAPI
       }
 
       return $data;
+   }
+
+   // *********************************************************************************************************************************
+   // Returns encoded version if method is GET
+   //
+   protected function rawurlencodeifneeded($item, $method)
+   {
+      return $method == 'get' ? rawurlencode($item) : $item;
    }
 
    // *********************************************************************************************************************************
