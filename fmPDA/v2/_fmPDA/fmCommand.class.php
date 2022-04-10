@@ -43,6 +43,7 @@ class fmCommand
    public $preSortScript;
    public $preSortScriptParams;
    public $resultLayout;
+   public $logicalOperator;
 
    function __construct($fm, $layout)
    {
@@ -59,6 +60,7 @@ class fmCommand
       $this->preSortScript = '';
       $this->preSortScriptParams = '';
       $this->resultLayout = '';
+      $this->logicalOperator = FILEMAKER_FIND_AND;
    }
 
    function getAPIParams()
@@ -74,7 +76,8 @@ class fmCommand
                'scriptPrerequestParams' => $this->preScriptParams,
                'scriptPresort'          => $this->preSortScript,
                'scriptPresortParams'    => $this->preSortScriptParams,
-               'layoutResponse'         => $this->resultLayout
+               'layoutResponse'         => $this->resultLayout,
+               'logicalOperator'        => $this->logicalOperator
             );
 
       return $params;
@@ -148,6 +151,11 @@ class fmCommand
    function validate($fieldName = null)
    {
       fmLogger(__METHOD__ .'(): is not supported by the Data API.');
+   }
+   
+   function setLogicalOperator($operator)
+   {
+     $this->logicalOperator = $operator;
    }
 
    // *********************************************************************************************************************************
