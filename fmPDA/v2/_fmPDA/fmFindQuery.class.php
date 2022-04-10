@@ -52,12 +52,22 @@ class fmFindQuery extends fmFind
             $request = $findRequest->getRequest();
             $fields = array();
             foreach ($request as $requestParts) {
+	      if ($this->logicalOperator == FILEMAKER_FIND_OR) {
+	         $part = array($requestParts['fieldName'] => $requestParts['value']);
+	         if ($findRequest->omit) {
+	            $part['omit'] = 'true';
+	         }
+	         $requests[] = $part;
+              } else {
                $fields[$requestParts['fieldName']] = $requestParts['value'];
             }
+	    }
+	    if ($this->logicalOperator == FILEMAKER_FIND_AND) {
             if ($findRequest->omit) {
                $fields['omit'] = 'true';
             }
             $requests[] = $fields;
+         }
          }
          $params['query'] = $requests;
       }

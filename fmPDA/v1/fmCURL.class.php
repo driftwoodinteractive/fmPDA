@@ -435,7 +435,7 @@ class fmCURL
                               'retryOn401Error' => false,
                               'getMimeType' => true);
 
-      if ($options['action'] == 'get') {
+      if (array_key_exists('action', $options) && $options['action'] == 'get') {
          $defaultOptions['compression'] = '';
       }
 
