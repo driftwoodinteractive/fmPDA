@@ -119,7 +119,7 @@ class fmLogger
    {
       if ($this->logging) {
 
-         $this->log  .= date('Y-m-d') .' '. strftime('%H:%M:%S') .' '. $this->convertToText($data) ."\n";
+         $this->log  .= date('Y-m-d H:i:s') .' '. $this->convertToText($data) ."\n";
 
          if ($this->logToSystem) {
             error_log($data, 0);
