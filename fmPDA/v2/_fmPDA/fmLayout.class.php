@@ -64,7 +64,7 @@ class fmLayout
    // *********************************************************************************************************************************
    function getField($fieldName)
    {
-      if (array_key_exists($field, $this->data[FM_FIELD_DATA])) {
+      if (array_key_exists($fieldName, $this->data[FM_FIELD_DATA])) {
          return new fmField($this->fm, $this->layout, $fieldName);
       }
       else {
