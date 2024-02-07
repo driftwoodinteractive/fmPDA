@@ -28,7 +28,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -153,7 +153,7 @@ class fmPDA extends fmPDAGlue
 
       $this->translateResult = array_key_exists('translateResult', $options) ? $options['translateResult'] : true;
 
-      fmLogger('fmPDA: translateResult='. ($this->translateResult ? 'true' : 'false'));
+      fmLogger('fmPDA: v'. $this->version);
 
       return;
    }
@@ -396,12 +396,13 @@ class fmPDA extends fmPDAGlue
 
     /***********************************************************************************************************************************
     *
-    * newAddCommand($layoutName)
+    * newAddCommand($layoutName, $fieldValues)
     *
     *    Create a new add record object.
     *
     *    Parameters:
     *       (string)  $layoutName           The name of the layout
+    *       (array)   $fieldValues          An array of field name/value pairs
     *
     *    Returns:
     *       A fmAdd object
@@ -410,20 +411,21 @@ class fmPDA extends fmPDAGlue
     *       $fm = new fmPDA($database, $host, $username, $password);
     *       $addCommand = $fm->newAddCommand($layoutName);
     */
-   public function newAddCommand($layoutName)
+   public function newAddCommand($layoutName, $fieldValues = array())
    {
-      return new fmAdd($this, $layoutName);
+      return new fmAdd($this, $layoutName, $fieldValues);
    }
 
     /***********************************************************************************************************************************
     *
-    * newEditCommand($layoutName, $recordID)
+    * newEditCommand($layoutName, $recordID, $fieldValues)
     *
     *    Create a new edit record object.
     *
     *    Parameters:
     *       (string)  $layoutName           The name of the layout
     *       (integer) $recordID             The recordID of the record to edit
+    *       (array)   $fieldValues          An array of field name/value pairs
     *
     *    Returns:
     *       A fmEdit object
@@ -432,9 +434,9 @@ class fmPDA extends fmPDAGlue
     *       $fm = new fmPDA($database, $host, $username, $password);
     *       $findAnyCommand = $fm->newEditCommand($layoutName, $recordID);
     */
-   public function newEditCommand($layoutName, $recordID)
+   public function newEditCommand($layoutName, $recordID, $fieldValues = array())
    {
-      return new fmEdit($this, $layoutName, $recordID);
+      return new fmEdit($this, $layoutName, $recordID, $fieldValues);
    }
 
     /***********************************************************************************************************************************
@@ -543,7 +545,7 @@ class fmPDA extends fmPDAGlue
     *       $file = array();
     *       $file['path'] = 'sample_files/sample.png';
     *       $uploadContainerCommand = $fm->newUploadContainerCommand($layout, $recordID, $fieldName, $fieldRepetition, $file);
-    *       $result = $performScriptCommand->execute();
+    *       $result = $uploadContainerCommand->execute();
     *       if (! $fm->getIsError($result)) {
     *          ...
     *       }

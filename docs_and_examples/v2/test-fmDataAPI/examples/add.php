@@ -7,7 +7,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +38,7 @@ $fields['Name'] = 'Project '. rand();
 $fields['Date_Start'] = date('m/d/Y');
 $fields['Date_End'] = date('m/d/Y');
 $fields['ColorIndex'] = 999;
+$fields['Field Name With Space'] = 'moof';
 
 $apiResult = $fm->apiCreateRecord('Web_Project', $fields);
 if (! $fm->getIsError($apiResult)) {

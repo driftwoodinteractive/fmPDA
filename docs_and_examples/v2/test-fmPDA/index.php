@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -399,15 +399,16 @@ define('ADMIN_API_VERSION', 2);
 
                <div class="api-description">
                   <pre><code class="language-php">
-                     function newAddCommand($layoutName)
+                     function newAddCommand($layoutName, $fieldValues = array())
 
                         Create a new add command object.
 
                         Parameters:
                            (string)  $layoutName           The name of the layout
+                           (array)   $fieldValues          An array of field name/value pairs
 
                         Returns:
-                           A fmRecord object
+                           A fmAdd object
 
                         Example:
                            $fm = new fmPDA($database, $host, $username, $password);
@@ -425,20 +426,23 @@ define('ADMIN_API_VERSION', 2);
 
                <div class="api-description">
                   <pre><code class="language-php">
-                     function newEditCommand($layoutName, $recordID)
+                     function newEditCommand($layoutName, $recordID, $fieldValues = array())
 
                         Create a new edit record object.
 
                         Parameters:
                            (string)  $layoutName           The name of the layout
                            (integer) $recordID             The recordID of the record to edit
+                           (array)   $fieldValues          An array of field name/value pairs
 
                         Returns:
                            A fmEdit object
 
                         Example:
                            $fm = new fmPDA($database, $host, $username, $password);
-                           $findAnyCommand = $fm->newEditCommand($layoutName, $recordID);
+                           $editCommand = $fm->newEditCommand($layoutName, $recordID);
+                           $editCommand->setField('Name', 'MyNewName');
+                           $result = $editCommand->execute();
                   </code></pre>
                </div>
 
@@ -566,14 +570,16 @@ define('ADMIN_API_VERSION', 2);
                </div>
 
                <div class="api-example-output-header">
-
                  <button type="button" class="btn btn-primary run_php_script" phpscript="container_data.php?action=get" output="container_get">Run Example 1</button> Use fmPDA::getContainerData() to display the container field contents.
                  <br>
                  <br>
-                 <button type="button" class="btn btn-primary run_php_script" phpscript="container_data.php?action=download" output="container_get" target="_blank">Run Example 2</button> Use fmPDA::getContainerData() to download the container field contents.
+                 <button type="button" class="btn btn-primary run_php_script" phpscript="container_data_base64encoded" output="container_get">Run Example 2</button> Use fmPDA's getRecordById() and getContainerData() to display the container field contents in a Base64 encoded &lt;img&gt; tag.
                  <br>
                  <br>
-                 <button type="button" class="btn btn-primary run_php_script" phpscript="container_data.php?action=inline" output="container_get" target="_blank">Run Example 3</button> Use fmPDA::getContainerData() to download/inline the container field contents.
+                 <button type="button" class="btn btn-primary run_php_script" phpscript="container_data.php?action=download" output="container_get" target="_blank">Run Example 3</button> Use fmPDA::getContainerData() to download the container field contents.
+                 <br>
+                 <br>
+                 <button type="button" class="btn btn-primary run_php_script" phpscript="container_data.php?action=inline" output="container_get" target="_blank">Run Example 4</button> Use fmPDA::getContainerData() to download/inline the container field contents.
                </div>
                <div id="output_container_get" class="api-example-output"></div>
             </div>

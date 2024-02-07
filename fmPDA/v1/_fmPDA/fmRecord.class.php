@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -76,30 +76,25 @@ class fmRecord
       $recordID = $this->getRecordId();
 
       if ($recordID == '') {                                                     // New record?
-         $addEditCommand = new fmAdd($this->fm, $this->layout);
-         $addEditCommand->setFields($this->data[FM_FIELD_DATA]);
+         $addEditCommand = new fmAdd($this->fm, $this->layout, $this->data[FM_FIELD_DATA]);
       }
       else {                                                                     // Must be an edit
-         $addEditCommand = new fmEdit($this->fm, $this->layout, $recordID);
-         $addEditCommand->setFields($this->editedFields);
+         $addEditCommand = new fmEdit($this->fm, $this->layout, $recordID, $this->editedFields);
       }
 
       $result = $addEditCommand->execute(false /* Don't return record */);
 
-      if (fmGetIsValid($result)) {
-         if ($recordID == '') {                                                  // New record?
-            $this->data[FM_RECORD_ID] = $addEditCommand->recordID;
-            $this->data[FM_MOD_ID] = 1;
-            $result = $this;                                                     // Return us as the result
-         }
-         else {
-            $this->data[FM_MOD_ID] = $this->data[FM_MOD_ID]++;
-            $this->clearEditedFields();
-            $result = $this;                                                     // Return us as the result
-         }
+      // Old API just returns true from a commit but does update internal info
+      if ($recordID == '') {                                                     // New record?
+         $this->data[FM_RECORD_ID] = $addEditCommand->recordID;
+         $this->data[FM_MOD_ID] = 1;
+      }
+      else {
+         $this->data[FM_MOD_ID] = $this->data[FM_MOD_ID]++;
+         $this->clearEditedFields();
       }
 
-      return $result;
+      return true;
    }
 
    function delete()
@@ -112,8 +107,8 @@ class fmRecord
       $result = '';
 
       if (array_key_exists($field .'('. $repetition .')', $this->data[FM_FIELD_DATA])) {              // Try exact repetition
-            $result =  $this->data[FM_FIELD_DATA][$field .'('. $repetition .')'];
-         }
+         $result =  $this->data[FM_FIELD_DATA][$field .'('. $repetition .')'];
+      }
 
       else if (($repetition == 0) && array_key_exists($field .'(1)', $this->data[FM_FIELD_DATA])) {   // See if it's really rep 1
          $result =  $this->data[FM_FIELD_DATA][$field .'(1)'];

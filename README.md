@@ -120,7 +120,7 @@ Caution
   you'll need to change your code (ugh) or remove the object names.
 
 - The Data API translates FM line separators from a line feed (\n) in the old
-  API is now a carriage return (\r). If your code looks for line feeds, look for
+  API to use a carriage return (\r). If your code looks for line feeds, look for
   carriage returns now.
 
 
@@ -247,7 +247,7 @@ keep FileMaker's old classes in your include tree. You Have Been Warned.
 
 PHP Compatibility
 -----------------
-fmPDA has been tested with PHP versions 5.2.17 through 7.3.3.
+fmPDA has been tested with PHP versions 5.2.17 through 7.4.3.
 
 
 
@@ -265,7 +265,7 @@ fmpda@driftwoodinteractive.com
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-Copyright (c) 2017 - 2019 Mark DeNyse
+Copyright (c) 2017 - 2024 Mark DeNyse
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

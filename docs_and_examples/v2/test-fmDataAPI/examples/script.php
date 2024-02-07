@@ -7,7 +7,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@
 require_once 'startup.inc.php';
 
 $script = 'Test';
+// $script = 'New Script';
 $params = 'some';     // 'all' or 'some'
 
 $fm = new fmDataAPI(FM_DATABASE, FM_HOST, FM_USERNAME, FM_PASSWORD);
@@ -50,8 +51,12 @@ if (! $fm->getIsError($apiResult)) {
 //     [scriptResult] => This is my script result!
 //     [scriptError] => 0
 
-   fmLogger('scriptResult='. $response['scriptResult']);
-   fmLogger('scriptError='. $response['scriptError']);
+   if (array_key_exists('scriptResult', $response)) {
+      fmLogger('scriptResult='. $response['scriptResult']);
+   }
+   if (array_key_exists('scriptError', $response)) {
+      fmLogger('scriptError='. $response['scriptError']);
+   }
 
    $responseData = $fm->getResponseData($apiResult);
 // fmLogger($responseData);

@@ -8,7 +8,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -57,9 +57,9 @@ function GetTheRecord($fm, $recordID, $showRecordData = false)
 //             'scriptPresort'          => 'PresortScript',
 //             'scriptPresortParams'    => 'PresortScriptParam',
 //             'layoutResponse'         => 'ResponseLayout',
-//             'portals'                => array('portal1', 'portal10'),
-//            'portalLimits'           => array(array('name' => 'portal1', 'limit' => '7'), array('name' => 'portal10', 'limit' => '99')),
-//            'portalOffsets'          => array(array('name' => 'portal1', 'offset' => '2'), array('name' => 'portal10', 'offset' => '33'))
+//             'portal'                 => array('portal1', 'portal10'),
+//             'portalLimits'           => array(array('name' => 'portal1', 'limit' => '7'), array('name' => 'portal10', 'limit' => '99')),
+//             'portalOffsets'          => array(array('name' => 'portal1', 'offset' => '2'), array('name' => 'portal10', 'offset' => '33'))
          );
 
    $apiResult = $fm->apiGetRecord('Web_Project', $recordID, '', $params);

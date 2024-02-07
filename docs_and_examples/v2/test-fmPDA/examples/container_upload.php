@@ -7,7 +7,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,8 @@ $addCommand->setField('ColorIndex', 999);
 $result = $addCommand->execute();
 
 if (! fmGetIsError($result)) {
-   $recordID = $result->getRecordId();
+   $record = $result->getFirstRecord();
+   $recordID = $record->getRecordId();
 
    $file = array();
    // Now upload the file to the container field by passing the path to the file:
@@ -67,11 +68,12 @@ if (! fmGetIsError($result)) {
    $result = $uploadCommand->execute();
 
    if (! fmGetIsError($result)) {
-      fmLogger('Successful upload! modID='. $result->getModificationId());
+      $record = $result->getFirstRecord();
+      fmLogger('Successful upload! modID='. $record->getModificationId());
 
-      $photoURL = $result->getFieldUnencoded('Photo');                           // Just get the URL and off you go!
-      $photoHW = $result->getFieldUnencoded('c_PhotoHWHTML');
-      $photoName = $result->getFieldUnencoded('PhotoName');
+      $photoURL = $record->getFieldUnencoded('Photo');                           // Just get the URL and off you go!
+      $photoHW = $record->getFieldUnencoded('c_PhotoHWHTML');
+      $photoName = $record->getFieldUnencoded('PhotoName');
    }
    else {
       fmLogger('Error = '. $result->getCode() .' Message = '. $result->getMessage());

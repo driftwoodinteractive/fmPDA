@@ -9,7 +9,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -62,7 +62,8 @@ class fmUpload extends fmCommand
             $result = $apiResult;
          }
          else if ($returnRecord) {
-            $result = $this->fm->getRecordById($this->layout, $this->recordID);
+            $record = $this->fm->getRecordById($this->layout, $this->recordID);
+            $result = $this->fm->newResult($this->layout, array(FM_DATA => array($record->data)));   // Convert fmRecord into a fmResult
          }
          else {
             $result = true;

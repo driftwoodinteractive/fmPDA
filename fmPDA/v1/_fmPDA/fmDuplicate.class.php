@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -57,16 +57,11 @@ class fmDuplicate extends fmCommand
             // so your Duplicate script should return the recordID of the duplicated record. Then we do another
             // getRecordByID to return the duplicated record data.
             $response = $this->fm->getResponse($apiResult);
-            $apiResult = $this->fm->apiGetRecord($this->layout, $response['scriptResult']);
+            $duplicatedRecordID = $response['scriptResult'];
 
-            if ($this->fm->getTranslateResult()) {
-               if (! fmGetIsError($apiResult)) {
-                  $responseData = $this->fm->getResponseData($apiResult);
-                  $result = new fmRecord($this->fm, $this->layout, array_key_exists(0, $responseData) ? $responseData[0] : array());
-               }
-               else {
-                  $result = $apiResult;
-               }
+            $apiResult = $this->fm->getRecordById($this->layout, $duplicatedRecordID);
+            if (! fmGetIsError($apiResult)) {
+               $result = $this->fm->newResult($this->layout, array($apiResult->data));   // Convert fmRecord into a fmResult
             }
             else {
                $result = $apiResult;

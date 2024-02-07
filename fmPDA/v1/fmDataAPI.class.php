@@ -19,7 +19,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -553,7 +553,7 @@ class fmDataAPI extends fmAPI
     *    Execute a script. We do this by doing a apiGetRecords() call for the first record on the specified layout.
     *    For this to work, *YOU MUST* have at least one record in this table or the script *WILL NOT EXECUTE*.
     *    For efficiency, you may want to create a table with just one record and no fields.
-    *    Typically you'll call this with an $layout set to a layout with nothing on it and then use $layoutResponse
+    *    Typically you'll call this with $layout set to a layout with nothing on it and then use $layoutResponse
     *    to indicate where you expect the result from the script to have put the record(s).
     *
     *    Parameters:
@@ -658,7 +658,7 @@ class fmDataAPI extends fmAPI
     *
     *    Example:
     *       $fm = new fmDataAPI($database, $host, $username, $password);
-    *       $apiResult = $fm->apiDownloadContainer(layout, $recordID, $fieldName);
+    *       $apiResult = $fm->apiGetContainer(layout, $recordID, $fieldName);
     *       if (! $fm->getIsError($apiResult)) {
     *          file contents are in $curl->file *not* $result
     *          ...

@@ -7,7 +7,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,16 +39,19 @@ $fields['Date_Start'] = date('m/d/Y');
 $fields['Date_End'] = date('m/d/Y');
 $fields['ColorIndex'] = 1;
 
+fmLogger('Creating Project Name = '. $fields['Name']);
+
 $record = $fm->createRecord('Web_Project', $fields);
 
 $result = $record->commit();
 
-if (! fmGetIsError($result)) {
+if ($result) {
+   $record = $fm->getRecordById('Web_Project', $record->getRecordId());        // Verify it really was stored
    fmLogger('Project Name = '. $record->getField('Name'));
    fmLogger($record);
 }
 else {
-   fmLogger('Error = '. $result->getCode() .' Message = '. $result->getMessage());
+   fmLogger('commit() somehow failed!');
 }
 
 echo fmGetLog();

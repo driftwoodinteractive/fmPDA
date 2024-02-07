@@ -7,7 +7,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@
 
 require_once 'startup.inc.php';
 
-$fm = new fmAdminAPI(FM_HOST, FM_USERNAME, FM_PASSWORD);
+$fm = new fmAdminAPI(FM_HOST, FM_ADMIN_USERNAME, FM_ADMIN_PASSWORD);
 
 $apiResult = $fm->apiListClients();
 if (! $fm->getIsError($apiResult)) {
@@ -40,6 +40,7 @@ if (! $fm->getIsError($apiResult)) {
 //    fmLogger($response);
 
    fmLogger($response['fmproCount']    .' Pro Users');
+   fmLogger($response['fmdapiCount']   .' Data API Users');          // This is an extension to the Admin API
    fmLogger($response['fmgoCount']     .' Go Users');
    fmLogger($response['fmwebdCount']   .' Web Direct Users');
    fmLogger($response['fmconcurrentCount']   .' Concurrent Users');
@@ -52,7 +53,6 @@ if (! $fm->getIsError($apiResult)) {
    fmLogger('');
    fmLogger(count($clients) .' Client(s):');
    foreach ($clients as $client) {
-
       $files = '';
       foreach ($client['guestFiles'] as $guestFile) {
          $files .= $guestFile['filename'] .' ';

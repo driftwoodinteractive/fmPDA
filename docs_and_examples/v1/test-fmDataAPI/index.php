@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -129,7 +129,7 @@ define('DATA_API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED
                            (string)  $username         The user name of the account to authenticate with
                            (string)  $password         The password of the account to authenticate with
                            (array)   $options          Optional parameters
-                                                         ['version']                Version of the API to use (1, 2, etc. or 'Latest')
+                                                         ['version']               Version of the API to use (1, 2, etc. or 'Latest')
 
                                                        Token management - typically you choose none or one of the following 3 options:
                                                             ['storeTokenInSession'] and ['sessionTokenKey']
@@ -595,16 +595,19 @@ define('DATA_API_VERSION', array_key_exists('v', $_GET) ? $_GET['v'] : SUPPORTED
                </div>
 
                <div class="api-example-output-header">
-                 <button type="button" class="btn btn-primary run_php_script" phpscript="container_get_url" output="container_get">Run Example 1</button> Use fmDataAPI::GetRecord() to retrieve a record and display the container in an &lt;img&gt; tag
+                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="container_get_url" output="container_get">Run Example 1</button> Use fmDataAPI::GetRecord() to retrieve a record and display the container in an &lt;img&gt; tag
                  <br>
                  <br>
-                 <button type="button" class="btn btn-primary run_php_script" phpscript="container_get.php?action=get" output="container_get">Run Example 2</button> Use fmDataAPI::apiGetContainer() to display the container field contents.
+                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="container_get_base64encoded" output="container_get">Run Example 2</button> Use fmDataAPI's GetRecord() & apiGetContainer() to retrieve a record and display the container in a Base64 encoded &lt;img&gt; tag
                  <br>
                  <br>
-                 <button type="button" class="btn btn-primary run_php_script" phpscript="container_get.php?action=download" output="container_get" target="_blank">Run Example 3</button> Use fmDataAPI::apiGetContainer() to download the container field contents.
+                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="container_get.php?action=get" output="container_get">Run Example 3</button> Use fmDataAPI::apiGetContainer() to display the container field contents.
                  <br>
                  <br>
-                 <button type="button" class="btn btn-primary run_php_script" phpscript="container_get.php?action=inline" output="container_get" target="_blank">Run Example 4</button> Use fmDataAPI::apiGetContainer() to download/inline the container field contents.
+                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="container_get.php?action=download" output="container_get" target="_blank">Run Example 4</button> Use fmDataAPI::apiGetContainer() to download the container field contents.
+                 <br>
+                 <br>
+                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="container_get.php?action=inline" output="container_get" target="_blank">Run Example 5</button> Use fmDataAPI::apiGetContainer() to download/inline the container field contents.
                </div>
                <div id="output_container_get" class="api-example-output"></div>
             </div>

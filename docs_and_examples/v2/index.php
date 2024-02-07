@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -123,7 +123,7 @@ define('ADMIN_API_VERSION', 2);
                      <ul>
                         <li>OAuth support is included but has not been tested.</li>
                         <li>The Data API replaces the name of the Table Occurrence in portals with the layout object name (if one exists). If you name your portals on the dedicated Web layouts (you do have those, right?) you've been using with the old API, you'll need to change your code (ugh) or remove the object names.</li>
-                        <li>The Data API translates FM line separators from a line feed (\n) in the old API is now a carriage return (\r). If your code looks for line feeds, look for carriage returns now.</li>
+                        <li>The Data API translates FM line separators from a line feed (\n) in the old API to use a carriage return (\r). If your code looks for line feeds, look for carriage returns now.</li>
                      </ul>
                   </ul>
                </li>
@@ -174,7 +174,7 @@ define('ADMIN_API_VERSION', 2);
                      <ul>
                         <li>Get layout metadata (you can use <code>fmDataAPI::apiLayoutMetadata()</code> to retreive most of the data on your own now)</li>
                         <li>Validation</li>
-                        <li>Value Lists (you can retrieve some of this now with <code>fmDataAPI::apiLayoutMetadata()</code>)</li>
+                        <li>Value Lists (you can retrieve some of this now with <code>fmDataAPI::apiGetValueList()</code> or <code>fmDataAPI::apiLayoutMetadata()</code>)</li>
                         <li>Using <code>Commit()</code> to commit data on portals.</li>
                      </ul>
 

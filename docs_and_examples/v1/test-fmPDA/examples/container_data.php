@@ -7,7 +7,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -37,11 +37,13 @@ $options['fileNameField'] = 'PhotoName';     // The value stored in the PhotoNam
 
 $fm = new fmPDA(FM_DATABASE, FM_HOST, FM_USERNAME, FM_PASSWORD);
 
+$recordID = 8;
+
 $photoURL = '';
 $photoHW = '';
 $photoName = '';
 
-$result = $fm->getRecordById('Web_Project', 114);
+$result = $fm->getRecordById('Web_Project', $recordID);
 if (! fmGetIsError($result)) {
 
    $url = $result->getFieldUnencoded('Photo');
@@ -58,6 +60,7 @@ if (! fmGetIsError($result)) {
 }
 else {
    fmLogger('Error = '. $result->getCode() .' Message = '. $result->getMessage());
+   echo fmGetLog();
 }
 
 ?>

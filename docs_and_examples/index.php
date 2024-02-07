@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -92,7 +92,7 @@
 
             <h4><span style="color: #8E3C18;"><i class="fas fa-poo fa-lg"></i></span> You've got CWP Code.</h4>
             You have Custom Web Publishing (CWP) code written using FileMaker's API for PHP. FileMaker has made it clear the new Data API is the way to go, and the XML interface (which FileMaker's API for PHP uses) will likely be deprecated and removed in the future. Your code will break. Game over, Player One.<br>
-            <h4><span style="color: #CA9008;"><i class="fas fa-question-circle fa-lg"></i></span> OK, Dallas, We've Had A Problem Here. What Do We Do Now?</h4>
+            <h4><span style="color: #CA9008;"><i class="fas fa-question-circle fa-lg"></i></span> OK, Houstin, We've Had A Problem Here. What Do We Do Now?</h4>
             <ul>
                <li>Rewrite your code to use the new Data API. Not 'hard', but it'll take time to rewrite/debug. In the end, your code may be a little faster. Yay, you.</li>
                <li>Use a library that someone wrote to solve the same problem. Less time consuming, especially if the code could <i><strong>replicate FileMaker's API for PHP<strong></i>.</li>
@@ -103,18 +103,14 @@
 
 
             <h4>Choose the version based on your FileMaker Server version:</h4>
-            <a href="v1/index.php?dataAPIVersion=Latest&adminAPIVersion=Latest">Version Latest: - The latest supported version for each API (v1 for Data, v2 for Admin).</a><br>
-            <br>
-            <a href="v2/index.php?dataAPIVersion=1&adminAPIVersion=2">Version '2': Data API v1 FileMaker Server 17+, Admin API v2 FileMaker Server 18+. Admin API v2 was released with FileMaker Server 18. </a><br>
+            <a href="v2/index.php?dataAPIVersion=1&adminAPIVersion=2">Version '2': Data API v1 & v2 FileMaker Server 17, 18, 19, 20+, Admin API v2 FileMaker Server 18, 19, 20+.</a><br>
             <br>
             <a href="v1/index.php?dataAPIVersion=1&adminAPIVersion=1">Version 1: FileMaker Server 17 and later - Version 1 was released with FileMaker Server 17. Admin API v1 beta trial expires on September 27, 2019.</a><br>
-            <br>
-            Version '0': FileMaker Server 16 - this was the initial trial release and is not available on FileMaker Server 17 or later.<br>
             <br>
 
 
             <h4>PHP Compatibility</h4>
-            fmPDA has been tested with PHP versions 5.2.17 through 7.3.3.<br>
+            fmPDA has been tested with PHP versions 5.2.17 through 8.2.<br>
             <br>
 
 

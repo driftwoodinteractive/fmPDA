@@ -21,7 +21,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -49,8 +49,10 @@ require_once 'fmCURL.class.php';
 define('FM_API_USER_AGENT',            'fmAPIphp/1.0');            // Our user agent string
 
 define('FM_VERSION_0',                 '0');                       // Version 0 was released with FileMaker Server 16 (now removed)
-define('FM_VERSION_1',                 '1');                       // Version 1 was released with FileMaker Server 17
+define('FM_VERSION_1',                 '1');                       // Version 1 of the Data API was released with FileMaker Server 17
 define('FM_VERSION_2',                 '2');                       // Version 2 of the Admin API was released with FileMaker Server 18
+                                                                   // Version 2 of the Data API was released with FileMaker Server 19
+                                                                   // (the version changed to 2 but there are no API changes).
 
 define('FM_VERSION_LATEST',            'Latest');                  // The latest version
 
@@ -200,9 +202,18 @@ class fmAPI extends fmCURL
       fmLogger('fmAPI: PHP v'. PHP_VERSION);
 
       if (strpos(strtolower($this->host), 'http:') !== false) {
-         fmLogger('Warning: You are attempting to use http:// with the Data or Admin API. Both require https:// and the request may fail.');
+         fmLogger('*********************************************************************************************************************.');
+         fmLogger("Warning: You passed 'http://' and the Data/Admin API require https:// so your request may fail.");
          fmLogger('Warning: Your server may redirect to https but you SHOULD change your code to avoid an extra roundtrip.');
          fmLogger('Host = '. $this->host);
+         fmLogger('*********************************************************************************************************************.');
+      }
+      if ((strpos(strtolower($this->host), 'localhost') !== false) || (strpos(strtolower($this->host), '127.0.0.1') !== false)) {
+         fmLogger('*********************************************************************************************************************.');
+         fmLogger("Warning: You are passing '". $this->host ."' as the host name.");
+         fmLogger('Warning: This might fail with your SSL certificate so you should use the Fully Qualified Domain Name (FQDN) for the host.');
+         fmLogger('Host = '. $this->host);
+         fmLogger('*********************************************************************************************************************.');
       }
 
       return;
@@ -587,6 +598,8 @@ class fmAPI extends fmCURL
    }
 
    // *********************************************************************************************************************************
+   // Override this method if you want to store the token somewhere else, such as a MySQL database.
+   //
    protected function setTokenDataInStorage()
    {
       $tokenData = array();
@@ -617,6 +630,20 @@ class fmAPI extends fmCURL
    protected function decryptTokenData($tokenData)
    {
       return $tokenData;
+   }
+
+   // *********************************************************************************************************************************
+   // encodeParameter
+   //
+   // rawurlencode a value if it's a GET/DELETE method.
+   //
+   protected function encodeParameter($value, $method)
+   {
+      if (($method == METHOD_GET) || ($method == METHOD_DELETE)) {
+         $value = rawurlencode($value);
+      }
+
+      return $value;
    }
 
 }

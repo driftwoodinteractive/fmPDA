@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -76,30 +76,25 @@ class fmRecord
       $recordID = $this->getRecordId();
 
       if ($recordID == '') {                                                     // New record?
-         $addEditCommand = new fmAdd($this->fm, $this->layout);
-         $addEditCommand->setFields($this->data[FM_FIELD_DATA]);
+         $addEditCommand = new fmAdd($this->fm, $this->layout, $this->data[FM_FIELD_DATA]);
       }
       else {                                                                     // Must be an edit
-         $addEditCommand = new fmEdit($this->fm, $this->layout, $recordID);
-         $addEditCommand->setFields($this->editedFields);
+         $addEditCommand = new fmEdit($this->fm, $this->layout, $recordID, $this->editedFields);
       }
 
       $result = $addEditCommand->execute(false /* Don't return record */);
 
-      if (fmGetIsValid($result)) {
-         if ($recordID == '') {                                                  // New record?
-            $this->data[FM_RECORD_ID] = $addEditCommand->recordID;
-            $this->data[FM_MOD_ID] = 1;
-            $result = $this;                                                     // Return us as the result
-         }
-         else {
-            $this->data[FM_MOD_ID] = $this->data[FM_MOD_ID]++;
-            $this->clearEditedFields();
-            $result = $this;                                                     // Return us as the result
-         }
+      // Old API just returns true from a commit but does update internal info
+      if ($recordID == '') {                                                     // New record?
+         $this->data[FM_RECORD_ID] = $addEditCommand->recordID;
+         $this->data[FM_MOD_ID] = 1;
+      }
+      else {
+         $this->data[FM_MOD_ID] = $this->data[FM_MOD_ID]++;
+         $this->clearEditedFields();
       }
 
-      return $result;
+      return true;
    }
 
    function delete()
@@ -244,9 +239,11 @@ class fmRecord
    {
       $relatedSets = array();
 
-      $recordData = $this->data[0];
-      if (! is_null($recordData)) {
-         $relatedSets = array_keys($recordData[FM_PORTAL_DATA]);
+      if (count($this->data) > 0) {
+         $recordData = $this->data[0];
+         if (! is_null($recordData)) {
+            $relatedSets = array_keys($recordData[FM_PORTAL_DATA]);
+         }
       }
 
       return $relatedSets;
@@ -308,12 +305,11 @@ class fmRecord
       return $result;
    }
 
-
-
    // Handy debugging function to see all the fields and related data in a record. Typically sent to the fmLogger::log() method.
    function dumpRecord()
    {
       $data = 'Record ('. FM_RECORD_ID .' = '. $this->getRecordId() .', '. FM_MOD_ID .' = '. $this->getModificationId() .')'. '<br>';
+
       $data .= print_r($this->data[FM_FIELD_DATA], 1);
 
       foreach ($this->data[FM_PORTAL_DATA] as $relatedSetName => $relatedSetData) {

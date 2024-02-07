@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -343,6 +343,39 @@ define('ADMIN_API_VERSION', 2);
                <div id="output_layout_metadata" class="api-example-output"></div>
             </div>
 
+            <div id="apiValueList" class="api-object">
+               <div class="api-header">
+                  fmDataAPI::apiGetValueList()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiGetValueList($layout, $valueList, $recordID = '')
+
+                        Retrieve a value list from the layout with an optional recordID.
+
+                        Parameters:
+                           (string)  $layout           The name of the layout
+                           (string)  $valueList        The name of the value list to return
+                           (integer) $recordID         The recordID of the record to retrieve value list data
+
+                        Returns:
+                           An JSON-decoded associative array of the value list:
+                              ['displayValue'] Array of labels/values
+                              ['value'] Array of values
+
+                        Example:
+                           $fm = new fmDataAPI($database, $host, $username, $password);
+                           $valueListInfo = $fm->apiGetValueList('Web_Holiday', 'Holidays');
+                  </code></pre>
+               </div>
+
+               <div class="api-example-output-header">
+                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="get_value_list">Run Example</button> Returns a list of holidays
+               </div>
+               <div id="output_get_value_list" class="api-example-output"></div>
+            </div>
+
             <div id="apiLogin" class="api-object">
                <div class="api-header">
                   fmDataAPI::apiLogin()
@@ -421,6 +454,54 @@ define('ADMIN_API_VERSION', 2);
                  <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="logout">Run Example</button> Log out and destroy the session
                </div>
                <div id="output_logout" class="api-example-output"></div>
+            </div>
+
+            <div id="apiValidateSession" class="api-object">
+               <div class="api-header">
+                  fmDataAPI::apiValidateSession()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiValidateSession($token = '')
+
+                        Check that a token is valid.
+                        There is very little reason to use this method as fmDataAPi/fmAPI take care of token management
+                        and will retrieve a new token should the current token age out.
+
+                        Originated in FileMaker Server 19
+
+                        Parameters:
+                           (string)  $token           The session token to test. Leave blank to use the one fmDataAPI manages.
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['response'] Typically this will be empty
+                              ['messages'] Array of code/message pairs
+
+                           An JSON-decoded associative array of the API result. Typically:
+                           If you call this with no token (before you've called apiLogin():
+                              {"messages":[{"code":"10","message":"Request validation failed: Parameter (Authorization) is required"}],"response":{}}
+
+                           If called with an invalid token:
+                              {"messages":[{"code":"952","message":"Invalid FileMaker Data API token (*)"}],"response":{}}
+
+                           If called with a valid token:
+                              {"response":{},"messages":[{"code":"0","message":"OK"}]}
+
+                        Example:
+                           $fm = new fmDataAPI($database, $host, $username, $password);
+                           $apiResult = $fm->apiValidateSession();
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+
+               <div class="api-example-output-header">
+                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="validate_session">Run Example</button> Validate the session token
+               </div>
+               <div id="output_validate_session" class="api-example-output"></div>
             </div>
 
             <div id="apiGetRecord" class="api-object">
@@ -811,13 +892,16 @@ define('ADMIN_API_VERSION', 2);
                  <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="container_get_url" output="container_get">Run Example 1</button> Use fmDataAPI::GetRecord() to retrieve a record and display the container in an &lt;img&gt; tag
                  <br>
                  <br>
-                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="container_get.php?action=get" output="container_get">Run Example 2</button> Use fmDataAPI::apiGetContainer() to display the container field contents.
+                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="container_get_base64encoded" output="container_get">Run Example 2</button> Use fmDataAPI's GetRecord() & apiGetContainer() to retrieve a record and display the container in a Base64 encoded &lt;img&gt; tag
                  <br>
                  <br>
-                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="container_get.php?action=download" output="container_get" target="_blank">Run Example 3</button> Use fmDataAPI::apiGetContainer() to download the container field contents.
+                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="container_get.php?action=get" output="container_get">Run Example 3</button> Use fmDataAPI::apiGetContainer() to display the container field contents.
                  <br>
                  <br>
-                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="container_get.php?action=inline" output="container_get" target="_blank">Run Example 4</button> Use fmDataAPI::apiGetContainer() to download/inline the container field contents.
+                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="container_get.php?action=download" output="container_get" target="_blank">Run Example 4</button> Use fmDataAPI::apiGetContainer() to download the container field contents.
+                 <br>
+                 <br>
+                 <button type="button" class="btn btn-primary run_php_script" api="data" phpscript="container_get.php?action=inline" output="container_get" target="_blank">Run Example 5</button> Use fmDataAPI::apiGetContainer() to download/inline the container field contents.
                </div>
                <div id="output_container_get" class="api-example-output"></div>
             </div>

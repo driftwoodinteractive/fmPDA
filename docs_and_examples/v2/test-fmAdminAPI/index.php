@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -350,7 +350,134 @@ define('ADMIN_API_VERSION', 2);
                <div id="output_get_log" class="api-example-output"></div>
             </div>
 
-            <div id="apiGetPHPConfig" class="api-object">
+            <div id="apiGetDataAPIConfiguration" class="api-object">
+               <div class="api-header">
+                  fmAdminAPI::apiGetDataAPIConfiguration()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiGetDataAPIConfiguration()
+
+                        Get the Data API configuration for the server.
+
+                        Parameters:
+                           None
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['result'] 0 if successful else an error code
+                              ['enabled'] 1 if PHP is enabled, 0 otherwise
+                              ...
+
+                        Example:
+                           $fm = new fmAdminAPI($host, $username, $password);
+                           $apiResult = $fm->apiGetDataAPIConfiguration();
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+
+               <div class="api-example-output-header">
+                 <button type="button" class="btn btn-primary run_php_script" api="admin" phpscript="get_dataapi_configuration">Run Example</button> Get the Data API configuration
+               </div>
+               <div id="output_get_dataapi_configuration" class="api-example-output"></div>
+            </div>
+            <div id="apiSetDataAPIConfiguration" class="api-object">
+               <div class="api-header">
+                  fmAdminAPI::apiSetDataAPIConfiguration()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiSetDataAPIConfiguration($data)
+
+                        Set the Data API configuration on the server.
+
+                        Parameters:
+                           (array) $data An array of options to set the configuration.
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['result'] 0 if successful else an error code
+                              ...
+
+                        Example:
+                           $fm = new fmAdminAPI($host, $username, $password);
+                           $option = array();
+                           $option[ ... ] = '';
+                           $apiResult = $fm->apiSetDataAPIConfiguration($data);
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+            </div>
+
+            <div id="apiGetGeneralConfiguration" class="api-object">
+               <div class="api-header">
+                  fmAdminAPI::apiGetServerGeneralConfiguration()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiGetServerGeneralConfiguration()
+
+                        Get the server's general configuration
+
+                        Parameters:
+                           None
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['result'] 0 if successful else an error code
+                              ...
+
+                        Example:
+                           $fm = new fmAdminAPI($host, $username, $password);
+                           $apiResult = $fm->apiGetServerGeneralConfiguration();
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+
+               <div class="api-example-output-header">
+                 <button type="button" class="btn btn-primary run_php_script" api="admin" phpscript="get_server_general_configuration">Run Example</button> Get the Server's General Configuration
+               </div>
+               <div id="output_get_server_general_configuration" class="api-example-output"></div>
+            </div>
+            <div id="apiSetGeneralConfiguration" class="api-object">
+               <div class="api-header">
+                  fmAdminAPI::apiSetServerGeneralConfiguration()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiSetServerGeneralConfiguration($data)
+
+                        Get the server's security configuration
+
+                        Parameters:
+                           (array) $data An array of options to set in the general configuration.
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['result'] 0 if successful else an error code
+                              ...
+
+                        Example:
+                           $fm = new fmAdminAPI($host, $username, $password);
+                           $apiResult = $fm->apiSetServerGeneralConfiguration($data);
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+            </div>
+
+            <div id="apiGetPHPConfiguration" class="api-object">
                <div class="api-header">
                   fmAdminAPI::apiGetPHPConfiguration()
                </div>
@@ -384,7 +511,7 @@ define('ADMIN_API_VERSION', 2);
                </div>
                <div id="output_get_php_configuration" class="api-example-output"></div>
             </div>
-            <div id="apiSetPHPConfig" class="api-object">
+            <div id="apiSetPHPConfiguration" class="api-object">
                <div class="api-header">
                   fmAdminAPI::apiSetPHPConfiguration()
                </div>
@@ -415,133 +542,7 @@ define('ADMIN_API_VERSION', 2);
                </div>
             </div>
 
-            <div id="apiGetXMLConfig" class="api-object">
-               <div class="api-header">
-                  fmAdminAPI::apiGetXMLConfiguration()
-               </div>
-
-               <div class="api-description">
-                  <pre><code class="language-php">
-                     function apiGetXMLConfiguration()
-
-                        Get the XML configuration for the server.
-
-                        Parameters:
-                           None
-
-                        Returns:
-                           An JSON-decoded associative array of the API result. Typically:
-                              ['result'] 0 if successful else an error code
-                              ['enabled'] 1 if XML is enabled, 0 otherwise
-
-                        Example:
-                           $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = $fm->apiGetXMLConfiguration();
-                           if (! $fm->getIsError($apiResult)) {
-                              ...
-                           }
-                  </code></pre>
-               </div>
-
-               <div class="api-example-output-header">
-                 <button type="button" class="btn btn-primary run_php_script" api="admin" phpscript="get_xml_configuration">Run Example</button> Get the XML configuration
-               </div>
-               <div id="output_get_xml_configuration" class="api-example-output"></div>
-            </div>
-            <div id="apiSetXMLConfig" class="api-object">
-               <div class="api-header">
-                  fmAdminAPI::apiSetXMLConfiguration()
-               </div>
-
-               <div class="api-description">
-                  <pre><code class="language-php">
-                     function apiSetXMLConfiguration($data)
-
-                        Get the XML configuration for the server.
-
-                        Parameters:
-                           (array) $data An array of options to set in the XML configuration. 'enabled' is currently the only option.
-
-                        Returns:
-                           An JSON-decoded associative array of the API result. Typically:
-                              ['result'] 0 if successful else an error code
-                              ...
-
-                        Example:
-                           $fm = new fmAdminAPI($host, $username, $password);
-                           $option = array();
-                           $option['enabled'] = 'true';
-                           $apiResult = $fm->apiSetXMLConfiguration($data);
-                           if (! $fm->getIsError($apiResult)) {
-                              ...
-                           }
-                  </code></pre>
-               </div>
-            </div>
-
-            <div id="apiGetGeneralConfig" class="api-object">
-               <div class="api-header">
-                  fmAdminAPI::apiGetServerGeneralConfiguration()
-               </div>
-
-               <div class="api-description">
-                  <pre><code class="language-php">
-                     function apiGetServerGeneralConfiguration()
-
-                        Get the server's general configuration
-
-                        Parameters:
-                           None
-
-                        Returns:
-                           An JSON-decoded associative array of the API result. Typically:
-                              ['result'] 0 if successful else an error code
-                              ...
-
-                        Example:
-                           $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = $fm->apiGetServerGeneralConfiguration();
-                           if (! $fm->getIsError($apiResult)) {
-                              ...
-                           }
-                  </code></pre>
-               </div>
-
-               <div class="api-example-output-header">
-                 <button type="button" class="btn btn-primary run_php_script" api="admin" phpscript="get_server_general_configuration">Run Example</button> Get the Server's General Configuration
-               </div>
-               <div id="output_get_server_general_configuration" class="api-example-output"></div>
-            </div>
-            <div id="apiSetGeneralConfig" class="api-object">
-               <div class="api-header">
-                  fmAdminAPI::apiSetServerGeneralConfiguration()
-               </div>
-
-               <div class="api-description">
-                  <pre><code class="language-php">
-                     function apiSetServerGeneralConfiguration($data)
-
-                        Get the server's security configuration
-
-                        Parameters:
-                           (array) $data An array of options to set in the general configuration.
-
-                        Returns:
-                           An JSON-decoded associative array of the API result. Typically:
-                              ['result'] 0 if successful else an error code
-                              ...
-
-                        Example:
-                           $fm = new fmAdminAPI($host, $username, $password);
-                           $apiResult = $fm->apiSetServerGeneralConfiguration($data);
-                           if (! $fm->getIsError($apiResult)) {
-                              ...
-                           }
-                  </code></pre>
-               </div>
-            </div>
-
-            <div id="apiGetSecurityConfig" class="api-object">
+            <div id="apiGetSecurityConfiguration" class="api-object">
                <div class="api-header">
                   fmAdminAPI::apiGetServerSecurityConfiguration()
                </div>
@@ -574,7 +575,7 @@ define('ADMIN_API_VERSION', 2);
                </div>
                <div id="output_get_server_security_configuration" class="api-example-output"></div>
             </div>
-            <div id="apiSetSecurityConfig" class="api-object">
+            <div id="apiSetSecurityConfiguration" class="api-object">
                <div class="api-header">
                   fmAdminAPI::apiSetServerSecurityConfiguration()
                </div>
@@ -596,6 +597,257 @@ define('ADMIN_API_VERSION', 2);
                         Example:
                            $fm = new fmAdminAPI($host, $username, $password);
                            $apiResult = $fm->apiSetServerSecurityConfiguration($data);
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+            </div>
+
+            <div id="apiGetWebDirectConfiguration" class="api-object">
+               <div class="api-header">
+                  fmAdminAPI::apiGetWebDirectConfiguration()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiGetWebDirectConfiguration()
+
+                        Get the server's Web Direct configuration
+
+                        Parameters:
+                           None
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['result'] 0 if successful else an error code
+                              ...
+
+                        Example:
+                           $fm = new fmAdminAPI($host, $username, $password);
+                           $apiResult = $fm->apiGetWebDirectConfiguration();
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+
+               <div class="api-example-output-header">
+                 <button type="button" class="btn btn-primary run_php_script" api="admin" phpscript="get_webd_configuration">Run Example</button> Get the Web Direct Configuration
+               </div>
+               <div id="output_get_webd_configuration" class="api-example-output"></div>
+            </div>
+            <div id="apiSetWebDirectConfiguration" class="api-object">
+               <div class="api-header">
+                  fmAdminAPI::apiSetWebDirectConfiguration()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiSetWebDirectConfiguration($data)
+
+                        Set the server's Web Direct configuration
+
+                        Parameters:
+                           (array) $data An array of options to set the configuration.
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['result'] 0 if successful else an error code
+                              ...
+
+                        Example:
+                           $fm = new fmAdminAPI($host, $username, $password);
+                           $apiResult = $fm->apiSetWebDirectConfiguration($data);
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+            </div>
+
+            <div id="apiGetWPEConfiguration" class="api-object">
+               <div class="api-header">
+                  fmAdminAPI::apiGetWPEConfiguration()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiGetWPEConfiguration($machineID = '')
+
+                        Get the server's Web Publishing Engine configuration
+
+                        Parameters:
+                           (integer)   $machineID  The machine ID to set the configuration or blank for all.
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['result'] 0 if successful else an error code
+                              ...
+
+                        Example:
+                           $fm = new fmAdminAPI($host, $username, $password);
+                           $apiResult = $fm->apiGetWPEConfiguration();
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+
+               <div class="api-example-output-header">
+                 <button type="button" class="btn btn-primary run_php_script" api="admin" phpscript="get_wpe_configuration">Run Example</button> Get the WPE Configuration
+               </div>
+               <div id="output_get_wpe_configuration" class="api-example-output"></div>
+            </div>
+            <div id="apiSetWebDirectConfiguration" class="api-object">
+               <div class="api-header">
+                  fmAdminAPI::apiSetWebDirectConfiguration()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiSetWPEConfiguration($data, $machineID = '')
+
+                        Set the server's Web Direct configuration
+
+                        Parameters:
+                           (array)   $data       An array of options to set the configuration.
+                           (integer) $machineID  The machine ID to set the configuration.
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['result'] 0 if successful else an error code
+                              ...
+
+                        Example:
+                           $fm = new fmAdminAPI($host, $username, $password);
+                           $apiResult = $fm->apiSetWebDirectConfiguration($data);
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+            </div>
+
+            <div id="apiGetXDBCConfiguration" class="api-object">
+               <div class="api-header">
+                  fmAdminAPI::apiGetXDBCConfiguration()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiGetXDBCConfiguration($machineID = '')
+
+                        Get the server's ODBC/JDBC configuration
+
+                        Parameters:
+                           None
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['result'] 0 if successful else an error code
+                              ...
+
+                        Example:
+                           $fm = new fmAdminAPI($host, $username, $password);
+                           $apiResult = $fm->apiGetXDBCConfiguration();
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+
+               <div class="api-example-output-header">
+                 <button type="button" class="btn btn-primary run_php_script" api="admin" phpscript="get_xdbc_configuration">Run Example</button> Get the ODBC/JDBC Configuration
+               </div>
+               <div id="output_get_xdbc_configuration" class="api-example-output"></div>
+            </div>
+            <div id="apiSetXDBCConfiguration" class="api-object">
+               <div class="api-header">
+                  fmAdminAPI::apiSetXDBCConfiguration()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiSetWPEConfiguration($data, $machineID = '')
+
+                        Set the server's ODBC/JDBC configuration
+
+                        Parameters:
+                           None
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['result'] 0 if successful else an error code
+                              ...
+
+                        Example:
+                           $fm = new fmAdminAPI($host, $username, $password);
+                           $apiResult = $fm->apiSetXDBCConfiguration($data);
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+            </div>
+
+            <div id="apiGetXMLConfiguration" class="api-object">
+               <div class="api-header">
+                  fmAdminAPI::apiGetXMLConfiguration()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiGetXMLConfiguration()
+
+                        Get the XML configuration for the server.
+
+                        Parameters:
+                           None
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['result'] 0 if successful else an error code
+                              ['enabled'] 1 if XML is enabled, 0 otherwise
+
+                        Example:
+                           $fm = new fmAdminAPI($host, $username, $password);
+                           $apiResult = $fm->apiGetXMLConfiguration();
+                           if (! $fm->getIsError($apiResult)) {
+                              ...
+                           }
+                  </code></pre>
+               </div>
+
+               <div class="api-example-output-header">
+                 <button type="button" class="btn btn-primary run_php_script" api="admin" phpscript="get_xml_configuration">Run Example</button> Get the XML configuration
+               </div>
+               <div id="output_get_xml_configuration" class="api-example-output"></div>
+            </div>
+            <div id="apiSetXMLConfiguration" class="api-object">
+               <div class="api-header">
+                  fmAdminAPI::apiSetXMLConfiguration()
+               </div>
+
+               <div class="api-description">
+                  <pre><code class="language-php">
+                     function apiSetXMLConfiguration($data)
+
+                        Get the XML configuration for the server.
+
+                        Parameters:
+                           (array) $data An array of options to set in the XML configuration. 'enabled' is currently the only option.
+
+                        Returns:
+                           An JSON-decoded associative array of the API result. Typically:
+                              ['result'] 0 if successful else an error code
+                              ...
+
+                        Example:
+                           $fm = new fmAdminAPI($host, $username, $password);
+                           $option = array();
+                           $option['enabled'] = 'true';
+                           $apiResult = $fm->apiSetXMLConfiguration($data);
                            if (! $fm->getIsError($apiResult)) {
                               ...
                            }

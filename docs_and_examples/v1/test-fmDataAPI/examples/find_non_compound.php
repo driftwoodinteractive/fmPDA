@@ -7,7 +7,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,8 @@ if (1) {
 
    $options =
          array(
-            'query'=> array(
+//             'limit' => 300,
+            'query' => array(
                         array('Name' => 'Test', 'ColorIndex' => '5', 'omit' => 'true')
                      )
          );

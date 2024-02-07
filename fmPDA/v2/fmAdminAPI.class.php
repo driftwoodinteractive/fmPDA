@@ -18,7 +18,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -63,6 +63,10 @@ define('PATH_ADMIN_CONFIG_GENERAL',    PATH_ADMIN_API_BASE .'/server/config/gene
 define('PATH_ADMIN_CONFIG_SECURITY',   PATH_ADMIN_API_BASE .'/server/config/security');
 define('PATH_ADMIN_PHP',               PATH_ADMIN_API_BASE .'/php/config');
 define('PATH_ADMIN_XML',               PATH_ADMIN_API_BASE .'/xml/config');
+define('PATH_ADMIN_XDBC',              PATH_ADMIN_API_BASE .'/xdbc/config');
+define('PATH_ADMIN_DATAAPI',           PATH_ADMIN_API_BASE .'/fmdapi/config');
+define('PATH_ADMIN_WEBDIRECT',         PATH_ADMIN_API_BASE .'/webdirect/config');
+define('PATH_ADMIN_WPE',               PATH_ADMIN_API_BASE .'/wpe/config');
 
 
 // *********************************************************************************************************************************
@@ -199,6 +203,58 @@ class fmAdminAPI extends fmAPI
 
    /***********************************************************************************************************************************
     *
+    * apiGetDataAPIConfiguration()
+    *
+    *    Get the server's Data API configuration
+    *
+    *    Parameters:
+    *       None
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['result'] 0 if successful else an error code
+    *          ...
+    *
+    *    Example:
+    *       $fm = new fmAdminAPI($host, $username, $password);
+    *       $apiResult = $fm->apiGetDataAPIConfiguration($data);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiGetDataAPIConfiguration()
+   {
+      return $this->fmAPI($this->getAPIPath(PATH_ADMIN_DATAAPI), METHOD_GET);
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * apiSetDataAPIConfiguration($data)
+    *
+    *    Set the server's Data API configuration
+    *
+    *    Parameters:
+    *       (array) $data An array of options to set the configuration.
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['result'] 0 if successful else an error code
+    *          ...
+    *
+    *    Example:
+    *       $fm = new fmAdminAPI($host, $username, $password);
+    *       $apiResult = $fm->apiSetDataAPIConfiguration($data);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiSetDataAPIConfiguration($data)
+   {
+      return $this->fmAPI($this->getAPIPath(PATH_ADMIN_DATAAPI), METHOD_PATCH, $data);
+   }
+
+   /***********************************************************************************************************************************
+    *
     * apiGetPHPConfiguration()
     *
     *    Get the PHP configuration for the server.
@@ -250,6 +306,167 @@ class fmAdminAPI extends fmAPI
    public function apiSetPHPConfiguration($data)
    {
       return $this->fmAPI($this->getAPIPath(PATH_ADMIN_PHP), METHOD_PATCH, $data);
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * apiGetWebDirectConfiguration()
+    *
+    *    Get the server's Web Direct configuration
+    *
+    *    Parameters:
+    *       None
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['result'] 0 if successful else an error code
+    *          ...
+    *
+    *    Example:
+    *       $fm = new fmAdminAPI($host, $username, $password);
+    *       $apiResult = $fm->apiGetWebDirectConfiguration($data);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiGetWebDirectConfiguration()
+   {
+      return $this->fmAPI($this->getAPIPath(PATH_ADMIN_WEBDIRECT), METHOD_GET);
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * apiSetWebDirectConfiguration($data)
+    *
+    *    Set the server's Web Direct configuration
+    *
+    *    Parameters:
+    *       (array) $data An array of options to set the configuration.
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['result'] 0 if successful else an error code
+    *          ...
+    *
+    *    Example:
+    *       $fm = new fmAdminAPI($host, $username, $password);
+    *       $apiResult = $fm->apiSetWebDirectConfiguration($data);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiSetWebDirectConfiguration($data)
+   {
+      return $this->fmAPI($this->getAPIPath(PATH_ADMIN_WEBDIRECT), METHOD_PATCH, $data);
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * apiGetWPEConfiguration($machineID)
+    *
+    *    Get the server's Web Publishing Engine configuration
+    *
+    *    Parameters:
+    *       (integer)   $machineID  The machine ID to set the configuration.
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['result'] 0 if successful else an error code
+    *          ...
+    *
+    *    Example:
+    *       $fm = new fmAdminAPI($host, $username, $password);
+    *       $apiResult = $fm->apiGetWPEConfiguration($data);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiGetWPEConfiguration($machineID = '')
+   {
+      $extra = ($machineID >= 1) ? '/'. $machineID : '';
+
+      return $this->fmAPI($this->getAPIPath(PATH_ADMIN_WPE) . $extra, METHOD_GET);
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * apiSetWPEConfiguration($data)
+    *
+    *    Set the server's Web Publishing Engine  configuration
+    *
+    *    Parameters:
+    *       (array)     $data       An array of options to set the configuration.
+    *       (integer)   $machineID  The machine ID to set the configuration.
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['result'] 0 if successful else an error code
+    *          ...
+    *
+    *    Example:
+    *       $fm = new fmAdminAPI($host, $username, $password);
+    *       $apiResult = $fm->apiSetWPEConfiguration($data);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiSetWPEConfiguration($data, $machineID = '')
+   {
+      $extra = ($machineID >= 1) ? '/'. $machineID : '';
+
+      return $this->fmAPI($this->getAPIPath(PATH_ADMIN_WPE) . $extra, METHOD_PATCH, $data);
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * apiGetXDBCConfiguration()
+    *
+    *    Get the server's ODBC/JDBC configuration
+    *
+    *    Parameters:
+    *       None
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['result'] 0 if successful else an error code
+    *          ...
+    *
+    *    Example:
+    *       $fm = new fmAdminAPI($host, $username, $password);
+    *       $apiResult = $fm->apiGetXDBCConfiguration($data);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiGetXDBCConfiguration()
+   {
+      return $this->fmAPI($this->getAPIPath(PATH_ADMIN_XDBC), METHOD_GET);
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * apiSetXDBCConfiguration($data)
+    *
+    *    Set the server's ODBC/JDBC configuration
+    *
+    *    Parameters:
+    *       (array) $data An array of options to set the configuration.
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['result'] 0 if successful else an error code
+    *          ...
+    *
+    *    Example:
+    *       $fm = new fmAdminAPI($host, $username, $password);
+    *       $apiResult = $fm->apiSetXDBCConfiguration($data);
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiSetXDBCConfiguration($data)
+   {
+      return $this->fmAPI($this->getAPIPath(PATH_ADMIN_XDBC), METHOD_PATCH, $data);
    }
 
    /***********************************************************************************************************************************
@@ -586,7 +803,24 @@ class fmAdminAPI extends fmAPI
     */
    public function apiListClients()
    {
-      return $this->fmAPI($this->getAPIPath(PATH_ADMIN_CLIENT), METHOD_GET);
+      $apiResult = $this->fmAPI($this->getAPIPath(PATH_ADMIN_CLIENT), METHOD_GET);
+
+      if (! $this->getIsError($apiResult)) {
+         $response = $this->getResponse($apiResult);
+
+         if (! array_key_exists('fmdapiCount', $apiResult)) {        // Guard against sure some future version that return this
+            $numDAPI = 0;
+            $clients = $response['clients'];
+            foreach ($clients as $client) {
+              if ($client['appType'] == 'FMDAPI') {                  // API doesn't return the $ of DAPI clients so we'll count ourselves.
+                  $numDAPI++;
+               }
+            }
+            $apiResult['response']['fmdapiCount'] = $numDAPI;
+         }
+      }
+
+      return $apiResult;
    }
 
    /***********************************************************************************************************************************
@@ -1144,7 +1378,7 @@ class fmAdminAPI extends fmAPI
    //
    public function getResponseData($result)
    {
-      $responseData = $this->getResponse();
+      $responseData = $this->getResponse($result);
 
       return $responseData;
    }
@@ -1233,7 +1467,7 @@ class fmAdminAPI extends fmAPI
       $this->credentials = '';
 
       if (array_key_exists('username', $data) && ($data['username'] != '') && array_key_exists('password', $data) && ($data['password'] != '')) {
-         $this->credentials = base64_encode(utf8_decode($data['username']) .':'. utf8_decode($data['password']));
+         $this->credentials = base64_encode(mb_convert_encoding($data['username'], 'ISO-8859-1', 'UTF-8') .':'. mb_convert_encoding($data['password'], 'ISO-8859-1', 'UTF-8'));
 
          if ($this->storeUNPW) {
             $this->userName = $data['username'];

@@ -5,12 +5,10 @@
 //
 // This example uses fmDataAPI::apiGetRecord() with external authentication to access records from another database on the server.
 //    - Retrieves one record and dump the contents to the log.
-//    - Retrieves a different record and displays the project name in the log.
-//    - Attempts to retrieve a record which doesn't exist so you can see what the API returns.
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

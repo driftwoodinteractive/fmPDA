@@ -7,7 +7,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ $options['fileNameField'] = 'PhotoName';     // The value stored in the PhotoNam
 
 $fm = new fmDataAPI(FM_DATABASE, FM_HOST, FM_USERNAME, FM_PASSWORD);
 
-$apiResult = $fm->apiGetContainer('Web_Project', 114, 'Photo', FM_FIELD_REPETITION_1, $options);
+$apiResult = $fm->apiGetContainer('Web_Project', 1, 'Photo', FM_FIELD_REPETITION_1, $options);
 if (! $fm->getIsError($apiResult)) {
 
    // If action is 'download' or 'inline' don't echo any thing else
@@ -54,6 +54,7 @@ else {
    $errorInfo = $fm->getMessageInfo($apiResult);
    fmLogger('Found error(s):');
    fmLogger($errorInfo);
+   echo fmGetLog();
 }
 
 ?>

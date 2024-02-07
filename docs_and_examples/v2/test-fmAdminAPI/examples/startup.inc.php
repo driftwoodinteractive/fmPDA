@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,12 +39,9 @@ ini_set('log_errors', 'on');
 // Include *only* fmAdminAPI & fmCURL
 require_once '../../../../fmPDA/vLatest/fmAdminAPI.class.php';
 
-// As before with the old API, include only the protocol, domain, and port (optional), ie:
-// https://www.example.com:8888
-//
-define('FM_HOST',                      'https://localhost');
+require_once '../../host.inc.php';
 
-define('FM_USERNAME',                  'mdenyse');
-define('FM_PASSWORD',                  'admin%5%pw');   // actually something more secure for localhost :)
+define('FM_ADMIN_USERNAME',            'USERNAME');
+define('FM_ADMIN_PASSWORD',            'PASSWORD');
 
 ?>

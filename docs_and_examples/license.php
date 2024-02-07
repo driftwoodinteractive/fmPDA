@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -57,9 +57,9 @@
                <div class="navigation-header1">Versions<i class="fas fa-caret-down"></i></div>
             </button>
             <div class="dropdown-container">
-               <a href="v0/index.php"><span class="indent-1">v0</span></a>
                <a href="v1/index.php?v=1"><span class="indent-1">v1</span></a>
-               <a href="v1/index.php?v=Latest"><span class="indent-1">vLatest</span></a>
+               <a href="v2/index.php?v=2"><span class="indent-1">v2</span></a>
+               <a href="v2/index.php?v=Latest"><span class="indent-1">vLatest</span></a>
             </div>
             <br>
 
@@ -95,7 +95,7 @@
 
             --------------------------------------------------------------------------------
             --------------------------------------------------------------------------------
-            Copyright (c) 2017 - 2019 Mark DeNyse
+            Copyright (c) 2017 - 2024 Mark DeNyse
 
             Permission is hereby granted, free of charge, to any person obtaining a copy of
             this software and associated documentation files (the "Software"), to deal in

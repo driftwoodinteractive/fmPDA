@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,9 +32,9 @@ require_once 'fmAddEdit.class.php';
 // *********************************************************************************************************************************
 class fmAdd extends fmAddEdit
 {
-   function __construct($fm, $layout)
+   function __construct($fm, $layout, $fieldValues = array())
    {
-      parent::__construct($fm, $layout);
+      parent::__construct($fm, $layout, $fieldValues);
       return;
    }
 
@@ -51,7 +51,13 @@ class fmAdd extends fmAddEdit
             $this->recordID = (array_key_exists(FM_RECORD_ID, $response) ? $response[FM_RECORD_ID] : '');
 
             if ($returnRecord && ($this->recordID != '')) {
-               $result = $this->fm->getRecordById($this->layout, $this->recordID);  // Old api returns record added so grab it now
+               $apiResult = $this->fm->getRecordById($this->layout, $this->recordID);
+               if (! fmGetIsError($apiResult)) {
+                  $result = $this->fm->newResult($this->layout, array($apiResult->data));   // Convert fmRecord into a fmResult
+               }
+               else {
+                  $result = $apiResult;
+               }
             }
             else {
                $result = true;

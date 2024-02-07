@@ -7,7 +7,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,15 +39,16 @@ $recordID = 6;
 
 $record = $fm->getRecordById('Web_Project', $recordID);              // Get the existing record
 if (! fmGetIsError($record)) {
-   $record->setField('ColorIndex', 888);
+   $record->setField('ColorIndex', 98789);
    $result = $record->commit();
 
-   if (! fmGetIsError($result)) {
-      fmLogger('Project Name = '. $result->getField('Name'));
+   if ($result) {
+      $record = $fm->getRecordById('Web_Project', $recordID);        // Verify it really was stored
+      fmLogger('Project Name = '. $record->getField('ColorIndex'));
       fmLogger($record);
    }
    else {
-      fmLogger('Error = '. $result->getCode() .' Message = '. $result->getMessage());
+      fmLogger('commit() somehow failed!');
    }
 }
 else {

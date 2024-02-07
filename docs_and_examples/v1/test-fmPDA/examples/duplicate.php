@@ -7,7 +7,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,8 +40,9 @@ $duplicateCommand = $fm->newDuplicateCommand('Web_Project', $recordID, 'Duplicat
 $result = $duplicateCommand->execute();
 
 if (! fmGetIsError($result)) {
-   fmLogger('Project Name = '. $result->getField('Name'));
-   fmLogger($result);
+   $record = $result->getFirstRecord();
+   fmLogger('Project Name = '. $record->getField('Name'));
+   fmLogger($record);
 }
 else {
    fmLogger('Error = '. $result->getCode() .' Message = '. $result->getMessage());

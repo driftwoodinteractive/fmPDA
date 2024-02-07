@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,5 +39,21 @@
 //
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 define('DEFINE_FILEMAKER_CLASS', false);
+
+
+
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//
+// Uncomment k_CURL_HTTP_VERSION to specify the HTTP version for fmCURL.
+//
+// Windows FMS 19+ may not work with curl requesting HTTP 2 so you may need to 'downshift' and uncomment.
+//
+// Values for k_CURL_HTTP_VERSION can be found here: https://curl.se/libcurl/c/CURLOPT_HTTP_VERSION.html
+//
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// define('k_CURL_HTTP_VERSION', CURL_HTTP_VERSION_1_1);
+
 
 ?>

@@ -4,10 +4,11 @@
 // fmCURL.class.php
 //
 // fmCURL is used to communicate with a host via curl(). This implementation is strictly for 'raw' curl data transmission.
+// It has been tuned for specific use with the Data and Admin API's but can be used for any type of curl() related traffic.
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -54,6 +55,7 @@ define('HTTP_SERVICE_UNAVAILABLE',     503);                      // Service Una
 
 define('CURL_CONNECTION_TIMEOUT',      2);                        // Connection time out
 
+define('MAX_RESPONSE_DUMP_SIZE',       2000);                     // Max chars will display in log from curl result
 
 // *********************************************************************************************************************************
 class fmCURL
@@ -81,6 +83,9 @@ class fmCURL
     *
     *    Parameters:
     *       (array)   $options          Optional parameters
+    *                                      For Windows FMS 19.4+ you may need to enforce HTTP 1.1. You can uncomment the
+    *                                      the CURL_HTTP_VERSION define() in fmPDA.conf.php OR pass this in $options:
+    *                                      $options['CURLOPT_HTTP_VERSION'] = CURL_HTTP_VERSION_1_1
     *       (array)   $curlOptions      Optional parameters passed to curl()
     *
     *    Returns:
@@ -99,6 +104,7 @@ class fmCURL
       $this->options['createCookieJar']         = false;
       $this->options['cookieFilePath']          = '';
       $this->options['maxAttempts']             = 1;
+      $this->options['encodeAsString']          = false;
       $this->options['encodeAsJSON']            = false;
       $this->options['decodeAsJSON']            = false;
       $this->options['logCallInfo']             = true;
@@ -109,6 +115,10 @@ class fmCURL
       $this->options['logCURLResult']           = true;
       $this->options['logCURLInfo']             = false;
       $this->options['userAgent']               = CURL_USER_AGENT;
+
+      if (!array_key_exists('CURL_HTTP_VERSION', $options) and defined('k_CURL_HTTP_VERSION')) {  // Option not passed but set in fmPDA.conf.php?
+         $options['CURL_HTTP_VERSION'] = k_CURL_HTTP_VERSION;
+      }
 
       $this->options = array_merge($this->options, $options);
 
@@ -123,7 +133,7 @@ class fmCURL
       $this->callTime      = 0;
 
       $curlVersion = curl_version();
-      fmLogger('fmCURL: curl v'. $curlVersion['version'] .'; OpenSSL v'. $curlVersion['ssl_version'] .'; Libz v'. $curlVersion['libz_version'] .'; Host '. $curlVersion['host']);
+      fmLogger('fmCURL: curl v'. $curlVersion['version'] .'; OpenSSL v'. $curlVersion['ssl_version'] .'; Libz v'. $curlVersion['libz_version'] .'; Host '. $curlVersion['host'] .' '. $this->options['userAgent']);
    }
 
    /***********************************************************************************************************************************
@@ -162,11 +172,14 @@ class fmCURL
       $postData = '';
       if ($data != '') {
          if (! $this->getIsMethodPost($method)) {
-            $url .= '?'. (($data[0] == '&') ? substr($data, 1) : $data);
+            $url .= '?'. ((substr($data, 0, 1) == '&') ? substr($data, 1) : $data);
          }
          else {
-            if ($options['encodeAsJSON']) {
+            if (array_key_exists('encodeAsJSON', $options) && $options['encodeAsJSON']) {
                $postData = json_encode($data);
+            }
+            else if (array_key_exists('encodeAsString', $options) && $options['encodeAsString']) {
+               $postData = http_build_query($data);
             }
             else {
                $postData = $data;
@@ -178,11 +191,13 @@ class fmCURL
       curl_setopt($ch, CURLOPT_URL, $url);
 
       // The Data API has some issues if there isn't a Content-Length: 0 on a POST with no content (ie: Login) so we explictly set the length to 0.
-      if ($this->getIsMethodPost($method)) {                              // Patch, Put, or Post?
-         if (! is_array($options['CURLOPT_HTTPHEADER'])) {
+      if ($this->getIsMethodPost($method)) {                                  // Patch, Put, or Post?
+         if (! is_array($options['CURLOPT_HTTPHEADER']) || ! array_key_exists('CURLOPT_HTTPHEADER', $options)) {
             $options['CURLOPT_HTTPHEADER'] = array();
          }
-         $options['CURLOPT_HTTPHEADER'][] = 'Content-Length: '. strlen($postData);
+         if (is_string($postData)) {
+            $options['CURLOPT_HTTPHEADER'][] = 'Content-Length: '. strlen($postData);
+         }
       }
 
       if (is_array($options['CURLOPT_HTTPHEADER']) && array_key_exists('CURLOPT_HTTPHEADER', $options) && (count($options['CURLOPT_HTTPHEADER']) > 0)) {
@@ -195,15 +210,26 @@ class fmCURL
       curl_setopt($ch, CURLOPT_MAXREDIRS, 20);
       curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
 
-      if ($options['CURLOPT_CONNECTTIMEOUT'] != '') {
+      if (array_key_exists('CURLOPT_HEADER', $options) && $options['CURLOPT_HEADER']) {
+         curl_setopt($ch, CURLOPT_HEADER, $options['CURLOPT_HEADER']);
+      }
+      if (array_key_exists('CURLOPT_NOBODY', $options) && $options['CURLOPT_NOBODY']) {
+         curl_setopt($ch, CURLOPT_NOBODY, $options['CURLOPT_NOBODY']);
+      }
+
+      if (array_key_exists('CURLOPT_CONNECTTIMEOUT', $options) && (strlen($options['CURLOPT_CONNECTTIMEOUT']) > 0)) {
          curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $options['CURLOPT_CONNECTTIMEOUT']);
       }
 
-      if ($options['userAgent'] != '') {
+      if (array_key_exists('CURLOPT_HTTP_VERSION', $options)) {
+         curl_setopt($ch, CURLOPT_HTTP_VERSION, $options['CURLOPT_HTTP_VERSION']);
+      }
+
+      if (array_key_exists('userAgent', $options) && (strlen($options['userAgent']) > 0)) {
          curl_setopt($ch, CURLOPT_USERAGENT, $options['userAgent']);
       }
 
-      if ($options['CURLOPT_CAINFO'] != '') {
+      if (array_key_exists('CURLOPT_CAINFO', $options) && (strlen($options['CURLOPT_CAINFO']) > 0)) {
          curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
          curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
          curl_setopt($ch, CURLOPT_CAINFO, $options['CURLOPT_CAINFO']);
@@ -213,7 +239,7 @@ class fmCURL
          curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
       }
 
-      if ($options['CURLOPT_POST'] == 1) {
+      if (array_key_exists('CURLOPT_POST', $options) && $options['CURLOPT_POST']) {
          curl_setopt($ch, CURLOPT_POST, 1);
       }
 
@@ -350,7 +376,13 @@ class fmCURL
       }
 
       if ($options['logCURLResult'] && ($curlResult != '')) {
-         fmLogger('<b>&#9664;</b>'. htmlspecialchars($curlResult));
+         if (strlen($curlResult) > MAX_RESPONSE_DUMP_SIZE) {                              // Don't dump out gobs of response data
+            fmLogger('<b>&#9664;</b>'. htmlspecialchars(substr($curlResult, 0, MAX_RESPONSE_DUMP_SIZE)) .' ...');
+            fmLogger('<i>Response truncated at '. number_format(MAX_RESPONSE_DUMP_SIZE, 0, '.', ',') .' characters.</i>');
+         }
+         else {
+            fmLogger('<b>&#9664;</b>'. htmlspecialchars($curlResult));
+         }
       }
 
       if (($this->curlErrNum != 0) || ($this->curlErrMsg != '')) {
@@ -389,7 +421,7 @@ class fmCURL
     *                                                       Defaults to 'gzip' for ['action'] == 'download' or ['action'] == 'inline',
     *                                  ['compressionLevel'] If ['compress'] =='gzip', then gzip with this compression level
     *                                                       (only valid for 'action' = 'download' or 'inline')
-    *                                  ['createCookieJar']  If true, a default cookie jar will be create to store any cookies
+    *                                  ['createCookieJar']  If true, a default cookie jar will be created to store any cookies
     *                                                       returned from the call. Defaults to true.
     *                                  ['retryOn401Error']  If true, a second attempt will be made with the cookie jar returned
     *                                                       from the first attempt. This is necessary for some hosts when 401
@@ -435,8 +467,11 @@ class fmCURL
                               'retryOn401Error' => false,
                               'getMimeType' => true);
 
-      if ($options['action'] == 'get') {
-         $defaultOptions['compression'] = '';
+      // If options wasn't defined or the action is a 'get', set our default compress to off.
+      // If options defines a compression with get we will pick this up.
+      if (! array_key_exists('action', $options) || ($options['action'] == 'get')) {
+         $defaultOptions['compress'] = '';
+         $defaultOptions['compressionLevel'] = '';
       }
 
       $options = array_merge($defaultOptions, $options);

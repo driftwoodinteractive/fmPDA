@@ -7,7 +7,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ $params = 'some';     // 'all' or 'some'
 
 $fm = new fmDataAPI(FM_DATABASE, FM_HOST, FM_USERNAME, FM_PASSWORD);
 
-$apiResult = $fm->apiExecuteScript('Web_Global', $script, $params);
+$apiResult = $fm->apiExecuteScript('Web_Project', $script, $params);
 
 if (! $fm->getIsError($apiResult)) {
 

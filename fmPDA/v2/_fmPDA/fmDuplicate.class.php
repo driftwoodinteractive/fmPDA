@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,6 @@ class fmDuplicate extends fmCommand
    {
       $apiResult = $this->fm->apiDuplicateRecord($this->layout, $this->recordID);
 
-
       if ($this->fm->getTranslateResult()) {
          if (! fmGetIsError($apiResult)) {
 
@@ -53,7 +52,13 @@ class fmDuplicate extends fmCommand
             $this->recordID = (array_key_exists(FM_RECORD_ID, $response) ? $response[FM_RECORD_ID] : '');
 
             if ($returnRecord && ($this->recordID != '')) {
-               $result = $this->fm->getRecordById($this->layout, $this->recordID);  // Old api returns record added so grab it now
+               $apiResult = $this->fm->getRecordById($this->layout, $this->recordID);  // Old api returns record added so grab it now
+               if (! fmGetIsError($apiResult)) {
+                  $result = $this->fm->newResult($this->layout, array(FM_DATA => array($apiResult->data)));   // Convert fmRecord into a fmResult
+               }
+               else {
+                  $result = $apiResult;
+               }
             }
             else {
                $result = true;

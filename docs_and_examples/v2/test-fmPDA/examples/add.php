@@ -7,7 +7,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,17 +33,30 @@ require_once 'startup.inc.php';
 
 $fm = new fmPDA(FM_DATABASE, FM_HOST, FM_USERNAME, FM_PASSWORD);
 
-$addCommand = $fm->newAddCommand('Web_Project');
-$addCommand->setField('Name', 'Project '. rand());
-$addCommand->setField('Date_Start', date('m/d/Y'));
-$addCommand->setField('Date_End', date('m/d/Y'));
-$addCommand->setField('ColorIndex', 999);
+// Flip 0 -> 1 to test between the two ways to add fields
+if (0) {
+   $addCommand = $fm->newAddCommand('Web_Project');
+   $addCommand->setField('Name', 'Project '. rand());
+   $addCommand->setField('Date_Start', date('m/d/Y'));
+   $addCommand->setField('Date_End', date('m/d/Y'));
+   $addCommand->setField('ColorIndex', 999);
+}
+else {
+   $fields = array();
+   $fields['Name'] = 'Project '. rand();
+   $fields['Date_Start'] = date('m/d/Y');
+   $fields['Date_End'] = date('m/d/Y');
+   $fields['ColorIndex'] = 888;
+
+   $addCommand = $fm->newAddCommand('Web_Project', $fields);
+}
 
 $result = $addCommand->execute();
 
 if (! fmGetIsError($result)) {
-   fmLogger('Project Name = '. $result->getField('Name'));
-   fmLogger($result);
+   $record = $result->getFirstRecord();
+   fmLogger('Project Name = '. $record->getField('Name'));
+//    fmLogger($result);
 }
 else {
    fmLogger('Error = '. $result->getCode() .' Message = '. $result->getMessage());

@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@
          caption { font-weight: bold; font-size: 1.1em; }
          table, caption, th, td { border: 1px solid black; }
          th { text-align: left; }
-         th, td { padding: 5px; }
+         th, td { padding: 5px; vertical-align: top; }
       </style>
    </head>
    <body>
@@ -66,9 +66,9 @@
                <div class="navigation-header1">Versions<i class="fas fa-caret-down"></i></div>
             </button>
             <div class="dropdown-container">
-               <a href="v0/index.php"><span class="indent-1">v0</span></a>
                <a href="v1/index.php?v=1"><span class="indent-1">v1</span></a>
-               <a href="v1/index.php?v=Latest"><span class="indent-1">vLatest</span></a>
+               <a href="v2/index.php?v=2"><span class="indent-1">v2</span></a>
+               <a href="v2/index.php?v=Latest"><span class="indent-1">vLatest</span></a>
             </div>
             <br>
 
@@ -94,13 +94,52 @@
                   <th style="width: 15%;">Version</th><th style="width: 15%;">Date</th><th style="width: 70%;">Notes</th>
                </tr>
                <tr>
-                  <td>1.0</td><td>Aug 28, 2017</td><td>Initial release.</td>
+                  <td>1.0</td><td>2017 August 28</td><td>Initial release.</td>
                </tr>
                <tr>
-                  <td>1.1</td><td>Jun 13, 2018</td><td>Support for FileMaker Server 17/v1 Data API, added fmAdminAPI.</td>
+                  <td>1.1</td><td>2018 June 13</td><td>Support for FileMaker Server 17 Data API v1, added AdminAPI v1</td>
                </tr>
                <tr>
-                  <td>2.0</td><td>May 22, 2019</td><td>Support for FileMaker Server 18 Data API v1, fmAdminAPI v2.</td>
+                  <td>2.0</td><td>2019 May 22</td><td>Support for FileMaker Server 18 Data API v1, Admin API v2.</td>
+               </tr>
+               <tr>
+                  <td>2.1</td><td>2020 September 15</td>
+                  <td>
+                     Support for FileMaker Server 19 Data API v2<br>
+                     <ul>
+                        Added additional methods for Data API v1 that are part of FileMaker Server 18:
+                        <ul>
+                        <li><code>Added fmDataAPI::ValidateSession()</code></li>
+                        </ul>
+                        <br>
+                        Added additional methods for Admin API v2 that are part of FileMaker Server 18:
+                        <ul>
+                        <li><code>Added fmAdminAPI::GetODBCJDBCConfiguration()</code></li>
+                        <li><code>Added fmAdminAPI::SetODBCJDBCConfiguration()</code></li>
+                        <li><code>Added fmAdminAPI::GetDataAPIConfiguration()</code></li>
+                        <li><code>Added fmAdminAPI::SetDataAPIConfiguration()</code></li>
+                        <li><code>Added fmAdminAPI::GetWebDirectonfiguration()</code></li>
+                        <li><code>Added fmAdminAPI::SetWebDirectonfiguration()</code></li>
+                        <li><code>Added fmAdminAPI::GetWPEConfiguration()</code></li>
+                        <li><code>Added fmAdminAPI::SetWPEonfiguration()</code></li>
+                        </ul>
+                     </ul>
+                     Added <code>fmAPI::EncodeParameter()</code> method to properly handle encoding of parameters for GET and POST operations. <code>fmDataAPI::getAPIParams()</code> now calls this.<br>
+                     <br>
+                     Added $fieldValues (array of field name/values) parameter to <code>fmPDA::newAddCommand()</code> and <code>fmPDA::newEditCommand()</code> to match FileMaker API for PHP. Thanks to Darren LaPadula for finding this.<br>
+                     <br>
+                     Changed fmPDA Add/Edit/Duplicate/Upload <code>execute()</code> methods to return a result object (instead of a record object) to match FileMaker API for PHP. Thanks to Darren LaPadula for finding this.<br>
+                  </td>
+               </tr>
+               <tr>
+                  <td>2.2</td><td>2024 February 6</td>
+                  <td>
+                     Support for PHP 8.2<br>
+                     <br>
+                     Support for FileMaker Server 20+<br>
+                     <br>
+                     Added <code>fmDataAPI::apiGetValueList()</code> to retrieve a specific value list from a layout.<br>
+                  </td>
                </tr>
             </table>
 

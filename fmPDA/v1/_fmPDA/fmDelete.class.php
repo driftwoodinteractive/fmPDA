@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -55,7 +55,7 @@ class fmDelete extends fmCommand
                $result = $apiResult;
             }
             else {
-               $result = $record;                                                   // Old API returns the record we just deleted
+               $result = $this->fm->newResult($this->layout, array($record->data));   // Convert fmRecord into a fmResult
             }
          }
          else {
@@ -63,7 +63,7 @@ class fmDelete extends fmCommand
          }
       }
       else {
-         $result = $apiResult;
+         $result = $record;
       }
 
       return $result;

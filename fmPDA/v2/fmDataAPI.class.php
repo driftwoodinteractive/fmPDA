@@ -3,8 +3,8 @@
 //
 // fmDataAPI.class.php
 //
-// This is in the 'v2' directory but it's really 'v1.1' -- v1 plus FMS 18+ enhancements.
-// For those who need strict v1 support, include the v1 directory instead of v2 or vLatest.
+// This is in the 'v2' directory but it's really 'v1.2' -- v1 (FMS 17) plus FMS 18 and 19+.
+// For those who need strict v1 support, include the v1 directory.
 //
 // fmDataAPI provides direct access to FileMaker's Data API (REST interface). You can use this class alone to communicate
 // with the Data API and not have any translation done on the data returned. If you want to send/receive data like the old
@@ -22,7 +22,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -47,11 +47,12 @@
 require_once 'fmAPI.class.php';
 
 // *********************************************************************************************************************************
-define('DATA_API_USER_AGENT',          'fmDataAPIphp/1.1');  // Our user agent string is v1.1 because it's v1 plus FMS18 stuff
+define('DATA_API_USER_AGENT',          'fmDataAPIphp/1.2');  // Our user agent string is v1.2 because it's v1 plus FMS18 & FMS19+
 
 // Starting with the v1 API, this is the new base path
 define('PATH_DATA_API_BASE',           '/fmi/data/v%%%VERSION%%%');
 
+define('PATH_VALIDATE_SESSION',        PATH_DATA_API_BASE .'/' .'validatesession');
 define('PATH_PRODUCT_INFO',            PATH_DATA_API_BASE .'/' .'productinfo');
 define('PATH_DATA_API_DATABASES_BASE', PATH_DATA_API_BASE .'/' .'databases');
 
@@ -82,10 +83,14 @@ define('FM_FIELD_DATA',                'fieldData');
 define('FM_PORTAL_DATA',               'portalData');
 define('FM_PORTAL_INFO',               'portalDataInfo');         // v1, but only available with FMS 18+
 define('FM_NEW_PORTAL_INFO',           'newPortalRecordInfo');    // v1, but only available with FMS 18+
+define('FM_FIELD_META_DATA',           'fieldMetaData');          // v1, but only available with FMS 18+
 define('FM_RECORD_ID',                 'recordId');
 define('FM_MOD_ID',                    'modId');
 
 define('FM_GLOBAL_FIELDS',             'globalFields');
+
+define('FM_SCRIPT_ERROR',              'scriptError');
+define('FM_SCRIPT_RESULT',             'scriptResult');
 
 define('FM_FIELD_REPETITION_1',        1);
 
@@ -97,7 +102,6 @@ define('FM_ERROR_NO_RECORDS',          401);                      // No records 
 
 // *********************************************************************************************************************************
 define('FM_DATA_SESSION_TOKEN',        'FM-Data-Session-Token');  // Where we store the token in the PHP session
-
 
 // *********************************************************************************************************************************
 if (! defined('FILEMAKER_FIND_LT')) {
@@ -391,7 +395,7 @@ class fmDataAPI extends fmAPI
     *
     *    Execute a script. The underlying table matched with $layout does *not* need to have any records.
     *
-    *    Typically you'll call this with a $layout set to a layout with nothing on it.
+    *    Typically you'll call this with $layout set to a layout with nothing on it.
     *
     *    Parameters:
     *       (string)  $layout           The name of the layout
@@ -566,7 +570,65 @@ class fmDataAPI extends fmAPI
       return $this->fmAPI($this->getAPIPath(PATH_RECORD, $layout), METHOD_GET, $payload);
    }
 
-   /***********************************************************************************************************************************
+    /***********************************************************************************************************************************
+    *
+    * apiGetValueList($layout, $valueList, $recordID = '')
+    *
+    *    Retrieve a value list from the layout with an optional recordID. A field using this value list must be on the layout.
+    *    You must have a field on the layout referencing the value list.
+    *
+    *    The structure returned is NOT the same as the 'old' FileMaker PHP API. Layout meta data returned is documented here:
+    *
+    *    https://help.claris.com/en/data-api-guide/content/get-layout-metadata.html
+    *
+    *    This method will return an array with two sub-arrays, one for the display values and the second with the actual values.
+    *    They will be the same if it’s a ‘custom’ value list rather than one using related data.
+    *
+    *    Parameters:
+    *       (string)  $layout           The name of the layout
+    *       (string)  $valueList        The name of the value list to return
+    *       (integer) $recordID         The recordID of the record to retrieve value list data
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the value list:
+    *          ['displayValue'] Array of labels/values
+    *          ['value'] Array of values
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $apiResult = $fm->apiGetValueList('Web_Project', 'MyValueList');
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   function apiGetValueList($layout, $valueList, $recordID = '')
+   {
+      $result = array();
+      $result['displayValue'] = array();
+      $result['value'] = array();
+
+      $apiResult = $this->apiLayoutMetadata($layout, $recordID);
+
+      if (! $this->getIsError($apiResult)) {
+         $response = $this->getResponse($apiResult);
+
+         $valueLists = array_key_exists('valueLists', $response) ? $response['valueLists'] : array();
+
+         foreach ($valueLists as $theValueList) {
+            if ($theValueList['name'] == $valueList) {
+               foreach ($theValueList['values'] as $item) {
+                  $result['displayValue'][] = $item['displayValue'];
+                  $result['value'][] = $item['value'];
+               }
+               break;
+            }
+         }
+      }
+
+      return $result;
+    }
+
+    /***********************************************************************************************************************************
     *
     * apiLayoutMetadata($layout, $recordID)
     *
@@ -661,7 +723,7 @@ class fmDataAPI extends fmAPI
     *
     * apiListScripts()
     *
-    *    Retrieves information about the FileMaker Server or FileMaker Cloud host
+    *    Retrieves a list of scripts available to execute for this account.
     *
     *    Parameters:
     *       None
@@ -673,7 +735,7 @@ class fmDataAPI extends fmAPI
     *
     *    Example:
     *       $fm = new fmDataAPI($database, $host, $username, $password);
-    *       $apiResult = $fm->apiListLayouts();
+    *       $apiResult = $fm->apiListScripts();
     *       if (! $fm->getIsError($apiResult)) {
     *          ...
     *       }
@@ -759,7 +821,49 @@ class fmDataAPI extends fmAPI
 
    /***********************************************************************************************************************************
     *
-    * apiPerformScript($layout, $scriptName, $params = '', $layoutResponse = '')
+    * apiValidateSession($token)
+    *
+    *    Check that a token is valid.
+    *    There's very little reason to use this method as fmDataAPi/fmAPI take care of token management
+    *    and will retrieve a new token should the current token age out.
+    *
+    *    Originated in FileMaker Server 19, may work in FileMaker Server 18
+    *
+    *    Parameters:
+    *       (string)  $token           The session token to test. Leave blank to use the one fmDataAPI manages.
+    *
+    *    Returns:
+    *       An JSON-decoded associative array of the API result. Typically:
+    *          ['response'] No values
+    *          ['messages'] Array of code/message pairs
+    *
+    *      If you call this with no token (before you've called apiLogin():
+    *          {"messages":[{"code":"10","message":"Request validation failed: Parameter (Authorization) is required"}],"response":{}}
+    *
+    *      If called with an invalid token:
+    *          {"messages":[{"code":"952","message":"Invalid FileMaker Data API token (*)"}],"response":{}}
+    *
+    *      If called with a valid token:
+    *          {"response":{},"messages":[{"code":"0","message":"OK"}]}
+    *
+    *    Example:
+    *       $fm = new fmDataAPI($database, $host, $username, $password);
+    *       $apiResult = $fm->apiValidateSession();
+    *       if (! $fm->getIsError($apiResult)) {
+    *          ...
+    *       }
+    */
+   public function apiValidateSession($token = '')
+   {
+      $options = array();
+      $options[FM_TOKEN] = ($token != '') ? $token : $this->getToken();
+
+      return $this->curlAPI($this->getAPIPath(PATH_VALIDATE_SESSION), METHOD_GET, '', $options);
+   }
+
+   /***********************************************************************************************************************************
+    *
+    * apiPerformScript($layout, $scriptName, $params = '', $layoutResponse = '', $options = array())
     *
     *    This function works with FMS 17+, but you must have record(s) in the table matching $layout.
     *    Use apiExecuteScript() for v1 with FMS 18+, which does *not* need any records in the table.
@@ -767,7 +871,7 @@ class fmDataAPI extends fmAPI
     *    Execute a script. We do this by doing a apiGetRecords() call for the first record on the specified layout.
     *    For this to work, *YOU MUST* have at least one record in this table or the script *WILL NOT EXECUTE*.
     *    For efficiency, you may want to create a table with just one record and no fields.
-    *    Typically you'll call this with a $layout set to a layout with nothing on it and then use $layoutResponse
+    *    Typically you'll call this with $layout set to a layout with nothing on it and then use $layoutResponse
     *    to indicate where you expect the result from the script to have put the record(s).
     *
     *    Parameters:
@@ -775,6 +879,7 @@ class fmDataAPI extends fmAPI
     *       (string)  $scriptName       The name of the FileMaker script to execute
     *       (string)  $params           The script parameter
     *       (string)  $layoutResponse   The name of the layout that any found set will be returned from
+    *       (array)   $options          Options - pass 'limit' to specify how many records to return.
     *
     *    Returns:
     *       An JSON-decoded associative array of the API result. Typically:
@@ -790,10 +895,11 @@ class fmDataAPI extends fmAPI
     *          ...
     *       }
     */
-   public function apiPerformScript($layout, $scriptName, $params = '', $layoutResponse = '')
+   public function apiPerformScript($layout, $scriptName, $params = '', $layoutResponse = '', $options = array())
    {
-      $options = array();
-      $options['limit'] = 1;
+      if (! array_key_exists('limit', $options)) {
+         $options['limit'] = 1;
+      }
       $options['script'] = $scriptName;
 
       if ($params != '') {
@@ -898,7 +1004,7 @@ class fmDataAPI extends fmAPI
     *
     *    Example:
     *       $fm = new fmDataAPI($database, $host, $username, $password);
-    *       $apiResult = $fm->apiDownloadContainer(layout, $recordID, $fieldName);
+    *       $apiResult = $fm->apiGetContainer(layout, $recordID, $fieldName);
     *       if (! $fm->getIsError($apiResult)) {
     *          file contents are in $curl->file *not* $result
     *          ...
@@ -1058,13 +1164,27 @@ class fmDataAPI extends fmAPI
    }
 
 
+   // *********************************************************************************************************************************
+   // Returns the response dataInfo returned in the result from the server.
+   //
+   public function getResponseDataInfo($result)
+   {
+      $responseDataInfo = array();
+
+      if (($result != '') && (is_array($result) && array_key_exists(FM_RESPONSE, $result)) && array_key_exists(FM_DATA_INFO, $result[FM_RESPONSE])) {
+         $responseDataInfo = $result[FM_RESPONSE][FM_DATA_INFO];
+      }
+
+      return $responseDataInfo;
+   }
+
+
    /***********************************************************************************************************************************
     *
     * Methods below are typically for internal use.
     *
     ***********************************************************************************************************************************
     */
-
 
    // *********************************************************************************************************************************
    // This method is called internally whenever no or an invalid token is passed to the Data API.
@@ -1152,7 +1272,7 @@ class fmDataAPI extends fmAPI
    //          'deleteRelated'          => array(array('table' => '<string>', 'recordID' => '<number>'), ...)
    //          'query'                  => array(array('<fieldName>' => '<value>', '<fieldName>' => '<value>', ..., 'omit' => '<boolean>'), ... )
    //       )
-   public function getAPIParams($params = array(), $method, $returnAs = '')
+   public function getAPIParams($params = array(), $method = METHOD_GET, $returnAs = '')
    {
       // Some GET parameters have underscores in front of them while POST never does, we need a mapping table
       $keys = array(
@@ -1198,36 +1318,36 @@ class fmDataAPI extends fmAPI
       if (array_key_exists('sort', $params) && (count($params['sort']) > 0)) {
          $sort = array();
          foreach ($params['sort'] as $sortItem) {
-            $sort[] = array('fieldName' => rawurlencode($sortItem['fieldName']),
+            $sort[] = array('fieldName' => $this->encodeParameter($sortItem['fieldName'], $method),
                             'sortOrder' => array_key_exists('sortOrder', $sortItem) ? $sortItem['sortOrder'] : 'ascend');
          }
-         $data[$keys[$key]['sort']] = ($key == 'get') ? rawurlencode(json_encode($sort)) : $sort;
+         $data[$keys[$key]['sort']] = ($key == 'get') ? $this->encodeParameter(json_encode($sort), $method) : $sort;
       }
 
       if (array_key_exists('script', $params) && ($params['script'] != '')) {
-         $data[$keys[$key]['script']] = rawurlencode($params['script']);
+         $data[$keys[$key]['script']] = $this->encodeParameter($params['script'], $method);
       }
 
       if (array_key_exists('scriptParams', $params) && ($params['scriptParams'] != '')) {
-         $data[$keys[$key]['scriptParams']] = rawurlencode($params['scriptParams']);
+         $data[$keys[$key]['scriptParams']] = $this->encodeParameter($params['scriptParams'], $method);
       }
 
       if (array_key_exists('scriptPrerequest', $params) && ($params['scriptPrerequest'] != '')) {
-         $data[$keys[$key]['scriptPrerequest']] = rawurlencode($params['scriptPrerequest']);
+         $data[$keys[$key]['scriptPrerequest']] = $this->encodeParameter($params['scriptPrerequest'], $method);
          if (array_key_exists('scriptPrerequestParams', $params) && ($params['scriptPrerequestParams'] != '')) {
-            $data[$keys[$key]['scriptPrerequestParams']] = rawurlencode($params['scriptPrerequestParams']);
+            $data[$keys[$key]['scriptPrerequestParams']] = $this->encodeParameter($params['scriptPrerequestParams'], $method);
          }
       }
 
       if (array_key_exists('scriptPresort', $params) && ($params['scriptPresort'] != '')) {
-         $data[$keys[$key]['scriptPresort']] = rawurlencode($params['scriptPresort']);
+         $data[$keys[$key]['scriptPresort']] = $this->encodeParameter($params['scriptPresort'], $method);
          if (array_key_exists('scriptPresortParams', $params) && ($params['scriptPresortParams'] != '')) {
-            $data[$keys[$key]['scriptPresortParams']] = rawurlencode($params['scriptPresortParams']);
+            $data[$keys[$key]['scriptPresortParams']] = $this->encodeParameter($params['scriptPresortParams'], $method);
          }
       }
 
       if (array_key_exists('layoutResponse', $params) && ($params['layoutResponse'] != '')) {
-         $data[$keys[$key]['layoutResponse']] = rawurlencode($params['layoutResponse']);
+         $data[$keys[$key]['layoutResponse']] = $this->encodeParameter($params['layoutResponse'], $method);
       }
 
       if (array_key_exists('portal', $params) && (count($params['portal']) > 0)) {
@@ -1235,7 +1355,7 @@ class fmDataAPI extends fmAPI
          foreach ($params['portal'] as $portal) {
             $portals .= '"'. $portal .'",';                  // Wrap each portal within quotes
          }
-         $data[$keys[$key]['portal']] = rawurlencode('['. rtrim($portals, ',') .']');
+         $data[$keys[$key]['portal']] = $this->encodeParameter('['. rtrim($portals, ',') .']', $method);
       }
 
       // This is for backward compatiblity Please use $params['portal'] moving forward as this matches the Data API.
@@ -1244,18 +1364,18 @@ class fmDataAPI extends fmAPI
          foreach ($params['portals'] as $portal) {
             $portals .= '"'. $portal .'",';                  // Wrap each portal within quotes
          }
-         $data[$keys[$key]['portals']] = rawurlencode('['. rtrim($portals, ',') .']');
+         $data[$keys[$key]['portals']] = $this->encodeParameter('['. rtrim($portals, ',') .']', $method);
       }
 
       if (array_key_exists('portalLimits', $params) && (count($params['portalLimits']) > 0)) {
          foreach ($params['portalLimits'] as $portal) {
-            $data[$keys[$key]['portalLimits']. rawurlencode($portal['name'])] = rawurlencode($portal['limit']);
+            $data[$keys[$key]['portalLimits']. $this->encodeParameter($portal['name'], $method)] = $this->encodeParameter($portal['limit'], $method);
          }
       }
 
       if (array_key_exists('portalOffsets', $params) && (count($params['portalOffsets']) > 0)) {
          foreach ($params['portalOffsets'] as $portal) {
-            $data[$keys[$key]['portalOffsets']. rawurlencode($portal['name'])] = rawurlencode($portal['offset']);
+            $data[$keys[$key]['portalOffsets']. $this->encodeParameter($portal['name'], $method)] = $this->encodeParameter($portal['offset'], $method);
          }
       }
 
@@ -1264,7 +1384,7 @@ class fmDataAPI extends fmAPI
          foreach ($params['deleteRelated'] as $to) {
             $deleteList .= "'". $to['table'] .'.'. $to['recordID'] ."',";  // Wrap each item within quotes
          }
-         $data[$keys[$key]['deleteRelated']] = rawurlencode('['. rtrim($deleteList, ',') .']');
+         $data[$keys[$key]['deleteRelated']] = $this->encodeParameter('['. rtrim($deleteList, ',') .']', $method);
       }
 
       if (array_key_exists('query', $params) && (count($params['query']) > 0)) {
@@ -1307,7 +1427,7 @@ class fmDataAPI extends fmAPI
       $credentials = '';
 
       if (($userName != '') && ($password != '')) {
-         $credentials = base64_encode(utf8_decode($userName) .':'. utf8_decode($password));
+         $credentials = base64_encode(mb_convert_encoding($userName, 'ISO-8859-1', 'UTF-8') .':'. mb_convert_encoding($password, 'ISO-8859-1', 'UTF-8'));
       }
 
       return $credentials;

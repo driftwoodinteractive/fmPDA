@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -128,7 +128,7 @@ define('HIGHEST_VERSION',  (DATA_API_VERSION == 'Latest') ? SUPPORTED_API_VERSIO
                      <ul>
                         <li>OAuth support is included but has not been tested.</li>
                         <li>The Data API replaces the name of the Table Occurrence in portals with the layout object name (if one exists). If you name your portals on the dedicated Web layouts (you do have those, right?) you've been using with the old API, you'll need to change your code (ugh) or remove the object names.</li>
-                        <li>The Data API translates FM line separators from a line feed (\n) in the old API is now a carriage return (\r). If your code looks for line feeds, look for carriage returns now.</li>
+                        <li>The Data API translates FM line separators from a line feed (\n) in the old API to use a carriage return (\r). If your code looks for line feeds, look for carriage returns now.</li>
                      </ul>
                   </ul>
                </li>

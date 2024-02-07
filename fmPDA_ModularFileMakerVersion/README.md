@@ -11,9 +11,6 @@ to handle all the error checking, automatic retries, etc. You can use this on an
 FileMaker's APIs.
 
 
-Version 2 will be released shortly - v1 works fine with Data API in FMS 17 and later.
-
-
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
@@ -59,7 +56,7 @@ info@driftwoodinteractive.com
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-Copyright (c) 2017 - 2019 Mark DeNyse
+Copyright (c) 2017 - 2024 Mark DeNyse
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

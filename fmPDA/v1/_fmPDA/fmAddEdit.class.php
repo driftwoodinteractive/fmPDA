@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,11 +34,11 @@ class fmAddEdit extends fmCommand
 {
    public $fields;
 
-   function __construct($fm, $layout)
+   function __construct($fm, $layout, $fieldValues = array())
    {
       parent::__construct($fm, $layout);
 
-      $this->fields = array();
+      $this->setFields($fieldValues);
 
       return;
    }

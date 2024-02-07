@@ -71,10 +71,12 @@ function GetNavigationMenu($numLevelsToRoot = 0, $dataAPIVersion = 1, $adminAPIV
                <a href="'. $path .'test-fmDataAPI/index.php?v='. $dataAPIVersion .'#apiListLayouts"><span class="indent-1">List Layouts</span></a>
                <a href="'. $path .'test-fmDataAPI/index.php?v='. $dataAPIVersion .'#apiListScripts"><span class="indent-1">List Scripts</span></a>
                <a href="'. $path .'test-fmDataAPI/index.php?v='. $dataAPIVersion .'#apiLayoutMetadata"><span class="indent-1">Layout Metadata</span></a>
+               <a href="'. $path .'test-fmDataAPI/index.php?v='. $dataAPIVersion .'#apiValueList"><span class="indent-1">Get Value List</span></a>
 
                <div class="navigation-header2"><i class="fas fa-lock fa-fw"></i> Authentication</div>
                <a href="'. $path .'test-fmDataAPI/index.php?v='. $dataAPIVersion .'#apiLogin"><span class="indent-1">Login</span></a>
                <a href="'. $path .'test-fmDataAPI/index.php?v='. $dataAPIVersion .'#apiLogout"><span class="indent-1">Logout</span></a>
+               <a href="'. $path .'test-fmDataAPI/index.php?v='. $dataAPIVersion .'#apiValidateSession"><span class="indent-1">Validate Session</span></a>
 
                <div class="navigation-header2"><i class="fas fa-cloud-download-alt fa-fw"></i> Get</div>
                <a href="'. $path .'test-fmDataAPI/index.php?v='. $dataAPIVersion .'#apiGetRecord"><span class="indent-1">Get Record By ID</span></a>
@@ -98,7 +100,7 @@ function GetNavigationMenu($numLevelsToRoot = 0, $dataAPIVersion = 1, $adminAPIV
 
                <div class="navigation-header2"><i class="fas fa-code fa-fw"></i> Scripting</div>
                <a href="'. $path .'test-fmDataAPI/index.php?v='. $dataAPIVersion .'#apiExecuteScript"><span class="indent-1">Execute a Script (v18+)</span></a>
-               <a href="'. $path .'test-fmDataAPI/index.php?v='. $dataAPIVersion .'#apiScript"><span class="indent-1">Run a Script</span></a>
+               <a href="'. $path .'test-fmDataAPI/index.php?v='. $dataAPIVersion .'#apiPerformScript"><span class="indent-1">PerformScript</span></a>
 
                <div class="navigation-header2"><i class="fas fa-calendar-alt fa-fw"></i> Calendar</div>
                <a href="'. $path .'test-fmDataAPI/examples/calendar/calendar.php?v='. $dataAPIVersion .'"><span class="indent-1">Full Calendar Demo</span></a>
@@ -122,21 +124,33 @@ function GetNavigationMenu($numLevelsToRoot = 0, $dataAPIVersion = 1, $adminAPIV
 
                <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiGetLog"><span class="indent-1">Get Server Log</span></a>
 
-               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiGetPHPConfig"><span class="indent-1">Get PHP Configuration</span></a>
-               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiSetPHPConfig"><span class="indent-1">Set PHP Configuration</span></a>
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiGetDataAPIConfiguration"><span class="indent-1">Get Data API Configuration</span></a>
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiSetDataAPIConfiguration"><span class="indent-1">Set Data API Configuration</span></a>
 
-               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiGetXMLConfig"><span class="indent-1">Get XML Configuration</span></a>
-               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiSetXMLConfig"><span class="indent-1">Set XML Configuration</span></a>
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiGetGeneralConfiguration"><span class="indent-1">Get General Configuration</span></a>
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiSetGeneralConfiguration"><span class="indent-1">Set General Configuration</span></a>
 
-               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiGetGeneralConfig"><span class="indent-1">Get General Configuration</span></a>
-               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiSetGeneralConfig"><span class="indent-1">Set General Configuration</span></a>
-               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiGetSecurityConfig"><span class="indent-1">Get Security Configuration</span></a>
-               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiSetSecurityConfig"><span class="indent-1">Set Security Configuration</span></a>
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiGetPHPConfiguration"><span class="indent-1">Get PHP Configuration</span></a>
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiSetPHPConfiguration"><span class="indent-1">Set PHP Configuration</span></a>
+
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiGetSecurityConfiguration"><span class="indent-1">Get Security Configuration</span></a>
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiSetSecurityConfiguration"><span class="indent-1">Set Security Configuration</span></a>
+
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiGetWebDirectConfiguration"><span class="indent-1">Get Web Direct Configuration</span></a>
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiSetWebDirectConfiguration"><span class="indent-1">Set Web Direct Configuration</span></a>
+
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiGetWPEConfiguration"><span class="indent-1">Get WPE Configuration</span></a>
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiSetWPEConfiguration"><span class="indent-1">Set WPE Configuration</span></a>
+
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiGetXDBCConfiguration"><span class="indent-1">Get xDBC Configuration</span></a>
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiSetXDBCConfiguration"><span class="indent-1">Set xDBC Configuration</span></a>
+
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiGetXMLConfiguration"><span class="indent-1">Get XML Configuration</span></a>
+               <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiSetXMLConfiguration"><span class="indent-1">Set XML Configuration</span></a>
+
 
                <div class="navigation-header2"><i class="fas fa-server fa-fw"></i> Databases</div>
                <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiListDatabases"><span class="indent-1">List Databases</span></a>
-
-
                <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiPerformOnDatabases"><span class="indent-1">Perform on All Databases</span></a>
                <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiPerformOnDatabase"><span class="indent-1">Perform on a Database</span></a>
 
@@ -145,6 +159,7 @@ function GetNavigationMenu($numLevelsToRoot = 0, $dataAPIVersion = 1, $adminAPIV
                <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiListClients"><span class="indent-1">List Clients</span></a>
                <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiDisconnectClient"><span class="indent-1">Disconnect Client</span></a>
                <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiSendMessageToClient"><span class="indent-1">Send Message to Client</span></a>
+
 
                <div class="navigation-header2"><i class="fas fa-clock fa-fw"></i> Schedules</div>
                <a href="'. $path .'test-fmAdminAPI/index.php?v='. $adminAPIVersion .'#apiListSchedules"><span class="indent-1">List Schedules</span></a>

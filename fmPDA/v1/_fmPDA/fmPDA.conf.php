@@ -5,7 +5,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,5 +39,18 @@
 //
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 define('DEFINE_FILEMAKER_CLASS', false);
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//
+// For Windows FMS 19.4+ you may need to uncomment CURL_HTTP_VERSION to force curl to use HTTP 1.1.
+//
+// The fmCURL class will look for this constant and use whatever is defined. Coder beware!
+//
+// Values are defined here: https://curl.se/libcurl/c/CURLOPT_HTTP_VERSION.html
+//
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// define('CURL_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+
 
 ?>

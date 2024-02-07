@@ -7,7 +7,7 @@
 //
 // *********************************************************************************************************************************
 //
-// Copyright (c) 2017 - 2019 Mark DeNyse
+// Copyright (c) 2017 - 2024 Mark DeNyse
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,16 +35,27 @@ $fm = new fmPDA(FM_DATABASE, FM_HOST, FM_USERNAME, FM_PASSWORD);
 
 $recordID = 6;
 
-$result = $fm->getRecordById('Web_Project', $recordID);                    // Get the existing record
+$result = $fm->getRecordById('Web_Project', $recordID);                        // Get the existing record
 if (! fmGetIsError($result)) {
-   $editCommand = $fm->newEditCommand('Web_Project', $recordID);
-   $editCommand->setField('ColorIndex', rand(1, 1000));                    // Set it to some random value
+
+   // Flip 0 -> 1 to test between the two ways to add fields
+   if (0) {
+      $editCommand = $fm->newEditCommand('Web_Project', $recordID);
+      $editCommand->setField('ColorIndex', rand(1, 1000));                    // Set it to some random value
+   }
+   else {
+      $fields = array();
+      $fields['ColorIndex'] = rand(1, 1000);                                  // Set it to some random value
+
+      $editCommand = $fm->newEditCommand('Web_Project', $recordID, $fields);
+   }
 
    $result = $editCommand->execute();
 }
 
 if (! fmGetIsError($result)) {
-   fmLogger('Project Name = '. $result->getField('Name'));
+   $record = $result->getFirstRecord();
+   fmLogger('Project Name = '. $record->getField('Name'));
    fmLogger($result);
 }
 else {
