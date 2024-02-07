@@ -1,5 +1,5 @@
 {
-   "name": "driftwoodinteractive/fmPDA",
+   "name": "driftwoodinteractive/fmpda",
    "type": "library",
    "description": "A set of PHP classes for FileMaker's Data and Admin API. The special sauce, the fmPDA class: a replacement for FileMaker's API For PHP FileMaker class, using the Data API. fmPDA provides method & data structure compatibility with FileMaker's API For PHP classes.",
    "keywords": [
@@ -21,6 +21,6 @@
    }
    ],
    "require": {
-      "php": "^5.2.17",
+      "php": "^5.2.17"
    }
 }
