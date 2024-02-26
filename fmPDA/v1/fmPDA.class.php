@@ -751,21 +751,21 @@ class fmPDA extends fmPDAGlue
    }
 
    // *********************************************************************************************************************************
-   function listDatabases()
+   public function listDatabases()
    {
       fmLogger('<br><br>*** listDatabases is not supported. ***<br><br>');
       return NULL;
    }
 
    // *********************************************************************************************************************************
-   function listScripts($prop, $value)
+   public function listScripts($prop, $value)
    {
       fmLogger('<br><br>*** listScripts is not supported. ***<br><br>');
       return;
    }
 
    // *********************************************************************************************************************************
-   function listLayouts($prop, $value)
+  public  function listLayouts($prop, $value)
    {
       fmLogger('<br><br>*** listLayouts is not supported. ***<br><br>');
       return;

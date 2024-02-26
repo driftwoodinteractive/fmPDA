@@ -177,7 +177,7 @@ class fmAPI extends fmCURL
       $this->version                   = array_key_exists('version', $options) ? $options['version'] : FM_VERSION_LATEST;
 
       if ($this->storeTokenInSession) {
-         if ((version_compare(PHP_VERSION, '5.4.0', '<') && (session_id() == '')) || (session_status() == PHP_SESSION_NONE)) {
+         if ((version_compare(PHP_VERSION, '5.4.0', '<') && (session_id() == '')) || (session_status() === PHP_SESSION_NONE)) {
             session_start();
          }
       }

@@ -199,7 +199,7 @@ class fmDataAPI extends fmAPI
       $options['host']            = $host;
       $options['sessionTokenKey'] = array_key_exists('sessionTokenKey', $options) ? $options['sessionTokenKey'] : FM_DATA_SESSION_TOKEN;
       $options['userAgent']       = array_key_exists('userAgent', $options) ? $options['userAgent'] : DATA_API_USER_AGENT;
-      $options['version']         = array_key_exists('version', $options) ? $options['version'] : FM_VERSION_1;
+      $options['version']         = array_key_exists('version', $options) ? $options['version'] : FM_VERSION_2;
 
       $authentication = array_key_exists('authentication', $options) ? $options['authentication'] : array('method' => 'default');
 
