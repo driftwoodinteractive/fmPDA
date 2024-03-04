@@ -432,6 +432,7 @@ class fmDataAPI extends fmAPI
     * apiFindRecords($layout, $data, $options = array())
     *
     *    Find record(s) with a query which can be a non-compound or a compound find.
+    *    By default the first 100 records will be returned. Use the limit parameter to adjust this value.
     *
     *    Parameters:
     *       (string)  $layout           The name of the layout
@@ -491,7 +492,6 @@ class fmDataAPI extends fmAPI
     *       (integer) $recordID         The recordID of the record to retrieve
     *       (string)  $params           The raw GET parameters to modify the call. Typically done with $options [optional]
     *       (array)   $options          Additional API parameters. Valid options:
-    *                                     ['limit']
     *                                     ['offset']
     *                                     ['sort']
     *                                     ['script']
@@ -530,7 +530,7 @@ class fmDataAPI extends fmAPI
     *
     * apiGetRecords($layout, $params = '', $options = array())
     *
-    *    Get a series of records. By default the first 100 records will be returned.
+    *    Get a series of records. By default the first 100 records will be returned. Use the limit parameter to adjust this value.
     *
     *    Parameters:
     *       (string)  $layout           The name of the layout
@@ -538,6 +538,9 @@ class fmDataAPI extends fmAPI
     *                                   to modify the call. Typically done with
     *                                   $options [optional]
     *       (array)   $options          Additional API parameters. Valid options:
+    *                                     ['limit']
+    *                                     ['offset']
+    *                                     ['sort']
     *                                     ['script']
     *                                     ['scriptParams']
     *                                     ['scriptPrerequest']
@@ -601,7 +604,7 @@ class fmDataAPI extends fmAPI
     *          ...
     *       }
     */
-   function apiGetValueList($layout, $valueList, $recordID = '')
+   public function apiGetValueList($layout, $valueList, $recordID = '')
    {
       $result = array();
       $result['displayValue'] = array();
@@ -1318,7 +1321,7 @@ class fmDataAPI extends fmAPI
       if (array_key_exists('sort', $params) && (count($params['sort']) > 0)) {
          $sort = array();
          foreach ($params['sort'] as $sortItem) {
-            $sort[] = array('fieldName' => $this->encodeParameter($sortItem['fieldName'], $method),
+           $sort[] = array('fieldName' => $sortItem['fieldName'],    // json_encode() will take care of proper encoding for GET
                             'sortOrder' => array_key_exists('sortOrder', $sortItem) ? $sortItem['sortOrder'] : 'ascend');
          }
          $data[$keys[$key]['sort']] = ($key == 'get') ? $this->encodeParameter(json_encode($sort), $method) : $sort;
